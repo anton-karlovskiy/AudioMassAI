@@ -11,11 +11,11 @@
  */
 
 function interleave(leftSamples, rightSamples) {
-  var length = leftSamples.length + rightSamples.length;
-  var result = new Int16Array(length);
+  const length = leftSamples.length + rightSamples.length;
+  const result = new Int16Array(length);
 
-  var writeIndex = 0;
-  var readIndex = 0;
+  let writeIndex = 0;
+  let readIndex = 0;
 
   while (writeIndex < length) {
     result[writeIndex++] = leftSamples[readIndex];
@@ -26,20 +26,20 @@ function interleave(leftSamples, rightSamples) {
 }
 
 function writeSamples(view, offset, samples) {
-  for (var i = 0; i < samples.length; i++, offset += 2) {
+  for (let i = 0; i < samples.length; i++, offset += 2) {
     view.setInt16(offset, samples[i], true);
   }
 }
 
 function writeString(view, offset, text) {
-  for (var i = 0; i < text.length; i++) {
+  for (let i = 0; i < text.length; i++) {
     view.setUint8(offset + i, text.charCodeAt(i));
   }
 }
 
 function encodeWav(samples, channelCount, sampleRate) {
-  var buffer = new ArrayBuffer(44 + samples.length * 2);
-  var view = new DataView(buffer);
+  const buffer = new ArrayBuffer(44 + samples.length * 2);
+  const view = new DataView(buffer);
 
   /* RIFF identifier */
   writeString(view, 0, 'RIFF');
@@ -73,12 +73,12 @@ function encodeWav(samples, channelCount, sampleRate) {
   return view;
 }
 
-var sampleRate = 44100;
-var channelCount = 1;
+let sampleRate = 44100;
+let channelCount = 1;
 
-var leftChannelSamples = null;
-var rightChannelSamples = null;
-var awaitingFirstBuffer = true;
+let leftChannelSamples = null;
+let rightChannelSamples = null;
+let awaitingFirstBuffer = true;
 
 onmessage = function (event) {
   if (!event.data) return;
@@ -102,9 +102,9 @@ onmessage = function (event) {
     rightChannelSamples = new Int16Array(event.data, 0);
   }
 
-  var samples =
+  const samples =
     channelCount > 1 ? interleave(leftChannelSamples, rightChannelSamples) : leftChannelSamples;
 
-  var wavView = encodeWav(samples, channelCount, sampleRate);
+  const wavView = encodeWav(samples, channelCount, sampleRate);
   postMessage(new Blob([wavView], { type: 'audio/wav' }));
 };

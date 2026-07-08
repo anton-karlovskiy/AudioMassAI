@@ -8,10 +8,10 @@
  * Parsing internals adapted from the original AudioMass implementation.
  */
 
-var StringUtils = {
+const StringUtils = {
   readUTF16String: function (bytes, bigEndian, maxBytes) {
-    var ix = 0;
-    var offset1 = 1,
+    let ix = 0;
+    let offset1 = 1,
       offset2 = 0;
     maxBytes = Math.min(maxBytes || bytes.length, bytes.length);
 
@@ -27,57 +27,57 @@ var StringUtils = {
       offset2 = 1;
     }
 
-    var arr = [];
-    for (var j = 0; ix < maxBytes; j++) {
-      var byte1 = bytes[ix + offset1];
-      var byte2 = bytes[ix + offset2];
-      var word1 = (byte1 << 8) + byte2;
+    const arr = [];
+    for (let j = 0; ix < maxBytes; j++) {
+      const byte1 = bytes[ix + offset1];
+      const byte2 = bytes[ix + offset2];
+      const word1 = (byte1 << 8) + byte2;
       ix += 2;
       if (word1 == 0x0000) {
         break;
       } else if (byte1 < 0xd8 || byte1 >= 0xe0) {
         arr[j] = String.fromCharCode(word1);
       } else {
-        var byte3 = bytes[ix + offset1];
-        var byte4 = bytes[ix + offset2];
-        var word2 = (byte3 << 8) + byte4;
+        const byte3 = bytes[ix + offset1];
+        const byte4 = bytes[ix + offset2];
+        const word2 = (byte3 << 8) + byte4;
         ix += 2;
         arr[j] = String.fromCharCode(word1, word2);
       }
     }
-    var string = new String(arr.join(''));
+    const string = new String(arr.join(''));
     string.bytesReadCount = ix;
     return string;
   },
   readUTF8String: function (bytes, maxBytes) {
-    var ix = 0;
+    let ix = 0;
     maxBytes = Math.min(maxBytes || bytes.length, bytes.length);
 
     if (bytes[0] == 0xef && bytes[1] == 0xbb && bytes[2] == 0xbf) {
       ix = 3;
     }
 
-    var arr = [];
-    for (var j = 0; ix < maxBytes; j++) {
-      var byte1 = bytes[ix++];
+    const arr = [];
+    for (let j = 0; ix < maxBytes; j++) {
+      const byte1 = bytes[ix++];
       if (byte1 == 0x00) {
         break;
       } else if (byte1 < 0x80) {
         arr[j] = String.fromCharCode(byte1);
       } else if (byte1 >= 0xc2 && byte1 < 0xe0) {
-        var byte2 = bytes[ix++];
+        const byte2 = bytes[ix++];
         arr[j] = String.fromCharCode(((byte1 & 0x1f) << 6) + (byte2 & 0x3f));
       } else if (byte1 >= 0xe0 && byte1 < 0xf0) {
-        var byte2 = bytes[ix++];
-        var byte3 = bytes[ix++];
+        const byte2 = bytes[ix++];
+        const byte3 = bytes[ix++];
         arr[j] = String.fromCharCode(
           ((byte1 & 0xff) << 12) + ((byte2 & 0x3f) << 6) + (byte3 & 0x3f)
         );
       } else if (byte1 >= 0xf0 && byte1 < 0xf5) {
-        var byte2 = bytes[ix++];
-        var byte3 = bytes[ix++];
-        var byte4 = bytes[ix++];
-        var codepoint =
+        const byte2 = bytes[ix++];
+        const byte3 = bytes[ix++];
+        const byte4 = bytes[ix++];
+        const codepoint =
           ((byte1 & 0x07) << 18) +
           ((byte2 & 0x3f) << 12) +
           ((byte3 & 0x3f) << 6) +
@@ -86,34 +86,35 @@ var StringUtils = {
         arr[j] = String.fromCharCode((codepoint >> 10) + 0xd800, (codepoint & 0x3ff) + 0xdc00);
       }
     }
-    var string = new String(arr.join(''));
+    const string = new String(arr.join(''));
     string.bytesReadCount = ix;
     return string;
   },
   readNullTerminatedString: function (bytes, maxBytes) {
-    var arr = [];
+    const arr = [];
     maxBytes = maxBytes || bytes.length;
-    for (var i = 0; i < maxBytes;) {
-      var byte1 = bytes[i++];
+    let i = 0;
+    for (; i < maxBytes; ) {
+      const byte1 = bytes[i++];
       if (byte1 == 0x00) break;
       arr[i - 1] = String.fromCharCode(byte1);
     }
-    var string = new String(arr.join(''));
+    const string = new String(arr.join(''));
     string.bytesReadCount = i;
     return string;
   },
 };
 
-var getBytesAt = function (data, iOffset, iLength) {
-  var bytes = new Array(iLength);
-  for (var i = 0; i < iLength; i++) {
+const getBytesAt = function (data, iOffset, iLength) {
+  const bytes = new Array(iLength);
+  for (let i = 0; i < iLength; i++) {
     bytes[i] = data.getUint8(iOffset + i);
   }
   return bytes;
 };
-var getStringWithCharsetAt = function (data, iOffset, iLength, iCharset) {
-  var bytes = getBytesAt(data, iOffset, iLength);
-  var sString;
+const getStringWithCharsetAt = function (data, iOffset, iLength, iCharset) {
+  const bytes = getBytesAt(data, iOffset, iLength);
+  let sString;
 
   switch (iCharset.toLowerCase()) {
     case 'utf-16':
@@ -134,7 +135,7 @@ var getStringWithCharsetAt = function (data, iOffset, iLength, iCharset) {
   return sString;
 };
 
-var ID3v2 = {
+const ID3v2 = {
   readFrameData: {},
 };
 
@@ -280,7 +281,7 @@ ID3v2.frames = {
   WXXX: 'User defined URL link frame',
 };
 
-var pictureType = [
+const pictureType = [
   "32x32 pixels 'file icon' (PNG only)",
   'Other file icon',
   'Cover (front)',
@@ -303,65 +304,65 @@ var pictureType = [
   'Publisher/Studio logotype',
 ];
 
-var getStringAt = function (data, iOffset, iLength) {
-  var aStr = [];
-  for (var i = iOffset, j = 0; i < iOffset + iLength; i++, j++) {
+const getStringAt = function (data, iOffset, iLength) {
+  const aStr = [];
+  for (let i = iOffset, j = 0; i < iOffset + iLength; i++, j++) {
     aStr[j] = String.fromCharCode(data.getUint8(i));
   }
   return aStr.join('');
 };
-var getLongAt = function (data, iOffset, bBigEndian) {
-  var iByte1 = data.getUint8(iOffset),
+const getLongAt = function (data, iOffset, bBigEndian) {
+  const iByte1 = data.getUint8(iOffset),
     iByte2 = data.getUint8(iOffset + 1),
     iByte3 = data.getUint8(iOffset + 2),
     iByte4 = data.getUint8(iOffset + 3);
 
-  var iLong = bBigEndian
+  let iLong = bBigEndian
     ? (((((iByte1 << 8) + iByte2) << 8) + iByte3) << 8) + iByte4
     : (((((iByte4 << 8) + iByte3) << 8) + iByte2) << 8) + iByte1;
   if (iLong < 0) iLong += 4294967296;
   return iLong;
 };
-var getSLongAt = function (data, iOffset, bBigEndian) {
-  var iULong = getLongAt(data, iOffset, bBigEndian);
+const getSLongAt = function (data, iOffset, bBigEndian) {
+  const iULong = getLongAt(data, iOffset, bBigEndian);
   if (iULong > 2147483647) return iULong - 4294967296;
   else return iULong;
 };
-var getShortAt = function (data, iOffset, bBigEndian) {
-  var iShort = bBigEndian
+const getShortAt = function (data, iOffset, bBigEndian) {
+  let iShort = bBigEndian
     ? (data.getUint8(iOffset) << 8) + data.getUint8(iOffset + 1)
     : (data.getUint8(iOffset + 1) << 8) + data.getUint8(iOffset);
   if (iShort < 0) iShort += 65536;
   return iShort;
 };
-var getInteger24At = function (data, iOffset, bBigEndian) {
-  var iByte1 = data.getUint8(iOffset),
+const getInteger24At = function (data, iOffset, bBigEndian) {
+  const iByte1 = data.getUint8(iOffset),
     iByte2 = data.getUint8(iOffset + 1),
     iByte3 = data.getUint8(iOffset + 2);
 
-  var iInteger = bBigEndian
+  let iInteger = bBigEndian
     ? (((iByte1 << 8) + iByte2) << 8) + iByte3
     : (((iByte3 << 8) + iByte2) << 8) + iByte1;
   if (iInteger < 0) iInteger += 16777216;
   return iInteger;
 };
-var isBitSetAt = function (dataview, offset, bit) {
-  var ibyte = dataview.getUint8(offset);
+const isBitSetAt = function (dataview, offset, bit) {
+  const ibyte = dataview.getUint8(offset);
   return (ibyte & (1 << bit)) != 0;
 };
-var readSynchsafeInteger32At = function (offset, data) {
-  var size1 = data.getUint8(offset);
-  var size2 = data.getUint8(offset + 1);
-  var size3 = data.getUint8(offset + 2);
-  var size4 = data.getUint8(offset + 3);
+const readSynchsafeInteger32At = function (offset, data) {
+  const size1 = data.getUint8(offset);
+  const size2 = data.getUint8(offset + 1);
+  const size3 = data.getUint8(offset + 2);
+  const size4 = data.getUint8(offset + 3);
   // 0x7f = 0b01111111
-  var size =
+  const size =
     (size4 & 0x7f) | ((size3 & 0x7f) << 7) | ((size2 & 0x7f) << 14) | ((size1 & 0x7f) << 21);
 
   return size;
 };
-var readFrameFlags = function (data, offset) {
-  var flags = {
+const readFrameFlags = function (data, offset) {
+  const flags = {
     message: {
       tag_alter_preservation: isBitSetAt(data, offset, 6),
       file_alter_preservation: isBitSetAt(data, offset, 5),
@@ -378,7 +379,7 @@ var readFrameFlags = function (data, offset) {
 
   return flags;
 };
-var _shortcuts = {
+const _shortcuts = {
   title: ['TIT2', 'TT2'],
   artist: ['TPE1', 'TP1'],
   album: ['TALB', 'TAL'],
@@ -389,56 +390,59 @@ var _shortcuts = {
   picture: ['APIC', 'PIC'],
   lyrics: ['USLT', 'ULT'],
 };
-var _defaultShortcuts = ['title', 'artist', 'album', 'track'];
+const _defaultShortcuts = ['title', 'artist', 'album', 'track'];
 
-var getTagsFromShortcuts = function (shortcuts) {
-  var tags = [];
-  for (var i = 0, shortcut; (shortcut = shortcuts[i]); i++) {
+const getTagsFromShortcuts = function (shortcuts) {
+  let tags = [];
+  for (let i = 0, shortcut; (shortcut = shortcuts[i]); i++) {
     tags = tags.concat(_shortcuts[shortcut] || [shortcut]);
   }
   return tags;
 };
-var getFrameData = function (frames, ids) {
+const getFrameData = function (frames, ids) {
   if (typeof ids == 'string') {
     ids = [ids];
   }
 
-  for (var i = 0, id; (id = ids[i]); i++) {
+  for (let i = 0, id; (id = ids[i]); i++) {
     if (id in frames) {
       return frames[id].data;
     }
   }
 };
-var readFrames = function (offset, end, data, id3header, tags) {
-  var frames = {};
-  var frameDataSize;
-  var major = id3header['major'];
+const readFrames = function (offset, end, data, id3header, tags) {
+  const frames = {};
+  let frameDataSize;
+  const major = id3header['major'];
 
   tags = getTagsFromShortcuts(tags || _defaultShortcuts);
 
   while (offset < end) {
-    var readFrameFunc = null;
-    var frameData = data;
-    var frameDataOffset = offset;
-    var flags = null;
+    let readFrameFunc = null;
+    const frameData = data;
+    let frameDataOffset = offset;
+    let flags = null;
 
+    let frameID = '';
+    let frameSize = 0;
+    let frameHeaderSize = 0;
     switch (major) {
       case 2:
-        var frameID = getStringAt(frameData, frameDataOffset, 3);
-        var frameSize = getInteger24At(frameData, frameDataOffset + 3, true);
-        var frameHeaderSize = 6;
+        frameID = getStringAt(frameData, frameDataOffset, 3);
+        frameSize = getInteger24At(frameData, frameDataOffset + 3, true);
+        frameHeaderSize = 6;
         break;
 
       case 3:
-        var frameID = getStringAt(frameData, frameDataOffset, 4);
-        var frameSize = getLongAt(frameData, frameDataOffset + 4, true);
-        var frameHeaderSize = 10;
+        frameID = getStringAt(frameData, frameDataOffset, 4);
+        frameSize = getLongAt(frameData, frameDataOffset + 4, true);
+        frameHeaderSize = 10;
         break;
 
       case 4:
-        var frameID = getStringAt(frameData, frameDataOffset, 4);
-        var frameSize = readSynchsafeInteger32At(frameDataOffset + 4, frameData);
-        var frameHeaderSize = 10;
+        frameID = getStringAt(frameData, frameDataOffset, 4);
+        frameSize = readSynchsafeInteger32At(frameDataOffset + 4, frameData);
+        frameHeaderSize = 10;
         break;
     }
     // if last frame GTFO
@@ -482,12 +486,12 @@ var readFrames = function (offset, end, data, id3header, tags) {
       readFrameFunc = ID3v2.readFrameData['T*'];
     }
 
-    var parsedData = readFrameFunc
+    const parsedData = readFrameFunc
       ? readFrameFunc(frameDataOffset, frameSize, frameData, flags)
       : undefined;
-    var desc = frameID in ID3v2.frames ? ID3v2.frames[frameID] : 'Unknown';
+    const desc = frameID in ID3v2.frames ? ID3v2.frames[frameID] : 'Unknown';
 
-    var frame = {
+    const frame = {
       id: frameID,
       size: frameSize,
       description: desc,
@@ -508,7 +512,7 @@ var readFrames = function (offset, end, data, id3header, tags) {
 };
 
 function getTextEncoding(bite) {
-  var charset;
+  let charset;
   switch (bite) {
     case 0x00:
       charset = 'iso-8859-1';
@@ -531,8 +535,8 @@ function getTextEncoding(bite) {
 }
 
 function getTime(duration) {
-  var duration = duration / 1000,
-    seconds = Math.floor(duration) % 60,
+  duration = duration / 1000;
+  const seconds = Math.floor(duration) % 60,
     minutes = Math.floor(duration / 60) % 60,
     hours = Math.floor(duration / 3600);
 
@@ -544,8 +548,8 @@ function getTime(duration) {
 }
 
 function formatTime(time) {
-  var seconds = time.seconds < 10 ? '0' + time.seconds : time.seconds;
-  var minutes = time.hours > 0 && time.minutes < 10 ? '0' + time.minutes : time.minutes;
+  const seconds = time.seconds < 10 ? '0' + time.seconds : time.seconds;
+  const minutes = time.hours > 0 && time.minutes < 10 ? '0' + time.minutes : time.minutes;
 
   return (time.hours > 0 ? time.hours + ':' : '') + minutes + ':' + seconds;
 }
@@ -553,23 +557,24 @@ function formatTime(time) {
 ID3v2.readFrameData['APIC'] = function readPictureFrame(offset, length, data, flags, v) {
   v = v || '3';
 
-  var start = offset;
-  var charset = getTextEncoding(data.getUint8(offset));
+  const start = offset;
+  const charset = getTextEncoding(data.getUint8(offset));
+  let format;
   switch (v) {
     case '2':
-      var format = getStringAt(data, offset + 1, 3);
+      format = getStringAt(data, offset + 1, 3);
       offset += 4;
       break;
 
     case '3':
     case '4':
-      var format = getStringWithCharsetAt(data, offset + 1, length - (offset - start), '');
+      format = getStringWithCharsetAt(data, offset + 1, length - (offset - start), '');
       offset += 1 + format.bytesReadCount;
       break;
   }
-  var bite = data.getUint8(offset, 1);
-  var type = pictureType[bite];
-  var desc = getStringWithCharsetAt(data, offset + 1, length - (offset - start), charset);
+  const bite = data.getUint8(offset, 1);
+  const type = pictureType[bite];
+  const desc = getStringWithCharsetAt(data, offset + 1, length - (offset - start), charset);
 
   offset += 1 + desc.bytesReadCount;
 
@@ -582,13 +587,13 @@ ID3v2.readFrameData['APIC'] = function readPictureFrame(offset, length, data, fl
 };
 
 ID3v2.readFrameData['COMM'] = function readCommentsFrame(offset, length, data) {
-  var start = offset;
-  var charset = getTextEncoding(data.getUint8(offset));
-  var language = getStringAt(data, offset + 1, 3);
-  var shortdesc = getStringWithCharsetAt(data, offset + 4, length - 4, charset);
+  const start = offset;
+  const charset = getTextEncoding(data.getUint8(offset));
+  const language = getStringAt(data, offset + 1, 3);
+  const shortdesc = getStringWithCharsetAt(data, offset + 4, length - 4, charset);
 
   offset += 4 + shortdesc.bytesReadCount;
-  var text = getStringWithCharsetAt(data, offset, start + length - offset, charset);
+  const text = getStringWithCharsetAt(data, offset, start + length - offset, charset);
 
   return {
     language: language,
@@ -611,13 +616,13 @@ ID3v2.readFrameData['PCNT'] = function readCounterFrame(offset, length, data) {
 ID3v2.readFrameData['CNT'] = ID3v2.readFrameData['PCNT'];
 
 ID3v2.readFrameData['T*'] = function readTextFrame(offset, length, data) {
-  var charset = getTextEncoding(data.getUint8(offset));
+  const charset = getTextEncoding(data.getUint8(offset));
 
   return getStringWithCharsetAt(data, offset + 1, length - 1, charset).toString();
 };
 
 ID3v2.readFrameData['TCON'] = function readGenreFrame(offset, length, data) {
-  var text = ID3v2.readFrameData['T*'].apply(this, arguments);
+  const text = ID3v2.readFrameData['T*'].apply(this, arguments);
   return text.replace(/^\(\d+\)/, '');
 };
 
@@ -633,13 +638,13 @@ ID3v2.readFrameData['TCO'] = ID3v2.readFrameData['TCON'];
 //};
 
 ID3v2.readFrameData['USLT'] = function readLyricsFrame(offset, length, data) {
-  var start = offset;
-  var charset = getTextEncoding(data.getUint8(offset));
-  var language = getStringAt(data, offset + 1, 3);
-  var descriptor = getStringWithCharsetAt(data, offset + 4, length - 4, charset);
+  const start = offset;
+  const charset = getTextEncoding(data.getUint8(offset));
+  const language = getStringAt(data, offset + 1, 3);
+  const descriptor = getStringWithCharsetAt(data, offset + 4, length - 4, charset);
 
   offset += 4 + descriptor.bytesReadCount;
-  var lyrics = getStringWithCharsetAt(data, offset, start + length - offset, charset);
+  const lyrics = getStringWithCharsetAt(data, offset, start + length - offset, charset);
 
   return {
     language: language,
@@ -651,27 +656,27 @@ ID3v2.readFrameData['USLT'] = function readLyricsFrame(offset, length, data) {
 ID3v2.readFrameData['ULT'] = ID3v2.readFrameData['USLT'];
 
 ID3v2.ReadTags = function (arraybuffer) {
-  var data = new DataView(arraybuffer);
-  var offset = 0;
+  const data = new DataView(arraybuffer);
+  let offset = 0;
 
-  var major = data.getUint8(offset + 3);
+  const major = data.getUint8(offset + 3);
   if (major > 4) {
     return { version: '>2.4' };
   }
-  var revision = data.getUint8(offset + 4);
-  var unsynch = isBitSetAt(data, offset + 5, 7);
-  var xheader = isBitSetAt(data, offset + 5, 6);
-  var xindicator = isBitSetAt(data, offset + 5, 5);
-  var size = readSynchsafeInteger32At(offset + 6, data);
+  const revision = data.getUint8(offset + 4);
+  const unsynch = isBitSetAt(data, offset + 5, 7);
+  const xheader = isBitSetAt(data, offset + 5, 6);
+  const xindicator = isBitSetAt(data, offset + 5, 5);
+  const size = readSynchsafeInteger32At(offset + 6, data);
   offset += 10;
 
   if (xheader) {
-    var xheadersize = data.getInt32(offset, true); //data.getLongAt(offset, true);
+    const xheadersize = data.getInt32(offset, true); //data.getLongAt(offset, true);
     // The 'Extended header size', currently 6 or 10 bytes, excludes itself.
     offset += xheadersize + 4;
   }
 
-  var id3 = {
+  const id3 = {
     version: '2.' + major + '.' + revision,
     major: major,
     revision: revision,
@@ -683,15 +688,15 @@ ID3v2.ReadTags = function (arraybuffer) {
     size: size,
   };
 
-  var frames = unsynch ? {} : readFrames(offset, size - 10, data, id3);
+  const frames = unsynch ? {} : readFrames(offset, size - 10, data, id3);
   // create shortcuts for most common data
-  for (var name in _shortcuts)
+  for (const name in _shortcuts)
     if (_shortcuts.hasOwnProperty(name)) {
-      var data = getFrameData(frames, _shortcuts[name]);
-      if (data) id3[name] = data;
+      const frameData = getFrameData(frames, _shortcuts[name]);
+      if (frameData) id3[name] = frameData;
     }
 
-  for (var frame in frames) {
+  for (const frame in frames) {
     if (frames.hasOwnProperty(frame)) {
       id3[frame] = frames[frame];
     }
@@ -702,7 +707,7 @@ ID3v2.ReadTags = function (arraybuffer) {
 
 /// -------
 
-var ID4 = {};
+const ID4 = {};
 
 ID4.types = {
   0: 'uint8',
@@ -734,7 +739,7 @@ ID4.atom = {
 };
 
 ID4.loadData = function (arraybuffer, callback) {
-  var data = new DataView(arraybuffer);
+  const data = new DataView(arraybuffer);
   // load the header of the first block
   loadAtom(data, 0, data.byteLength, callback);
 };
@@ -747,9 +752,9 @@ function loadAtom(data, offset, length, callback) {
   // 8 is the size of the atomSize and atomName fields.
   // When reading the current block we always read 8 more bytes in order
   // to also read the header of the next block.
-  var atomSize = getLongAt(data, offset, true);
+  const atomSize = getLongAt(data, offset, true);
   if (atomSize == 0) return callback();
-  var atomName = getStringAt(data, offset + 4, 4);
+  const atomName = getStringAt(data, offset + 4, 4);
 
   // Container atoms
   if (['moov', 'udta', 'meta', 'ilst'].indexOf(atomName) > -1) {
@@ -759,7 +764,7 @@ function loadAtom(data, offset, length, callback) {
     // });
   } else {
     // Value atoms
-    var readAtom = atomName in ID4.atom;
+    const readAtom = atomName in ID4.atom;
     // data.loadRange([offset+(readAtom?0:atomSize), offset+atomSize + 8], function() {
     loadAtom(data, offset + atomSize, length, callback);
     // });
@@ -767,8 +772,8 @@ function loadAtom(data, offset, length, callback) {
 }
 
 ID4.ReadTags = function (arraybuffer) {
-  var data = new DataView(arraybuffer);
-  var tag = {};
+  const data = new DataView(arraybuffer);
+  const tag = {};
   readAtom(tag, data, 0, data.byteLength);
   return tag;
 };
@@ -777,11 +782,11 @@ function readAtom(tag, data, offset, length, indent) {
   // debugger;
 
   indent = indent === undefined ? '' : indent + '  ';
-  var seek = offset;
+  let seek = offset;
   while (seek < offset + length) {
-    var atomSize = data.getInt32(seek); // getLongAt(data, seek, true);
+    const atomSize = data.getInt32(seek); // getLongAt(data, seek, true);
     if (atomSize == 0) return;
-    var atomName = getStringAt(data, seek + 4, 4);
+    const atomName = getStringAt(data, seek + 4, 4);
     // Container atoms
     if (atomName === 'meta') {
       seek += 4; // next_item_id (uint32)
@@ -809,9 +814,9 @@ function readAtom(tag, data, offset, length, indent) {
 
     // Value atoms
     if (ID4.atom[atomName]) {
-      var klass = getInteger24At(data, seek + 16 + 1, true);
-      var atom = ID4.atom[atomName];
-      var type = ID4.types[klass];
+      const klass = getInteger24At(data, seek + 16 + 1, true);
+      const atom = ID4.atom[atomName];
+      const type = ID4.types[klass];
       if (atomName === 'trkn') {
         tag[atom[0]] = data.getUint8(seek + 16 + 11);
         tag['count'] = data.getUint8(seek + 16 + 13);
@@ -819,9 +824,9 @@ function readAtom(tag, data, offset, length, indent) {
         // 16: name + size + "data" + size (4 bytes each)
         // 4: atom version (1 byte) + atom flags (3 bytes)
         // 4: NULL (usually locale indicator)
-        var dataStart = seek + 16 + 4 + 4;
-        var dataEnd = atomSize - 16 - 4 - 4;
-        var atomData;
+        const dataStart = seek + 16 + 4 + 4;
+        const dataEnd = atomSize - 16 - 4 - 4;
+        let atomData;
         switch (type) {
           case 'text':
             atomData = getStringWithCharsetAt(data, dataStart, dataEnd, 'UTF-8');

@@ -23,7 +23,7 @@ const compressors = {
 
       let lz4Instance;
 
-      // eslint-disable-next-line no-undef
+       
       lz4BlockCodec.createInstance('wasm').then((instance) => {
         lz4Instance = instance;
 

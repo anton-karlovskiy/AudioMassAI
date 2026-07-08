@@ -7,24 +7,24 @@
 
 import { AudioEffectModal } from '../ui/modals.js';
 
-var modal_name = 'modalfx';
-var modal_esc_key = modal_name + 'esc';
+const modal_name = 'modalfx';
+const modal_esc_key = modal_name + 'esc';
 
 export function openRecordingModal(app) {
-  var filter_id = 'rec_tools';
+  const filter_id = 'rec_tools';
 
-  var audio_stream = null;
-  var audio_context = null;
-  var script_processor = null;
-  var media_stream_source = null;
-  var temp_buffers = [];
-  var newbuff = null;
-  var sample_rate = 44100;
-  var buffer_size = 2048; // * 2 ?
-  var channel_num = 1;
-  var channel_num_out = 1;
+  let audio_stream = null;
+  let audio_context = null;
+  let script_processor = null;
+  let media_stream_source = null;
+  let temp_buffers = [];
+  let newbuff = null;
+  let sample_rate = 44100;
+  const buffer_size = 2048; // * 2 ?
+  const channel_num = 1;
+  const channel_num_out = 1;
 
-  var stop_audio = function () {
+  const stop_audio = function () {
     if (!audio_stream) return;
 
     audio_stream.getTracks().forEach(function (stream) {
@@ -41,7 +41,7 @@ export function openRecordingModal(app) {
     audio_context = null;
   };
 
-  var fxModal = AudioEffectModal(
+  const fxModal = AudioEffectModal(
     {
       id: filter_id,
       title: 'New Recording',
@@ -92,47 +92,47 @@ export function openRecordingModal(app) {
       //			}],
 
       setup: function (q) {
-        var is_ready = false;
-        var is_active = false;
-        var is_paused = false;
-        var has_recorded = false;
+        let is_ready = false;
+        let is_active = false;
+        let is_paused = false;
+        let has_recorded = false;
 
-        var mainbtns = q.el_body.getElementsByClassName('pk_tbsa');
-        var btn_start = mainbtns[0];
-        var btn_pause = mainbtns[1];
-        var btn_open = mainbtns[2];
-        var btn_add = mainbtns[3];
-        var time_span = q.el_body.getElementsByTagName('span')[0];
-        var devices_sel = q.el_body.getElementsByTagName('select')[0];
-        var devices = [];
-        var volcanvas = q.el_body.getElementsByTagName('canvas')[0];
-        var volctx = volcanvas.getContext('2d', { alpha: false, antialias: false });
+        const mainbtns = q.el_body.getElementsByClassName('pk_tbsa');
+        const btn_start = mainbtns[0];
+        const btn_pause = mainbtns[1];
+        const btn_open = mainbtns[2];
+        const btn_add = mainbtns[3];
+        const time_span = q.el_body.getElementsByTagName('span')[0];
+        const devices_sel = q.el_body.getElementsByTagName('select')[0];
+        const devices = [];
+        const volcanvas = q.el_body.getElementsByTagName('canvas')[0];
+        const volctx = volcanvas.getContext('2d', { alpha: false, antialias: false });
 
-        var freqcanvas = q.el_body.getElementsByTagName('canvas')[1];
-        var freqctx = freqcanvas.getContext('2d', { alpha: false, antialias: false });
-        var tempCanvas = document.createElement('canvas');
+        const freqcanvas = q.el_body.getElementsByTagName('canvas')[1];
+        const freqctx = freqcanvas.getContext('2d', { alpha: false, antialias: false });
+        const tempCanvas = document.createElement('canvas');
         tempCanvas.width = 500 * 2;
         tempCanvas.height = 100 * 2;
-        var tempCtx = tempCanvas.getContext('2d', { alpha: false, antialias: false });
+        const tempCtx = tempCanvas.getContext('2d', { alpha: false, antialias: false });
 
-        var first_skip = 12;
-        var curr_offset = 0;
-        var temp_buffer_index = -1;
-        var volume = 0;
-        var currtime = 0;
-        var has_devices = false;
+        let first_skip = 12;
+        let curr_offset = 0;
+        let temp_buffer_index = -1;
+        let volume = 0;
+        let currtime = 0;
+        let has_devices = false;
 
-        var old_left_time = -999999;
-        var old_right_time = -999999;
-        var peaks = [];
-        var skipp = false;
-        var remaining = 0;
-        var debounce = false;
+        const old_left_time = -999999;
+        let old_right_time = -999999;
+        let peaks = [];
+        const skipp = false;
+        let remaining = 0;
+        let debounce = false;
 
         temp_buffers = [];
         newbuff = null;
 
-        var draw_volume = function () {
+        const draw_volume = function () {
           volctx.fillStyle = '#000';
           volctx.fillRect(0, 0, 200, 40);
 
@@ -148,7 +148,7 @@ export function openRecordingModal(app) {
           window.requestAnimationFrame(draw_volume);
         };
 
-        var fetchBufferFunction = function (ev) {
+        const fetchBufferFunction = function (ev) {
           if (first_skip > 0) {
             --first_skip;
             return;
@@ -159,43 +159,43 @@ export function openRecordingModal(app) {
           }
 
           curr_offset += ev.inputBuffer.duration * sample_rate;
-          var float_array = ev.inputBuffer.getChannelData(0).slice(0);
+          const float_array = ev.inputBuffer.getChannelData(0).slice(0);
           temp_buffers[++temp_buffer_index] = float_array;
 
-          var sum = 0;
-          var x;
+          let sum = 0;
+          let x;
 
-          for (var i = 0; i < buffer_size; i += 2) {
+          for (let i = 0; i < buffer_size; i += 2) {
             x = float_array[i];
             sum += x * x;
           }
 
-          var rms = Math.sqrt(sum / (buffer_size / 2));
+          const rms = Math.sqrt(sum / (buffer_size / 2));
           volume = Math.max(rms, volume * 0.9);
 
-          var curr_time = (temp_buffer_index * buffer_size) / sample_rate;
+          const curr_time = (temp_buffer_index * buffer_size) / sample_rate;
           currtime = curr_time;
-          var width = 500;
-          var height = 100;
-          var half_height = (height / 2) * 2;
-          var new_width = width;
-          var cached_index = 0;
-          var pixels = 0;
-          var raw_pixels = 0;
-          var limit = 3;
+          const width = 500;
+          const height = 100;
+          const half_height = (height / 2) * 2;
+          let new_width = width;
+          let cached_index = 0;
+          let pixels = 0;
+          let raw_pixels = 0;
+          const limit = 3;
 
-          var left_time = curr_time - limit;
-          var right_time = curr_time; // + (limit/2);
-          var quick_render = false;
+          const left_time = curr_time - limit;
+          const right_time = curr_time; // + (limit/2);
+          let quick_render = false;
 
-          var start_offset = (left_time * sample_rate) >> 0;
-          var end_offset = ((left_time + limit) * sample_rate) >> 0;
-          var length = end_offset - start_offset;
-          var mod = (length / width) >> 0;
+          let start_offset = (left_time * sample_rate) >> 0;
+          let end_offset = ((left_time + limit) * sample_rate) >> 0;
+          let length = end_offset - start_offset;
+          let mod = (length / width) >> 0;
 
           if (left_time < old_right_time) {
             // find pixels
-            var diff = right_time - old_right_time;
+            const diff = right_time - old_right_time;
             // pixels = Math.round ( (diff / limit) * width);
 
             raw_pixels = (diff / limit) * width;
@@ -222,20 +222,20 @@ export function openRecordingModal(app) {
 
           old_right_time = right_time;
 
-          var max = 0;
-          var min = 0;
+          let max = 0;
+          let min = 0;
 
-          for (var i = 0; i < new_width; ++i) {
-            var new_offset = start_offset + mod * i;
+          for (let i = 0; i < new_width; ++i) {
+            const new_offset = start_offset + mod * i;
 
             max = 0;
             min = 0;
 
             if (new_offset >= 0) {
-              for (var j = 0; j < mod; j += 3) {
-                var temp = new_offset + j;
-                var temp2 = (temp / 2048) >> 0;
-                var temp3 = temp % 2048;
+              for (let j = 0; j < mod; j += 3) {
+                const temp = new_offset + j;
+                const temp2 = (temp / 2048) >> 0;
+                const temp3 = temp % 2048;
 
                 if (!temp_buffers[temp2]) continue;
 
@@ -263,7 +263,7 @@ export function openRecordingModal(app) {
           freqctx.fillStyle = '#99c2c6';
 
           if (quick_render) {
-            var forward = Math.round(raw_pixels * 2);
+            let forward = Math.round(raw_pixels * 2);
             remaining += forward - raw_pixels * 2;
             if (remaining > 1) {
               forward -= 1;
@@ -279,19 +279,19 @@ export function openRecordingModal(app) {
 
             freqctx.beginPath();
 
-            var peak = peaks[(width - pixels - 2) * 2];
-            var _h = Math.round(peak * half_height);
+            let peak = peaks[(width - pixels - 2) * 2];
+            let _h = Math.round(peak * half_height);
             freqctx.moveTo((width - pixels - 2) * 2, half_height - _h);
 
-            for (var i = width - pixels - 1; i < width; ++i) {
+            for (let i = width - pixels - 1; i < width; ++i) {
               peak = peaks[i * 2];
               _h = Math.round(peak * half_height);
               freqctx.lineTo(i * 2, half_height - _h);
             }
 
-            for (var i = width - 1; i >= width - pixels - 1; --i) {
-              var peak = peaks[i * 2 + 1];
-              var _h = Math.round(peak * half_height);
+            for (let i = width - 1; i >= width - pixels - 1; --i) {
+              const peak = peaks[i * 2 + 1];
+              const _h = Math.round(peak * half_height);
               freqctx.lineTo(i * 2, half_height - _h);
             }
 
@@ -301,15 +301,15 @@ export function openRecordingModal(app) {
             freqctx.beginPath();
             freqctx.moveTo(0, half_height);
 
-            for (var i = 0; i < width; ++i) {
-              var peak = peaks[i * 2];
-              var _h = Math.round(peak * half_height);
+            for (let i = 0; i < width; ++i) {
+              const peak = peaks[i * 2];
+              const _h = Math.round(peak * half_height);
               freqctx.lineTo(i * 2, half_height - _h);
             }
 
-            for (var i = width - 1; i >= 0; --i) {
-              var peak = peaks[i * 2 + 1];
-              var _h = Math.round(peak * half_height);
+            for (let i = width - 1; i >= 0; --i) {
+              const peak = peaks[i * 2 + 1];
+              const _h = Math.round(peak * half_height);
               freqctx.lineTo(i * 2, half_height - _h);
             }
 
@@ -331,15 +331,15 @@ export function openRecordingModal(app) {
             alert('no microphone permissions found!');
           });
 
-        var enumerate = function () {
+        const enumerate = function () {
           if (navigator.mediaDevices.enumerateDevices) {
             navigator.mediaDevices.enumerateDevices().then((devices) => {
               devices = devices.filter((d) => d.kind === 'audioinput');
               has_devices = true;
 
-              var len = devices.length;
-              for (var i = 0; i < len; ++i) {
-                var el = document.createElement('option');
+              const len = devices.length;
+              for (let i = 0; i < len; ++i) {
+                const el = document.createElement('option');
                 el.value = devices[i].deviceId;
                 el.innerText = devices[i].label;
                 devices_sel.appendChild(el);
@@ -356,7 +356,7 @@ export function openRecordingModal(app) {
           }
         };
 
-        var stop = function () {
+        const stop = function () {
           stop_audio();
 
           is_active = false;
@@ -364,10 +364,10 @@ export function openRecordingModal(app) {
           first_skip = 10;
 
           ++temp_buffer_index;
-          var k = -1;
+          let k = -1;
           newbuff = new Float32Array(temp_buffer_index * buffer_size);
-          for (var i = 0; i < temp_buffer_index; ++i) {
-            for (var j = 0; j < buffer_size; ++j) {
+          for (let i = 0; i < temp_buffer_index; ++i) {
+            for (let j = 0; j < buffer_size; ++j) {
               newbuff[++k] = temp_buffers[i][j];
             }
           }
@@ -427,7 +427,7 @@ export function openRecordingModal(app) {
           audio_context = new (window.AudioContext || window.webkitAudioContext)();
           sample_rate = audio_context.sampleRate;
 
-          var audio_val = true;
+          let audio_val = true;
           if (has_devices) {
             audio_val = { deviceId: devices_sel.value };
             // devices_sel.options[devices_sel.selectedIndex].value;

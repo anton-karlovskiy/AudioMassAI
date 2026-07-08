@@ -8,16 +8,16 @@
 
 import { AudioEffectModal } from '../ui/modals.js';
 
-var modal_name = 'modalfx';
-var modal_esc_key = modal_name + 'esc';
-var max_db_val = 35;
+const modal_name = 'modalfx';
+const modal_esc_key = modal_name + 'esc';
+const max_db_val = 35;
 
 function ParagraphicEqGraph() {
-  var q = this;
-  var _id = 0;
+  const q = this;
+  let _id = 0;
 
-  var _is_render_scheduled = false;
-  var _is_render_scheduled2 = false;
+  let _is_render_scheduled = false;
+  let _is_render_scheduled2 = false;
 
   q.act = null;
   q.ranges = [];
@@ -26,7 +26,7 @@ function ParagraphicEqGraph() {
   this.Callback = function () {};
 
   this.Init = function (container) {
-    var q = this;
+    const q = this;
 
     q.el = container;
     _make_ui(q);
@@ -36,9 +36,9 @@ function ParagraphicEqGraph() {
   };
 
   this.Add = function (type, is_on, freq, gain, qval, coords_x, coords_y) {
-    var q = this;
+    const q = this;
 
-    var new_range = {
+    const new_range = {
       id: ++_id,
       type: type ? type : 'peaking',
       freq: freq || 0,
@@ -74,9 +74,9 @@ function ParagraphicEqGraph() {
   };
 
   this.Remove = function (range) {
-    var q = this;
+    const q = this;
 
-    var l = q.ranges.length;
+    let l = q.ranges.length;
 
     while (l-- > 0) {
       if (q.ranges[l] === range) {
@@ -97,14 +97,14 @@ function ParagraphicEqGraph() {
     q.Render();
   };
 
-  var _fillstyle = '#d9d955';
+  const _fillstyle = '#d9d955';
 
-  var _anim_render = function () {
+  const _anim_render = function () {
     _render(q);
   };
 
   this.Render = function () {
-    var q = this;
+    const q = this;
 
     if (_is_render_scheduled) return;
     _is_render_scheduled = true;
@@ -113,7 +113,7 @@ function ParagraphicEqGraph() {
   };
 
   this.RenderBars = function (_, freq) {
-    var q = this;
+    const q = this;
 
     if (_is_render_scheduled2) return;
     _is_render_scheduled2 = true;
@@ -123,45 +123,45 @@ function ParagraphicEqGraph() {
     });
   };
 
-  var _render_bars = function (q, freq) {
+  const _render_bars = function (q, freq) {
     _is_render_scheduled2 = false;
 
     if (!freq) return;
 
-    var ctx = q.ui.ctx_bars;
-    var canvas = q.ui.canvas_bars;
+    const ctx = q.ui.ctx_bars;
+    const canvas = q.ui.canvas_bars;
 
-    var cw = canvas.width;
-    var ch = canvas.height;
+    const cw = canvas.width;
+    const ch = canvas.height;
 
     // ctx.fillStyle = '#000';
     // ctx.fillRect (0, 0, cw, ch);
     ctx.clearRect(0, 0, cw, ch);
 
-    var bufferLength = 512; // 256
-    var max_bars = 117 * 2;
-    var barWidth = (cw / max_bars).toFixed(1) / 1;
-    var barHeight = 0;
-    var x = 0;
+    const bufferLength = 512; // 256
+    const max_bars = 117 * 2;
+    const barWidth = (cw / max_bars).toFixed(1) / 1;
+    let barHeight = 0;
+    let x = 0;
 
     //
-    for (var i = 0; i < 117; ++i) {
+    for (let i = 0; i < 117; ++i) {
       barHeight = freq[i];
 
       // map.push ( i * 43 );
 
-      var newheight = ((barHeight / 256) * ch) >> 0;
+      const newheight = ((barHeight / 256) * ch) >> 0;
 
       ctx.fillRect(x, ch - newheight, barWidth, newheight);
       x += barWidth; // + 1;
     }
 
-    for (var i = 0; i < 117; ++i) {
+    for (let i = 0; i < 117; ++i) {
       // (116*3.4)
       barHeight = freq[117 + ((i * 3.34) >> 0)];
 
       // map.push ( (120 + (i * 3)) * 43 );
-      var newheight = ((barHeight / 256) * ch) >> 0;
+      const newheight = ((barHeight / 256) * ch) >> 0;
 
       ctx.fillRect(x, ch - newheight, barWidth, newheight);
       x += barWidth; // + 1;
@@ -233,17 +233,17 @@ function ParagraphicEqGraph() {
     //			}
   };
 
-  var line_arr = new Array(1000);
-  var _render = function (q) {
+  const line_arr = new Array(1000);
+  const _render = function (q) {
     _is_render_scheduled = false;
 
-    var ctx = q.ui.ctx_eq;
-    var canvas = q.ui.canvas_eq;
+    const ctx = q.ui.ctx_eq;
+    const canvas = q.ui.canvas_eq;
 
-    var cw = canvas.width;
-    var ch = canvas.height;
+    const cw = canvas.width;
+    const ch = canvas.height;
 
-    var ch_half = ch / 2;
+    const ch_half = ch / 2;
 
     // --------------------
     ctx.clearRect(0, 0, cw, ch);
@@ -260,24 +260,24 @@ function ParagraphicEqGraph() {
     }
 
     // render the line based on the elements
-    var first = true;
-    var arr = [];
-    for (var i = 0; i < total; ++i) {
+    let first = true;
+    const arr = [];
+    for (let i = 0; i < total; ++i) {
       arr[i] = 0;
     }
 
-    for (var o = 0; o < q.ranges.length; ++o) {
-      var curr = q.ranges[o];
+    for (let o = 0; o < q.ranges.length; ++o) {
+      const curr = q.ranges[o];
 
       if (!curr._on) continue;
 
       if (first) {
         first = false;
-        for (var i = 0; i < total; ++i) {
+        for (let i = 0; i < total; ++i) {
           line_arr[i] = curr._arr[i];
         }
       } else {
-        for (var i = 0; i < total; ++i) {
+        for (let i = 0; i < total; ++i) {
           line_arr[i] += curr._arr[i];
         }
       }
@@ -294,23 +294,23 @@ function ParagraphicEqGraph() {
       ctx.beginPath();
       ctx.moveTo(0, ch_half - line_arr[0] * (ch_half / max_db_val));
 
-      for (var i = 0; i < total / 4; i += 1) {
-        var el = line_arr[i];
+      for (let i = 0; i < total / 4; i += 1) {
+        const el = line_arr[i];
 
-        var x = i * 2 * (cw / total);
-        var y = ch_half - el * (ch_half / max_db_val);
+        const x = i * 2 * (cw / total);
+        const y = ch_half - el * (ch_half / max_db_val);
 
         ctx.lineTo(x, y);
       }
 
-      var hh = 0;
-      for (var i = total / 4; i < total; i += 3) {
-        var el = line_arr[i];
+      let hh = 0;
+      for (let i = total / 4; i < total; i += 3) {
+        const el = line_arr[i];
 
         hh += 2;
 
-        var x = (total / 2 + hh) * (cw / total);
-        var y = ch_half - el * (ch_half / max_db_val);
+        const x = (total / 2 + hh) * (cw / total);
+        const y = ch_half - el * (ch_half / max_db_val);
 
         ctx.lineTo(x, y);
       }
@@ -320,12 +320,12 @@ function ParagraphicEqGraph() {
     // ---
 
     // draw the dots
-    var radius = 6;
-    for (var o = 0; o < q.ranges.length; ++o) {
-      var curr = q.ranges[o];
+    const radius = 6;
+    for (let o = 0; o < q.ranges.length; ++o) {
+      const curr = q.ranges[o];
 
-      var center_x = curr._coords.x;
-      var center_y = curr._coords.y;
+      const center_x = curr._coords.x;
+      const center_y = curr._coords.y;
 
       ctx.beginPath();
       ctx.arc(center_x, center_y, radius, 0, 2 * Math.PI, false);
@@ -363,42 +363,42 @@ function ParagraphicEqGraph() {
 
   ////////////////////////////////////////////
   // helpers
-  var _dbncr = null;
-  var total_freq = 20000; // 22000
-  var total = 1000;
-  var jump = (total_freq / total) >> 0;
+  let _dbncr = null;
+  const total_freq = 20000; // 22000
+  const total = 1000;
+  const jump = (total_freq / total) >> 0;
 
   function _range_update(q, range, new_range, compute_coords) {
-    var modified = false;
-    var old_val = null;
+    let modified = false;
+    let old_val = null;
 
-    for (var key in new_range) {
+    for (const key in new_range) {
       if (range[key] !== new_range[key]) {
         modified = true;
         old_val = range[key];
         range[key] = new_range[key];
 
         if (key === '_on') {
-          var el = document.getElementById('pgon' + range.id);
+          const el = document.getElementById('pgon' + range.id);
           el.checked = range[key];
         } else if (key === 'freq') {
-          var el = range.el.getElementsByClassName('pk_freq')[0];
+          const el = range.el.getElementsByClassName('pk_freq')[0];
           //requestAnimationFrame (function () {
           el.value = range[key];
           //});
         } else if (key === 'gain') {
-          var el = range.el.getElementsByClassName('pk_gain')[0];
+          const el = range.el.getElementsByClassName('pk_gain')[0];
           //requestAnimationFrame (function () {
           el.value = range[key];
           //});
         } else if (key === 'q') {
-          var el = range.el.getElementsByClassName('pk_q')[0];
+          const el = range.el.getElementsByClassName('pk_q')[0];
           //requestAnimationFrame (function () {
           el.value = range[key];
           //});
         } else if (key === 'type') {
           // -----
-          var el = range.el.getElementsByTagName('select')[0];
+          const el = range.el.getElementsByTagName('select')[0];
           if (range[key] === 'peaking') el.options[0].selected = true;
           else if (range[key] === 'lowpass') el.options[1].selected = true;
           else if (range[key] === 'highpass') el.options[2].selected = true;
@@ -413,11 +413,11 @@ function ParagraphicEqGraph() {
     if (modified) {
       if (compute_coords) {
         // compute coords of the canvas
-        var canvas = q.ui.canvas_eq;
-        var cw = canvas.width;
-        var ch = canvas.height;
+        const canvas = q.ui.canvas_eq;
+        const cw = canvas.width;
+        const ch = canvas.height;
 
-        var tmp_x = 0;
+        const tmp_x = 0;
         if (range.freq <= 5000) {
           range._coords.x = ((range.freq / 5000) * (cw / 2)).toFixed(1) / 1;
         } else {
@@ -454,28 +454,28 @@ function ParagraphicEqGraph() {
   }
 
   function _range_compute_arr(range) {
-    var arr = [];
+    const arr = [];
 
-    for (var i = 0; i < total; ++i) {
+    for (let i = 0; i < total; ++i) {
       arr[i] = 0;
     }
 
     range._arr = arr;
 
     // -------------
-    var rounding = total_freq * (2 / range.q);
-    var half_rounding = (rounding / jump) >> 0;
+    const rounding = total_freq * (2 / range.q);
+    const half_rounding = (rounding / jump) >> 0;
 
     if (range.type === 'peaking') {
-      var edge_left = range.freq - rounding / 2;
-      var edge_right = range.freq + rounding / 2;
+      const edge_left = range.freq - rounding / 2;
+      const edge_right = range.freq + rounding / 2;
 
-      var start = (edge_left / jump) >> 0;
-      var end = (edge_right / jump) >> 0;
+      const start = (edge_left / jump) >> 0;
+      const end = (edge_right / jump) >> 0;
 
-      var j = 0;
-      for (var i = start; i < end; ++i) {
-        var ii = i * jump;
+      let j = 0;
+      for (let i = start; i < end; ++i) {
+        const ii = i * jump;
         if (ii < range.freq) {
           ++j;
           arr[i] += _ease(j / (half_rounding / 2)) * range.gain;
@@ -489,17 +489,17 @@ function ParagraphicEqGraph() {
     }
 
     if (range.type === 'highpass') {
-      var edge_left = range.freq - rounding;
-      var start = (edge_left / jump) >> 0;
-      var end = (range.freq / jump) >> 0;
+      const edge_left = range.freq - rounding;
+      const start = (edge_left / jump) >> 0;
+      const end = (range.freq / jump) >> 0;
 
-      for (var i = 0; i < start; ++i) {
+      for (let i = 0; i < start; ++i) {
         arr[i] = -max_db_val;
       }
 
       // todo improve this!!!
-      var j = half_rounding;
-      for (var i = start; i < end; ++i) {
+      let j = half_rounding;
+      for (let i = start; i < end; ++i) {
         --j;
         arr[i] -= _ease_out(j / half_rounding) * max_db_val;
       }
@@ -508,17 +508,17 @@ function ParagraphicEqGraph() {
     }
 
     if (range.type === 'lowpass') {
-      var edge_right = range.freq + rounding;
-      var start = (range.freq / jump) >> 0;
-      var end = (edge_right / jump) >> 0;
+      const edge_right = range.freq + rounding;
+      const start = (range.freq / jump) >> 0;
+      const end = (edge_right / jump) >> 0;
 
-      for (var i = end; i < total; ++i) {
+      for (let i = end; i < total; ++i) {
         arr[i] = -max_db_val;
       }
 
       // todo improve this!!!
-      var j = 0;
-      for (var i = start; i < end; ++i) {
+      let j = 0;
+      for (let i = start; i < end; ++i) {
         ++j;
         arr[i] -= _ease_out(j / half_rounding) * max_db_val;
       }
@@ -530,11 +530,11 @@ function ParagraphicEqGraph() {
   }
 
   function _make_ui(q) {
-    var el_drawer = document.createElement('div');
+    const el_drawer = document.createElement('div');
     el_drawer.className = 'pk_row';
 
-    var canvas_bars = document.createElement('canvas');
-    var canvas_eq = document.createElement('canvas');
+    const canvas_bars = document.createElement('canvas');
+    const canvas_eq = document.createElement('canvas');
 
     canvas_bars.className = 'pk_peq2';
     canvas_eq.className = 'pk_peq';
@@ -545,8 +545,8 @@ function ParagraphicEqGraph() {
     canvas_eq.width = 450;
     canvas_eq.height = 225;
 
-    var ctx_bars = canvas_bars.getContext('2d', { alpha: true, antialias: false });
-    var ctx_eq = canvas_eq.getContext('2d', { alpha: true, antialias: false });
+    const ctx_bars = canvas_bars.getContext('2d', { alpha: true, antialias: false });
+    const ctx_eq = canvas_eq.getContext('2d', { alpha: true, antialias: false });
 
     ctx_bars.fillStyle = '#365457'; // '#486a6e';
 
@@ -556,7 +556,7 @@ function ParagraphicEqGraph() {
     ctx_eq.shadowBlur = 0;
 
     // render the decibel and the frequencies
-    var marker_freqs = document.createElement('div');
+    const marker_freqs = document.createElement('div');
     marker_freqs.className = 'pk_peq3 pk_noselect';
     marker_freqs.innerHTML =
       '<span>32</span>' +
@@ -575,7 +575,7 @@ function ParagraphicEqGraph() {
       '<span style="position:absolute;left:85%">16k<span></span></span>' +
       '<span style="float:right">20k</span>';
 
-    var marker_dbs = document.createElement('div');
+    const marker_dbs = document.createElement('div');
     marker_dbs.className = 'pk_peq4 pk_noselect';
     marker_dbs.innerHTML =
       '<span style="top:0">35</span>' +
@@ -598,7 +598,7 @@ function ParagraphicEqGraph() {
     q.el.appendChild(el_drawer);
 
     // element's area
-    var el_list = document.createElement('div');
+    const el_list = document.createElement('div');
     el_list.className = 'pk_row pk_noselect pk_pglst';
 
     el_list.innerHTML =
@@ -617,17 +617,17 @@ function ParagraphicEqGraph() {
   }
 
   function _make_evs(q) {
-    var ctx = q.ui.ctx_eq;
-    var canvas = q.ui.canvas_eq;
+    const ctx = q.ui.ctx_eq;
+    const canvas = q.ui.canvas_eq;
 
-    var click_time = 0;
-    var is_dragging = false;
+    let click_time = 0;
+    let is_dragging = false;
 
-    var _move = function (e) {
+    const _move = function (e) {
       if (!is_dragging || !q.act) return;
 
-      var ex = 0;
-      var ey = 0;
+      let ex = 0;
+      let ey = 0;
 
       if (e.touches) {
         if (e.touches.length > 1) {
@@ -641,21 +641,21 @@ function ParagraphicEqGraph() {
         ey = e.clientY;
       }
 
-      var bounds = canvas.getBoundingClientRect();
-      var cw = canvas.width;
-      var ch = canvas.height;
+      const bounds = canvas.getBoundingClientRect();
+      const cw = canvas.width;
+      const ch = canvas.height;
 
-      var posx = ex - bounds.left;
-      var posy = ey - bounds.top;
+      const posx = ex - bounds.left;
+      const posy = ey - bounds.top;
 
-      var rel_x = posx / cw;
-      var rel_y = posy / ch;
+      const rel_x = posx / cw;
+      const rel_y = posy / ch;
 
       q.act._coords.x = posx;
       q.act._coords.y = posy;
 
       // up until half it's 0 - 5000, second half 5000 -> 2200
-      var freq = 0;
+      let freq = 0;
 
       if (rel_x <= 0.5) {
         freq = (5000 * (rel_x * 2)) >> 0;
@@ -664,7 +664,7 @@ function ParagraphicEqGraph() {
       }
 
       //				var freq = (rel_x * (total_freq) + 0) >> 0; // + 16 (min freq)
-      var gain = ((rel_y - 0.5) * -2 * max_db_val).toFixed(2) / 1;
+      const gain = ((rel_y - 0.5) * -2 * max_db_val).toFixed(2) / 1;
 
       _range_update(q, q.act, {
         freq: freq,
@@ -673,7 +673,7 @@ function ParagraphicEqGraph() {
       _range_compute_arr(q.act);
     };
 
-    var _end = function (e) {
+    const _end = function (e) {
       is_dragging = false;
 
       canvas.removeEventListener('mousemove', _move);
@@ -683,26 +683,26 @@ function ParagraphicEqGraph() {
       canvas.removeEventListener('touchup', _end);
     };
 
-    var mdown = function (e) {
-      var unchecked = !!q.act;
+    const mdown = function (e) {
+      const unchecked = !!q.act;
 
       if (q.ranges.length === 0) {
         if (unchecked) q.Render();
         return;
       }
 
-      var bounds = canvas.getBoundingClientRect();
-      var cw = canvas.width;
-      var ch = canvas.height;
+      const bounds = canvas.getBoundingClientRect();
+      const cw = canvas.width;
+      const ch = canvas.height;
 
-      var posx = e.clientX - bounds.left;
-      var posy = e.clientY - bounds.top;
+      const posx = e.clientX - bounds.left;
+      const posy = e.clientY - bounds.top;
 
-      var dist_x = e.is_touch ? 20 : 10;
-      var dist_y = e.is_touch ? 20 : 9;
+      const dist_x = e.is_touch ? 20 : 10;
+      const dist_y = e.is_touch ? 20 : 9;
 
-      for (var o = 0; o < q.ranges.length; ++o) {
-        var curr = q.ranges[o];
+      for (let o = 0; o < q.ranges.length; ++o) {
+        const curr = q.ranges[o];
 
         if (Math.abs(curr._coords.x - posx) < dist_x && Math.abs(curr._coords.y - posy) < dist_y) {
           if (unchecked) {
@@ -755,7 +755,7 @@ function ParagraphicEqGraph() {
         return;
       }
 
-      var ev = {
+      const ev = {
         clientX: e.touches[0].clientX,
         clientY: e.touches[0].clientY,
         is_touch: true,
@@ -769,16 +769,16 @@ function ParagraphicEqGraph() {
       'click',
       function (e) {
         if (e.timeStamp - click_time < 260) {
-          var bounds = canvas.getBoundingClientRect();
-          var cw = canvas.width;
-          var ch = canvas.height;
-          var posx = e.clientX - bounds.left;
-          var posy = e.clientY - bounds.top;
+          const bounds = canvas.getBoundingClientRect();
+          const cw = canvas.width;
+          const ch = canvas.height;
+          const posx = e.clientX - bounds.left;
+          const posy = e.clientY - bounds.top;
 
-          var rel_x = posx / cw;
-          var rel_y = posy / ch;
+          const rel_x = posx / cw;
+          const rel_y = posy / ch;
 
-          var freq = 0;
+          let freq = 0;
           if (rel_x <= 0.5) {
             freq = (5000 * (rel_x * 2)) >> 0;
           } else {
@@ -786,9 +786,9 @@ function ParagraphicEqGraph() {
           }
 
           // var freq = (rel_x * (total_freq) + 0) >> 0; // + 16 (min freq)
-          var gain = ((rel_y - 0.5) * -2 * max_db_val).toFixed(2) / 1;
-          var qval = 5;
-          var type = 'peaking';
+          const gain = ((rel_y - 0.5) * -2 * max_db_val).toFixed(2) / 1;
+          const qval = 5;
+          const type = 'peaking';
 
           q.Add(type, true, freq, gain, qval, posx, posy);
         }
@@ -802,9 +802,9 @@ function ParagraphicEqGraph() {
   }
 
   function _range_render_el(q, range, clss) {
-    var el_list = q.ui.el_list;
+    const el_list = q.ui.el_list;
 
-    var el = document.createElement('div');
+    const el = document.createElement('div');
     el.className = 'pk_pgeq_els' + (clss ? clss : '');
     el.setAttribute('data-id', range.id);
 
@@ -854,9 +854,9 @@ function ParagraphicEqGraph() {
     );
 
     // # & on or off
-    var chckd = range._on ? 'checked' : '';
-    var num = '<i>' + range.id + '</i>';
-    var el_num = document.createElement('div');
+    const chckd = range._on ? 'checked' : '';
+    const num = '<i>' + range.id + '</i>';
+    const el_num = document.createElement('div');
     el_num.className = 'pk_txlft';
     el_num.innerHTML =
       num +
@@ -872,15 +872,15 @@ function ParagraphicEqGraph() {
     el_num.getElementsByTagName('input')[0].onchange = function (e) {
       _range_update(q, range, { _on: !!this.checked });
 
-      var lbl = this.parentNode.getElementsByTagName('label')[0];
+      const lbl = this.parentNode.getElementsByTagName('label')[0];
       lbl.innerHTML = this.checked ? 'ON' : 'OFF';
     };
     el.appendChild(el_num);
 
     // type
-    var sel1 = range.type === 'lowpass' ? 'selected' : '';
-    var sel2 = range.type === 'highpass' ? 'selected' : '';
-    var el_type = document.createElement('div');
+    const sel1 = range.type === 'lowpass' ? 'selected' : '';
+    const sel2 = range.type === 'highpass' ? 'selected' : '';
+    const el_type = document.createElement('div');
     el_type.innerHTML =
       '<select><option>peaking</option><option ' +
       sel1 +
@@ -889,7 +889,7 @@ function ParagraphicEqGraph() {
       '>highpass</option></select>';
 
     el_type.getElementsByTagName('select')[0].onchange = function (e) {
-      var val = this.options[this.selectedIndex].value;
+      const val = this.options[this.selectedIndex].value;
 
       if (val === 'peaking') {
         el.classList.remove('pk_dis');
@@ -903,7 +903,7 @@ function ParagraphicEqGraph() {
     el.appendChild(el_type);
 
     // gain
-    var el_gain = document.createElement('div');
+    const el_gain = document.createElement('div');
     el_gain.innerHTML =
       '<input type="number" class="pk_val pk_gain" min="-35" max="35" value="' + range.gain + '">';
 
@@ -922,9 +922,9 @@ function ParagraphicEqGraph() {
     el_gain.getElementsByClassName('pk_gain')[0].onfocus = function (e) {
       if (this.hasAttribute('data-open')) return;
 
-      var self = this;
-      var parent = this.parentNode;
-      var bar = document.createElement('div');
+      const self = this;
+      const parent = this.parentNode;
+      const bar = document.createElement('div');
       bar.className = 'pk_pgeq_freq pk_gain';
       bar.innerHTML =
         '<div class="pk_arr"></div><input type="range" min="-35" max="35" class="pk_horiz pk_gain" step="0.1" value="' +
@@ -941,7 +941,7 @@ function ParagraphicEqGraph() {
       parent.appendChild(bar);
       this.setAttribute('data-open', '1');
 
-      var down = function (e) {
+      const down = function (e) {
         if (
           !e.target.classList.contains('pk_gain') ||
           (e.target.type === self.type && e.target !== self)
@@ -957,7 +957,7 @@ function ParagraphicEqGraph() {
     el.appendChild(el_gain);
 
     // freq
-    var el_freq = document.createElement('div');
+    const el_freq = document.createElement('div');
     el_freq.innerHTML =
       '<input type="number" class="pk_val pk_freq" min="16" max="20000" value="' +
       range.freq +
@@ -978,9 +978,9 @@ function ParagraphicEqGraph() {
     el_freq.getElementsByClassName('pk_freq')[0].onfocus = function (e) {
       if (this.hasAttribute('data-open')) return;
 
-      var self = this;
-      var parent = this.parentNode;
-      var bar = document.createElement('div');
+      const self = this;
+      const parent = this.parentNode;
+      const bar = document.createElement('div');
       bar.className = 'pk_pgeq_freq pk_freq';
       bar.innerHTML =
         '<div class="pk_arr"></div><input type="range" min="16" max="20000" class="pk_horiz pk_freq" step="1" value="' +
@@ -997,7 +997,7 @@ function ParagraphicEqGraph() {
       parent.appendChild(bar);
       this.setAttribute('data-open', '1');
 
-      var down = function (e) {
+      const down = function (e) {
         if (
           !e.target.classList.contains('pk_freq') ||
           (e.target.type === self.type && e.target !== self)
@@ -1013,7 +1013,7 @@ function ParagraphicEqGraph() {
     el.appendChild(el_freq);
 
     // q
-    var el_q = document.createElement('div');
+    const el_q = document.createElement('div');
     el_q.innerHTML =
       '<input type="number" class="pk_val pk_q" min="1" max="50" value="' + range.q + '">';
     el_q.getElementsByClassName('pk_q')[0].onchange = function (e) {
@@ -1032,9 +1032,9 @@ function ParagraphicEqGraph() {
     el_q.getElementsByClassName('pk_q')[0].onfocus = function (e) {
       if (this.hasAttribute('data-open')) return;
 
-      var self = this;
-      var parent = this.parentNode;
-      var bar = document.createElement('div');
+      const self = this;
+      const parent = this.parentNode;
+      const bar = document.createElement('div');
       bar.className = 'pk_pgeq_freq pk_q';
       bar.innerHTML =
         '<div class="pk_arr"></div><input type="range" min="1" max="50" class="pk_horiz pk_q" step="0.1" value="' +
@@ -1051,7 +1051,7 @@ function ParagraphicEqGraph() {
       parent.appendChild(bar);
       this.setAttribute('data-open', '1');
 
-      var down = function (e) {
+      const down = function (e) {
         if (
           !e.target.classList.contains('pk_q') ||
           (e.target.type === self.type && e.target !== self)
@@ -1066,7 +1066,7 @@ function ParagraphicEqGraph() {
     el.appendChild(el_q);
 
     // delete
-    var el_del = document.createElement('div');
+    const el_del = document.createElement('div');
     el_del.className = 'pk_del';
     el_del.innerHTML = '<a style="cursor:pointer">DELETE</a>';
     el_del.getElementsByTagName('a')[0].onclick = function (e) {
@@ -1093,21 +1093,21 @@ function ParagraphicEqGraph() {
 export function openParagraphicEQ(app, custom_presets) {
   app.fireEvent('RequestSelect', 1);
 
-  var filter_id = 'paragraphic_eq';
+  const filter_id = 'paragraphic_eq';
 
   // -------
-  var PGEQ = new ParagraphicEqGraph();
-  var DrawBars = function (_, freq) {
+  let PGEQ = new ParagraphicEqGraph();
+  const DrawBars = function (_, freq) {
     PGEQ.RenderBars(_, freq);
   };
-  var updateFilter = function () {
+  const updateFilter = function () {
     if (!PGEQ) return;
 
-    var val = [];
-    var ranges = PGEQ.ranges;
+    const val = [];
+    const ranges = PGEQ.ranges;
 
-    for (var i = 0; i < ranges.length; ++i) {
-      var range = ranges[i];
+    for (let i = 0; i < ranges.length; ++i) {
+      const range = ranges[i];
       if (range._on) {
         val.push({
           type: range.type,
@@ -1120,7 +1120,7 @@ export function openParagraphicEQ(app, custom_presets) {
     return val;
   };
 
-  var fxModal = AudioEffectModal(
+  const fxModal = AudioEffectModal(
     {
       id: filter_id,
       title: 'Paragraphic EQ',
@@ -1144,22 +1144,22 @@ export function openParagraphicEQ(app, custom_presets) {
       custom_pres: custom_presets.Get(filter_id),
 
       onpreset: function (val) {
-        var l = PGEQ.ranges.length;
+        let l = PGEQ.ranges.length;
         while (l-- > 0) {
           PGEQ.Remove(PGEQ.ranges[l]);
         }
 
-        var canvas = PGEQ.ui.canvas_eq;
-        var cw = canvas.width;
-        var ch = canvas.height;
+        const canvas = PGEQ.ui.canvas_eq;
+        const cw = canvas.width;
+        const ch = canvas.height;
 
-        var list = val.split(',');
-        var len = list.length;
-        var els = (len / 5) >> 0;
+        const list = val.split(',');
+        const len = list.length;
+        const els = (len / 5) >> 0;
 
-        for (var j = 0; j < els; ++j) {
-          var curr = [];
-          var offset = j * 5;
+        for (let j = 0; j < els; ++j) {
+          const curr = [];
+          const offset = j * 5;
 
           curr[0] = !!(list[offset + 0] / 1);
           curr[1] = list[offset + 1];
@@ -1167,8 +1167,8 @@ export function openParagraphicEQ(app, custom_presets) {
           curr[3] = list[offset + 3] / 1;
           curr[4] = list[offset + 4] / 1;
 
-          var x = 0;
-          var y = 0;
+          let x = 0;
+          let y = 0;
 
           if (curr[3] < 5000) {
             x = (curr[3] / 5000) * (cw / 2);

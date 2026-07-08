@@ -16,9 +16,9 @@ const WAV_ENCODER_WORKER_URL = '/workers/wav-encoder.worker.js';
 
 export function AudioUtils(app, wavesurfer) {
   // audio destination
-  var audio_destination = wavesurfer.backend.analyser;
-  var audio_ctx = wavesurfer.backend.ac;
-  var audio_script_node = audio_ctx.createScriptProcessor(256);
+  const audio_destination = wavesurfer.backend.analyser;
+  const audio_ctx = wavesurfer.backend.ac;
+  const audio_script_node = audio_ctx.createScriptProcessor(256);
 
   function loadDecoded(new_buffer) {
     wavesurfer.loadDecodedBuffer(new_buffer);
@@ -26,9 +26,9 @@ export function AudioUtils(app, wavesurfer) {
   }
 
   function OverwriteBufferWithSegment(_offset, _duration, withBuffer) {
-    var originalBuffer = wavesurfer.backend.buffer;
+    const originalBuffer = wavesurfer.backend.buffer;
     TrimBuffer(_offset, _duration, true);
-    var ret = InsertSegmentToBuffer(_offset, withBuffer);
+    const ret = InsertSegmentToBuffer(_offset, withBuffer);
 
     setTimeout(function () {
       wavesurfer.drawBuffer();
@@ -45,8 +45,8 @@ export function AudioUtils(app, wavesurfer) {
   }
 
   function MakeSilenceBuffer(_duration) {
-    var originalBuffer = wavesurfer.backend.buffer;
-    var emptySegment = wavesurfer.backend.ac.createBuffer(
+    const originalBuffer = wavesurfer.backend.buffer;
+    const emptySegment = wavesurfer.backend.ac.createBuffer(
       originalBuffer.numberOfChannels,
       _duration * originalBuffer.sampleRate,
       originalBuffer.sampleRate
@@ -56,18 +56,18 @@ export function AudioUtils(app, wavesurfer) {
   }
 
   function CopyBufferSegment(_offset, _duration) {
-    var originalBuffer = wavesurfer.backend.buffer;
+    const originalBuffer = wavesurfer.backend.buffer;
 
-    var new_len = ((_duration / 1) * originalBuffer.sampleRate) >> 0;
-    var new_offset = ((_offset / 1) * originalBuffer.sampleRate) >> 0;
+    const new_len = ((_duration / 1) * originalBuffer.sampleRate) >> 0;
+    const new_offset = ((_offset / 1) * originalBuffer.sampleRate) >> 0;
 
-    var emptySegment = wavesurfer.backend.ac.createBuffer(
+    const emptySegment = wavesurfer.backend.ac.createBuffer(
       wavesurfer.SelectedChannelsLen,
       new_len,
       originalBuffer.sampleRate
     );
 
-    for (var i = 0, u = 0; i < wavesurfer.ActiveChannels.length; ++i) {
+    for (let i = 0, u = 0; i < wavesurfer.ActiveChannels.length; ++i) {
       if (wavesurfer.ActiveChannels[i] === 0) continue;
 
       emptySegment
@@ -80,18 +80,18 @@ export function AudioUtils(app, wavesurfer) {
   }
 
   function TrimBuffer(_offset, _duration, force) {
-    var originalBuffer = wavesurfer.backend.buffer;
+    const originalBuffer = wavesurfer.backend.buffer;
 
-    var new_len = ((_duration / 1) * originalBuffer.sampleRate) >> 0;
-    var new_offset = ((_offset / 1) * originalBuffer.sampleRate) >> 0;
+    const new_len = ((_duration / 1) * originalBuffer.sampleRate) >> 0;
+    const new_offset = ((_offset / 1) * originalBuffer.sampleRate) >> 0;
 
-    var emptySegment = wavesurfer.backend.ac.createBuffer(
+    const emptySegment = wavesurfer.backend.ac.createBuffer(
       !force ? wavesurfer.SelectedChannelsLen : originalBuffer.numberOfChannels,
       new_len,
       originalBuffer.sampleRate
     );
 
-    var uberSegment = null;
+    let uberSegment = null;
 
     if (!force && wavesurfer.SelectedChannelsLen < originalBuffer.numberOfChannels) {
       uberSegment = wavesurfer.backend.ac.createBuffer(
@@ -100,14 +100,14 @@ export function AudioUtils(app, wavesurfer) {
         originalBuffer.sampleRate
       );
 
-      for (var i = 0; i < originalBuffer.numberOfChannels; ++i) {
-        var chan_data = originalBuffer.getChannelData(i);
-        var uber_chan_data = uberSegment.getChannelData(i);
+      for (let i = 0; i < originalBuffer.numberOfChannels; ++i) {
+        const chan_data = originalBuffer.getChannelData(i);
+        const uber_chan_data = uberSegment.getChannelData(i);
 
         if (wavesurfer.ActiveChannels[i] === 0) {
           uber_chan_data.set(chan_data);
         } else {
-          var segment_chan_data = emptySegment.getChannelData(0);
+          const segment_chan_data = emptySegment.getChannelData(0);
 
           segment_chan_data.set(chan_data.slice(new_offset, new_offset + new_len));
 
@@ -123,10 +123,10 @@ export function AudioUtils(app, wavesurfer) {
         originalBuffer.sampleRate
       );
 
-      for (var i = 0; i < originalBuffer.numberOfChannels; ++i) {
-        var chan_data = originalBuffer.getChannelData(i);
-        var segment_chan_data = emptySegment.getChannelData(i);
-        var uber_chan_data = uberSegment.getChannelData(i);
+      for (let i = 0; i < originalBuffer.numberOfChannels; ++i) {
+        const chan_data = originalBuffer.getChannelData(i);
+        const segment_chan_data = emptySegment.getChannelData(i);
+        const uber_chan_data = uberSegment.getChannelData(i);
 
         segment_chan_data.set(chan_data.slice(new_offset, new_offset + new_len));
 
@@ -142,8 +142,8 @@ export function AudioUtils(app, wavesurfer) {
   }
 
   function InsertSegmentToBuffer(_offset, buffer) {
-    var originalBuffer = wavesurfer.backend.buffer;
-    var uberSegment = wavesurfer.backend.ac.createBuffer(
+    const originalBuffer = wavesurfer.backend.buffer;
+    const uberSegment = wavesurfer.backend.ac.createBuffer(
       originalBuffer.numberOfChannels,
       originalBuffer.length + buffer.length,
       originalBuffer.sampleRate
@@ -151,10 +151,10 @@ export function AudioUtils(app, wavesurfer) {
 
     _offset = ((_offset / 1) * originalBuffer.sampleRate) >> 0;
 
-    for (var i = 0; i < originalBuffer.numberOfChannels; ++i) {
-      var chan_data = originalBuffer.getChannelData(i);
-      var uberChanData = uberSegment.getChannelData(i);
-      var segment_chan_data = null;
+    for (let i = 0; i < originalBuffer.numberOfChannels; ++i) {
+      const chan_data = originalBuffer.getChannelData(i);
+      const uberChanData = uberSegment.getChannelData(i);
+      let segment_chan_data = null;
 
       if (buffer.numberOfChannels === 1) segment_chan_data = buffer.getChannelData(0);
       else segment_chan_data = buffer.getChannelData(i);
@@ -190,12 +190,12 @@ export function AudioUtils(app, wavesurfer) {
   }
 
   function ReplaceFloatArrays(_offset, arrays) {
-    var originalBuffer = wavesurfer.backend.buffer;
-    var arr_len = arrays.length;
-    var arr_samples = arrays[0].length;
+    const originalBuffer = wavesurfer.backend.buffer;
+    const arr_len = arrays.length;
+    const arr_samples = arrays[0].length;
 
-    var new_len = arr_samples * arr_len;
-    var buff_len = originalBuffer.length;
+    const new_len = arr_samples * arr_len;
+    let buff_len = originalBuffer.length;
 
     _offset = ((_offset / 1) * originalBuffer.sampleRate) >> 0;
 
@@ -203,21 +203,21 @@ export function AudioUtils(app, wavesurfer) {
       buff_len = _offset + new_len;
     }
 
-    var uberSegment = wavesurfer.backend.ac.createBuffer(
+    const uberSegment = wavesurfer.backend.ac.createBuffer(
       originalBuffer.numberOfChannels,
       buff_len,
       originalBuffer.sampleRate
     );
 
-    for (var i = 0; i < originalBuffer.numberOfChannels; i++) {
-      var chan_data = originalBuffer.getChannelData(i);
-      var uberChanData = uberSegment.getChannelData(i);
+    for (let i = 0; i < originalBuffer.numberOfChannels; i++) {
+      const chan_data = originalBuffer.getChannelData(i);
+      const uberChanData = uberSegment.getChannelData(i);
 
       if (_offset > 0) {
         uberChanData.set(chan_data.slice(0, _offset));
       }
 
-      for (var j = 0; j < arr_len; ++j) {
+      for (let j = 0; j < arr_len; ++j) {
         uberChanData.set(arrays[j], _offset + j * arr_samples);
       }
 
@@ -235,29 +235,29 @@ export function AudioUtils(app, wavesurfer) {
   }
 
   function InsertFloatArrays(_offset, arrays) {
-    var originalBuffer = wavesurfer.backend.buffer;
-    var arr_len = arrays.length;
-    var arr_samples = arrays[0].length;
+    const originalBuffer = wavesurfer.backend.buffer;
+    const arr_len = arrays.length;
+    const arr_samples = arrays[0].length;
 
-    var new_len = arr_samples * arr_len;
+    const new_len = arr_samples * arr_len;
 
     _offset = ((_offset / 1) * originalBuffer.sampleRate) >> 0;
 
-    var uberSegment = wavesurfer.backend.ac.createBuffer(
+    const uberSegment = wavesurfer.backend.ac.createBuffer(
       originalBuffer.numberOfChannels,
       originalBuffer.length + new_len,
       originalBuffer.sampleRate
     );
 
-    for (var i = 0; i < originalBuffer.numberOfChannels; i++) {
-      var chan_data = originalBuffer.getChannelData(i);
-      var uberChanData = uberSegment.getChannelData(i);
+    for (let i = 0; i < originalBuffer.numberOfChannels; i++) {
+      const chan_data = originalBuffer.getChannelData(i);
+      const uberChanData = uberSegment.getChannelData(i);
 
       if (_offset > 0) {
         uberChanData.set(chan_data.slice(0, _offset));
       }
 
-      for (var j = 0; j < arr_len; ++j) {
+      for (let j = 0; j < arr_len; ++j) {
         uberChanData.set(arrays[j], _offset + j * arr_samples);
       }
 
@@ -301,11 +301,11 @@ export function AudioUtils(app, wavesurfer) {
 
     if (this.PreviewFilter) {
       if (this.PreviewFilter.length > 0) {
-        for (var ii = 0; ii < this.PreviewFilter.length; ++ii) this.PreviewFilter[ii].disconnect();
+        for (let ii = 0; ii < this.PreviewFilter.length; ++ii) this.PreviewFilter[ii].disconnect();
       } else this.PreviewFilter.disconnect();
     }
 
-    var script_node = audio_script_node; // wavesurfer.backend.scriptNode
+    const script_node = audio_script_node; // wavesurfer.backend.scriptNode
 
     script_node.disconnect();
     wavesurfer.backend.scriptNode.connect(audio_ctx.destination);
@@ -380,17 +380,17 @@ export function AudioUtils(app, wavesurfer) {
   function previewEffect(_offset, _duration, _fx) {
     if (this.previewing) stopPreview(_fx);
 
-    var orig_buffer = wavesurfer.backend.buffer;
+    const orig_buffer = wavesurfer.backend.buffer;
 
     if (!_offset && !_duration) {
       _offset = 0;
       _duration = (orig_buffer.length / orig_buffer.sampleRate) >> 0;
     }
 
-    var script_node = audio_script_node; //wavesurfer.backend.scriptNode;
-    var fx_buffer = CopyBufferSegment(_offset, _duration);
-    var audio_ctx = wavesurfer.backend.ac || getAudioContext();
-    var source = audio_ctx.createBufferSource();
+    const script_node = audio_script_node; //wavesurfer.backend.scriptNode;
+    const fx_buffer = CopyBufferSegment(_offset, _duration);
+    const audio_ctx = wavesurfer.backend.ac || getAudioContext();
+    const source = audio_ctx.createBufferSource();
     source.buffer = fx_buffer;
     source.loop = true;
 
@@ -406,13 +406,13 @@ export function AudioUtils(app, wavesurfer) {
     wavesurfer.backend.scriptNode.disconnect();
     script_node.connect(audio_ctx.destination);
 
-    var skipp = 1;
-    var prev_fft = 0;
-    var dataArray = null;
+    let skipp = 1;
+    let prev_fft = 0;
+    let dataArray = null;
 
     script_node.onaudioprocess = (e) => {
-      var loudness = [0, 0];
-      var temp = 0;
+      const loudness = [0, 0];
+      let temp = 0;
       // var flip = false;
       --skipp;
 
@@ -424,8 +424,8 @@ export function AudioUtils(app, wavesurfer) {
           }
           audio_destination.getFloatTimeDomainData(dataArray); // fill the Float32Array with data returned from getFloatTimeDomainData()
 
-          for (var j = 0; j < audio_destination.fftSize; j += 1) {
-            var x = dataArray[j];
+          for (let j = 0; j < audio_destination.fftSize; j += 1) {
+            const x = dataArray[j];
             if (Math.abs(x) >= temp) {
               temp = Math.abs(x);
             }
@@ -439,13 +439,13 @@ export function AudioUtils(app, wavesurfer) {
           }
           audio_destination.getByteTimeDomainData(dataArray); // fill the Float32Array with data returned from getFloatTimeDomainData()
 
-          var total_float = 0;
+          let total_float = 0;
 
-          for (var j = 0; j < audio_destination.fftSize; j += 1) {
-            var float = dataArray[j] / 0x80 - 1;
+          for (let j = 0; j < audio_destination.fftSize; j += 1) {
+            const float = dataArray[j] / 0x80 - 1;
             total_float += float * float;
           }
-          var rms = Math.sqrt(total_float / audio_destination.fftSize);
+          const rms = Math.sqrt(total_float / audio_destination.fftSize);
           loudness[0] = 20 * (Math.log(rms) / Math.log(10));
         }
 
@@ -476,7 +476,7 @@ export function AudioUtils(app, wavesurfer) {
   }
 
   function applyEffect(_offset, _duration, _fx) {
-    var orig_buffer = wavesurfer.backend.buffer;
+    const orig_buffer = wavesurfer.backend.buffer;
 
     if (!_offset && !_duration) {
       _offset = 0;
@@ -486,19 +486,19 @@ export function AudioUtils(app, wavesurfer) {
     if (_offset < 0) _offset = 0;
     if (wavesurfer.getDuration() < _duration) _duration = wavesurfer.getDuration();
 
-    var fx_buffer = CopyBufferSegment(_offset, _duration);
-    var new_offset = ((_offset / 1) * orig_buffer.sampleRate) >> 0;
+    let fx_buffer = CopyBufferSegment(_offset, _duration);
+    const new_offset = ((_offset / 1) * orig_buffer.sampleRate) >> 0;
 
-    var audio_ctx = getOfflineAudioContext(
+    const audio_ctx = getOfflineAudioContext(
       wavesurfer.SelectedChannelsLen, // orig_buffer.numberOfChannels,
       orig_buffer.sampleRate,
       fx_buffer.length
     );
 
-    var source = audio_ctx.createBufferSource();
+    const source = audio_ctx.createBufferSource();
     source.buffer = fx_buffer;
 
-    var filter = null;
+    let filter = null;
     if (_fx) {
       filter = _fx.filter(audio_ctx, audio_ctx.destination, source, _duration / 1);
       filter.destroy && filter.destroy();
@@ -506,16 +506,16 @@ export function AudioUtils(app, wavesurfer) {
 
     source.start();
 
-    var offline_callback = function (rendered_buffer) {
-      var uber_buffer = wavesurfer.backend.ac.createBuffer(
+    const offline_callback = function (rendered_buffer) {
+      const uber_buffer = wavesurfer.backend.ac.createBuffer(
         orig_buffer.numberOfChannels,
         orig_buffer.length,
         orig_buffer.sampleRate
       );
 
-      for (var i = 0; i < orig_buffer.numberOfChannels; ++i) {
-        var uber_chan_data = uber_buffer.getChannelData(i);
-        var chan_data = orig_buffer.getChannelData(i);
+      for (let i = 0; i < orig_buffer.numberOfChannels; ++i) {
+        const uber_chan_data = uber_buffer.getChannelData(i);
+        const chan_data = orig_buffer.getChannelData(i);
 
         // check if channel is active
         if (wavesurfer.ActiveChannels[i] === 0) {
@@ -523,7 +523,7 @@ export function AudioUtils(app, wavesurfer) {
           continue;
         }
 
-        var fx_chan_data = null;
+        let fx_chan_data = null;
         if (rendered_buffer.numberOfChannels === 1)
           fx_chan_data = rendered_buffer.getChannelData(0);
         else fx_chan_data = rendered_buffer.getChannelData(i);
@@ -536,7 +536,7 @@ export function AudioUtils(app, wavesurfer) {
       loadDecoded(uber_buffer);
 
       if (filter.length > 0) {
-        for (var i = 0; i < filter.length; ++i) filter[i].disconnect();
+        for (let i = 0; i < filter.length; ++i) filter[i].disconnect();
       } else filter && filter.disconnect && filter.disconnect();
 
       // is this needed?
@@ -546,7 +546,7 @@ export function AudioUtils(app, wavesurfer) {
       // -
     };
 
-    var offline_renderer = audio_ctx.startRendering();
+    const offline_renderer = audio_ctx.startRendering();
     if (offline_renderer)
       offline_renderer.then(offline_callback).catch(function (err) {
         console.log('Rendering failed: ' + err);
@@ -557,7 +557,7 @@ export function AudioUtils(app, wavesurfer) {
       };
   }
 
-  var worker = null;
+  let worker = null;
   function DownloadFileCancel() {
     if (worker) {
       worker.terminate();
@@ -579,13 +579,13 @@ export function AudioUtils(app, wavesurfer) {
       worker = new Worker(WAV_ENCODER_WORKER_URL);
     }
 
-    var originalBuffer = wavesurfer.backend.buffer;
-    var sample_rate = originalBuffer.sampleRate;
+    const originalBuffer = wavesurfer.backend.buffer;
+    const sample_rate = originalBuffer.sampleRate;
 
-    var channels = originalBuffer.numberOfChannels;
+    let channels = originalBuffer.numberOfChannels;
 
-    var data_left = originalBuffer.getChannelData(0);
-    var data_right = null;
+    let data_left = originalBuffer.getChannelData(0);
+    let data_right = null;
     if (channels === 2) data_right = originalBuffer.getChannelData(1);
 
     if (!stereo && channels === 2) {
@@ -604,17 +604,17 @@ export function AudioUtils(app, wavesurfer) {
       channels = 1;
     }
 
-    var len = data_left.length,
+    let len = data_left.length,
       i = 0;
-    var offset = 0;
+    let offset = 0;
 
     if (selection) {
       offset = (selection[0] * sample_rate) >> 0;
       len = ((selection[1] * sample_rate) >> 0) - offset;
     }
 
-    var dataAsInt16ArrayLeft = new Int16Array(len);
-    var dataAsInt16ArrayRight = null;
+    const dataAsInt16ArrayLeft = new Int16Array(len);
+    let dataAsInt16ArrayRight = null;
 
     if (data_right) {
       dataAsInt16ArrayRight = new Int16Array(len);
@@ -631,7 +631,7 @@ export function AudioUtils(app, wavesurfer) {
       }
     }
     function convert(n) {
-      var v = n < 0 ? n * 32768 : n * 32767; // convert in range [-32768, 32767]
+      const v = n < 0 ? n * 32768 : n * 32767; // convert in range [-32768, 32767]
       return Math.max(-32768, Math.min(32768, v)); // clamp
     }
 
@@ -660,9 +660,9 @@ export function AudioUtils(app, wavesurfer) {
     // function forceDownload ( mp3Data ) {
     // 	var blob = new Blob (mp3Data, {type:'audio/mp3'});
     function forceDownload(blob) {
-      var url = (window.URL || window.webkitURL).createObjectURL(blob);
+      const url = (window.URL || window.webkitURL).createObjectURL(blob);
 
-      var a = document.createElement('a');
+      const a = document.createElement('a');
       a.href = url;
       a.download = with_name ? with_name : 'output.mp3';
       a.style.display = 'none';
@@ -680,16 +680,16 @@ export function AudioUtils(app, wavesurfer) {
   }
 
   // EFFECTS LOGIC
-  var FXBank = {
+  const FXBank = {
     Gain: function (val) {
       return {
         filter: function (audio_ctx, destination, source, duration) {
-          var gain = audio_ctx.createGain();
+          const gain = audio_ctx.createGain();
 
-          for (var k = 0; k < val.length; ++k) {
-            var curr = val[k];
+          for (let k = 0; k < val.length; ++k) {
+            const curr = val[k];
             if (curr.length) {
-              for (var i = 0; i < curr.length; ++i) {
+              for (let i = 0; i < curr.length; ++i) {
                 gain.gain.linearRampToValueAtTime(
                   curr[i].val,
                   audio_ctx.currentTime + curr[i].time
@@ -706,10 +706,10 @@ export function AudioUtils(app, wavesurfer) {
           return gain;
         },
         update: function (gain, audio_ctx, val) {
-          for (var k = 0; k < val.length; ++k) {
-            var curr = val[k];
+          for (let k = 0; k < val.length; ++k) {
+            const curr = val[k];
             if (curr.length) {
-              for (var i = 0; i < curr.length; ++i) {
+              for (let i = 0; i < curr.length; ++i) {
                 gain.gain.linearRampToValueAtTime(
                   curr[i].val,
                   audio_ctx.currentTime + curr[i].time
@@ -727,7 +727,7 @@ export function AudioUtils(app, wavesurfer) {
     FadeIn: function (val) {
       return {
         filter: function (audio_ctx, destination, source, duration) {
-          var gain = audio_ctx.createGain();
+          const gain = audio_ctx.createGain();
           gain.gain.setValueAtTime(0, audio_ctx.currentTime);
           gain.gain.linearRampToValueAtTime(1, audio_ctx.currentTime + duration / 1);
           gain.connect(destination);
@@ -741,7 +741,7 @@ export function AudioUtils(app, wavesurfer) {
     FadeOut: function (val) {
       return {
         filter: function (audio_ctx, destination, source, duration) {
-          var gain = audio_ctx.createGain();
+          const gain = audio_ctx.createGain();
           gain.gain.setValueAtTime(1, audio_ctx.currentTime);
           gain.gain.linearRampToValueAtTime(0, audio_ctx.currentTime + duration / 1);
           gain.connect(destination);
@@ -755,12 +755,12 @@ export function AudioUtils(app, wavesurfer) {
     Compressor: function (val) {
       return {
         filter: function (audio_ctx, destination, source, duration) {
-          var compressor = audio_ctx.createDynamicsCompressor();
+          const compressor = audio_ctx.createDynamicsCompressor();
 
-          for (var k in val) {
+          for (const k in val) {
             if (val[k].length) {
-              for (var i = 0; i < val[k].length; ++i) {
-                var curr = val[k][i];
+              for (let i = 0; i < val[k].length; ++i) {
+                const curr = val[k][i];
                 compressor[k].linearRampToValueAtTime(curr.val, audio_ctx.currentTime + curr.time);
               }
             } else {
@@ -774,10 +774,10 @@ export function AudioUtils(app, wavesurfer) {
           return compressor;
         },
         update: function (compressor, audio_ctx, val) {
-          for (var k in val) {
+          for (const k in val) {
             if (val[k].length) {
-              for (var i = 0; i < val[k].length; ++i) {
-                var curr = val[k][i];
+              for (let i = 0; i < val[k].length; ++i) {
+                const curr = val[k][i];
                 compressor[k].linearRampToValueAtTime(curr.val, audio_ctx.currentTime + curr.time);
               }
             } else {
@@ -792,7 +792,7 @@ export function AudioUtils(app, wavesurfer) {
     Reverse: function (val) {
       return {
         filter: function (audio_ctx, destination, source, duration) {
-          for (var i = 0; i < source.buffer.numberOfChannels; ++i) {
+          for (let i = 0; i < source.buffer.numberOfChannels; ++i) {
             Array.prototype.reverse.call(source.buffer.getChannelData(i));
           }
 
@@ -806,10 +806,10 @@ export function AudioUtils(app, wavesurfer) {
     Invert: function (val) {
       return {
         filter: function (audio_ctx, destination, source, duration) {
-          for (var i = 0; i < source.buffer.numberOfChannels; ++i) {
-            var channel = source.buffer.getChannelData(i);
+          for (let i = 0; i < source.buffer.numberOfChannels; ++i) {
+            const channel = source.buffer.getChannelData(i);
 
-            for (var j = 0; j < channel.length; ++j) channel[j] *= -1;
+            for (let j = 0; j < channel.length; ++j) channel[j] *= -1;
           }
 
           source.connect(destination);
@@ -823,11 +823,11 @@ export function AudioUtils(app, wavesurfer) {
       return {
         filter: function (audio_ctx, destination, source, duration) {
           if (val === 'flip') {
-            var chan0 = source.buffer.getChannelData(0);
-            var chan1 = source.buffer.getChannelData(1);
-            var tmp = 0;
+            const chan0 = source.buffer.getChannelData(0);
+            const chan1 = source.buffer.getChannelData(1);
+            let tmp = 0;
 
-            for (var j = 0; j < chan0.length; ++j) {
+            for (let j = 0; j < chan0.length; ++j) {
               tmp = chan0[j];
               chan0[j] = chan1[j];
               chan1[j] = tmp;
@@ -845,23 +845,23 @@ export function AudioUtils(app, wavesurfer) {
       //todo ASM JS??
       return {
         filter: function (audio_ctx, destination, source, duration) {
-          var max_val = val[1] || 1.0;
-          var equally = val[0];
-          var max_peak = 0;
+          const max_val = val[1] || 1.0;
+          const equally = val[0];
+          let max_peak = 0;
 
-          for (var i = 0; i < source.buffer.numberOfChannels; ++i) {
-            var chan_data = source.buffer.getChannelData(i);
+          for (let i = 0; i < source.buffer.numberOfChannels; ++i) {
+            const chan_data = source.buffer.getChannelData(i);
 
             // iterating faster first time...
-            for (var k = 1, len = chan_data.length; k < len; k = k + 10) {
-              var curr = Math.abs(chan_data[k]);
+            for (let k = 1, len = chan_data.length; k < len; k = k + 10) {
+              const curr = Math.abs(chan_data[k]);
               if (max_peak < curr) max_peak = curr;
             }
 
-            var diff = max_val / max_peak;
+            const diff = max_val / max_peak;
 
             if (!equally) {
-              for (var k = 0, len = chan_data.length; k < len; ++k) {
+              for (let k = 0, len = chan_data.length; k < len; ++k) {
                 chan_data[k] *= diff;
               }
               max_peak = 0;
@@ -869,12 +869,12 @@ export function AudioUtils(app, wavesurfer) {
           }
 
           if (equally) {
-            var diff = max_val / max_peak;
+            const diff = max_val / max_peak;
 
-            for (var i = 0; i < source.buffer.numberOfChannels; ++i) {
-              var chan_data = source.buffer.getChannelData(i);
+            for (let i = 0; i < source.buffer.numberOfChannels; ++i) {
+              const chan_data = source.buffer.getChannelData(i);
 
-              for (var k = 0, len = chan_data.length; k < len; ++k) {
+              for (let k = 0, len = chan_data.length; k < len; ++k) {
                 chan_data[k] *= diff;
               }
             }
@@ -891,13 +891,13 @@ export function AudioUtils(app, wavesurfer) {
       //todo ASM JS??
       return {
         filter: function (audio_ctx, destination, source, duration) {
-          var max_val = val[1] || 1.0;
-          var ratio = val[2] || 0.0;
-          var look_ahead = val[3] || 15; // ms
-          var equally = false; //val[0];
-          var max_peak = 0;
+          const max_val = val[1] || 1.0;
+          const ratio = val[2] || 0.0;
+          let look_ahead = val[3] || 15; // ms
+          const equally = false; //val[0];
+          let max_peak = 0;
 
-          var buffer = audio_ctx.createBuffer(
+          const buffer = audio_ctx.createBuffer(
             source.buffer.numberOfChannels,
             source.buffer.length,
             source.buffer.sampleRate
@@ -905,25 +905,25 @@ export function AudioUtils(app, wavesurfer) {
 
           look_ahead = ((look_ahead * buffer.sampleRate) / 1000) >> 0;
 
-          for (var i = 0; i < buffer.numberOfChannels; ++i) {
-            var chan_data = buffer.getChannelData(i);
+          for (let i = 0; i < buffer.numberOfChannels; ++i) {
+            const chan_data = buffer.getChannelData(i);
             chan_data.set(source.buffer.getChannelData(i));
 
             // iterating faster first time...
-            for (var b = 0, len = chan_data.length; b < len; ++b) {
-              for (var k = 0; k < look_ahead; k = k + 10) {
-                var curr = Math.abs(chan_data[b + k]);
+            for (let b = 0, len = chan_data.length; b < len; ++b) {
+              for (let k = 0; k < look_ahead; k = k + 10) {
+                const curr = Math.abs(chan_data[b + k]);
                 if (max_peak < curr) max_peak = curr;
               }
 
-              var diff = max_val / max_peak;
+              const diff = max_val / max_peak;
 
               if (!equally) {
-                for (var k = 0; k < look_ahead; ++k) {
-                  var orig_val = chan_data[b + k];
-                  var new_val = orig_val * diff;
+                for (let k = 0; k < look_ahead; ++k) {
+                  const orig_val = chan_data[b + k];
+                  const new_val = orig_val * diff;
 
-                  var peak_diff = max_val - Math.abs(new_val);
+                  let peak_diff = max_val - Math.abs(new_val);
                   peak_diff *= orig_val < 0 ? -ratio : ratio;
 
                   chan_data[b + k] = new_val + peak_diff;
@@ -936,7 +936,7 @@ export function AudioUtils(app, wavesurfer) {
           }
 
           // todo handle disconnected LEFT AND RIGHT
-          var temp_source = audio_ctx.createBufferSource();
+          const temp_source = audio_ctx.createBufferSource();
           temp_source.buffer = buffer;
           temp_source.loop = true;
           temp_source.start();
@@ -950,7 +950,7 @@ export function AudioUtils(app, wavesurfer) {
           filtered_source.buffer = null;
           filtered_source = null;
 
-          var ff = this.FXBank.HardLimit(val);
+          const ff = this.FXBank.HardLimit(val);
           this.PreviewFilter = ff.filter(audio_ctx, audio_destination, source, 0);
         },
       };
@@ -959,14 +959,14 @@ export function AudioUtils(app, wavesurfer) {
     ParametricEQ: function (val) {
       return {
         filter: function (audio_ctx, destination, source, duration) {
-          var bands = [];
-          var len = val.length;
+          const bands = [];
+          const len = val.length;
 
-          var makeEQ = function (band) {
-            var eq = audio_ctx.createBiquadFilter();
+          const makeEQ = function (band) {
+            const eq = audio_ctx.createBiquadFilter();
 
             if (band.length) {
-              for (var i = 0; i < band.length; ++i) {
+              for (let i = 0; i < band.length; ++i) {
                 eq.gain.linearRampToValueAtTime(
                   ~~band[i].val,
                   audio_ctx.currentTime + band[i].time
@@ -992,7 +992,7 @@ export function AudioUtils(app, wavesurfer) {
             };
           }
 
-          var eq = makeEQ(val[0]);
+          let eq = makeEQ(val[0]);
           bands.push(eq);
           source.connect(eq);
 
@@ -1001,7 +1001,7 @@ export function AudioUtils(app, wavesurfer) {
             return bands;
           }
 
-          for (var i = 1; i < len - 1; ++i) {
+          for (let i = 1; i < len - 1; ++i) {
             eq = makeEQ(val[i]);
             bands[i - 1].connect(eq);
             bands.push(eq);
@@ -1015,16 +1015,16 @@ export function AudioUtils(app, wavesurfer) {
         },
         update: function (bands, audio_ctx, val, source) {
           if (bands.length !== val.length) {
-            var makeEQ = function (band) {
-              var eq = audio_ctx.createBiquadFilter();
+            const makeEQ = function (band) {
+              const eq = audio_ctx.createBiquadFilter();
               return eq;
             };
 
             if (bands.length < val.length) {
-              var l = val.length - bands.length;
+              let l = val.length - bands.length;
               while (l-- > 0) {
-                var eq = makeEQ();
-                var connect_to = bands[0];
+                const eq = makeEQ();
+                const connect_to = bands[0];
                 bands.unshift(eq);
                 eq.connect(connect_to);
               }
@@ -1033,11 +1033,11 @@ export function AudioUtils(app, wavesurfer) {
               source.connect(bands[0]);
             } else {
               if (val.length > 0) {
-                var l = bands.length - val.length;
+                const l = bands.length - val.length;
                 source.disconnect();
 
-                for (var i = 0; i < l; ++i) {
-                  var eq = bands.shift();
+                for (let i = 0; i < l; ++i) {
+                  const eq = bands.shift();
                   eq.disconnect();
                 }
 
@@ -1053,9 +1053,9 @@ export function AudioUtils(app, wavesurfer) {
             }
           }
 
-          var len = val.length;
-          for (var i = 0; i < len; ++i) {
-            var eq = bands[i];
+          const len = val.length;
+          for (let i = 0; i < len; ++i) {
+            const eq = bands[i];
             eq.type = val[i].type;
             eq.gain.value = ~~val[i].val;
             eq.Q.value = val[i].q || 1.0;
@@ -1067,14 +1067,14 @@ export function AudioUtils(app, wavesurfer) {
     },
 
     Rate: function (val) {
-      var prev_val = 1.0;
-      var temp_source = [];
+      let prev_val = 1.0;
+      let temp_source = [];
 
       return {
         filter: function (audio_ctx, destination, source, duration) {
-          var fx_buffer = source.buffer;
+          const fx_buffer = source.buffer;
 
-          var stretch_ratio = val;
+          const stretch_ratio = val;
           let grainDuration = 0.05; // 50 ms grain
           const analysisHop = 0.025; // 25 ms step (50% overlap)
           const desiredOverlap = 0.5; // 50% overlap
@@ -1084,11 +1084,11 @@ export function AudioUtils(app, wavesurfer) {
             grainDuration = synthesisHop / (1 - desiredOverlap); // 0.15 sec (150 ms
           }
 
-          var offlineCtx = audio_ctx;
+          const offlineCtx = audio_ctx;
           const now = audio_ctx.currentTime;
 
           // var filter = fx.filter ( offlineCtx, offlineCtx.destination, null, duration );
-          var applyHannWindowFast = function (gainNode, outputTime, grainDuration) {
+          const applyHannWindowFast = function (gainNode, outputTime, grainDuration) {
             // The automation curve using a Hann window shape
             const numSteps = 50;
 
@@ -1100,8 +1100,8 @@ export function AudioUtils(app, wavesurfer) {
           };
 
           // Schedule grains
-          var grainIndex = 0;
-          var filter_chain = [];
+          let grainIndex = 0;
+          const filter_chain = [];
 
           for (let t = 0; t < fx_buffer.duration; t += analysisHop) {
             const offset = t;
@@ -1133,7 +1133,7 @@ export function AudioUtils(app, wavesurfer) {
 
         update: function (filter_chain, audio_ctx, val, source) {
           prev_val = 1 / val;
-          var fx_buffer = source.buffer;
+          const fx_buffer = source.buffer;
 
           let grainDuration = 0.05; // 50 ms grain
           const analysisHop = 0.025; // 25 ms step (50% overlap)
@@ -1147,7 +1147,7 @@ export function AudioUtils(app, wavesurfer) {
           const now = audio_ctx.currentTime;
 
           // var filter = fx.filter ( offlineCtx, offlineCtx.destination, null, duration );
-          var applyHannWindowFast = function (gainNode, outputTime, grainDuration) {
+          const applyHannWindowFast = function (gainNode, outputTime, grainDuration) {
             // The automation curve using a Hann window shape
             const numSteps = 50;
 
@@ -1159,9 +1159,9 @@ export function AudioUtils(app, wavesurfer) {
           };
 
           // Schedule grains
-          var l = filter_chain.length;
-          var t = 0;
-          for (var i = 0; i < l; ++i) {
+          const l = filter_chain.length;
+          let t = 0;
+          for (let i = 0; i < l; ++i) {
             const offset = t;
             const outputTime = i * synthesisHop;
             //if (offset + grainDuration > fx_buffer.duration) break;
@@ -1188,11 +1188,11 @@ export function AudioUtils(app, wavesurfer) {
     },
 
     Speed: function (val) {
-      var prev_val = 1.0;
+      let prev_val = 1.0;
 
       return {
         filter: function (audio_ctx, destination, source, duration) {
-          var inputNode = audio_ctx.createGain();
+          const inputNode = audio_ctx.createGain();
 
           source.playbackRate.value = val;
           source.connect(inputNode);
@@ -1200,7 +1200,7 @@ export function AudioUtils(app, wavesurfer) {
           // line in to dry mix
           inputNode.connect(destination);
 
-          var filter_chain = [inputNode];
+          const filter_chain = [inputNode];
 
           return filter_chain;
         },
@@ -1220,12 +1220,12 @@ export function AudioUtils(app, wavesurfer) {
     Delay: function (val) {
       return {
         filter: function (audio_ctx, destination, source, duration) {
-          var inputNode = audio_ctx.createGain();
-          var outputNode = audio_ctx.createGain();
-          var dryGainNode = audio_ctx.createGain();
-          var wetGainNode = audio_ctx.createGain();
-          var feedbackGainNode = audio_ctx.createGain();
-          var delayNode = audio_ctx.createDelay();
+          const inputNode = audio_ctx.createGain();
+          const outputNode = audio_ctx.createGain();
+          const dryGainNode = audio_ctx.createGain();
+          const wetGainNode = audio_ctx.createGain();
+          const feedbackGainNode = audio_ctx.createGain();
+          const delayNode = audio_ctx.createDelay();
 
           source.connect(inputNode);
 
@@ -1247,7 +1247,7 @@ export function AudioUtils(app, wavesurfer) {
           wetGainNode.connect(outputNode);
           outputNode.connect(destination);
 
-          var filter_chain = [
+          const filter_chain = [
             inputNode,
             outputNode,
             dryGainNode,
@@ -1258,7 +1258,7 @@ export function AudioUtils(app, wavesurfer) {
 
           if (!val.delay.length) delayNode.delayTime.value = val.delay.val;
           else {
-            for (var i = 0; i < val.delay.length; ++i) {
+            for (let i = 0; i < val.delay.length; ++i) {
               delayNode.delayTime.linearRampToValueAtTime(
                 val.delay[i].val,
                 val.delay[i].time + audio_ctx.currentTime
@@ -1268,7 +1268,7 @@ export function AudioUtils(app, wavesurfer) {
 
           if (!val.feedback.length) feedbackGainNode.gain.value = val.feedback.val;
           else {
-            for (var i = 0; i < val.feedback.length; ++i) {
+            for (let i = 0; i < val.feedback.length; ++i) {
               feedbackGainNode.gain.linearRampToValueAtTime(
                 val.feedback[i].val,
                 val.feedback[i].time + audio_ctx.currentTime
@@ -1280,7 +1280,7 @@ export function AudioUtils(app, wavesurfer) {
             dryGainNode.gain.value = 1 - (val.mix.val - 0.5) * 2;
             wetGainNode.gain.value = 1 - (0.5 - val.mix.val) * 2;
           } else {
-            for (var i = 0; i < val.mix.length; ++i) {
+            for (let i = 0; i < val.mix.length; ++i) {
               dryGainNode.gain.linearRampToValueAtTime(
                 1 - (val.mix[i].val - 0.5) * 2,
                 val.mix[i].time + audio_ctx.currentTime
@@ -1297,16 +1297,16 @@ export function AudioUtils(app, wavesurfer) {
 
         update: function (filter_chain, audio_ctx, val) {
           // update filter chain...
-          var inputNode = filter_chain[0];
-          var outputNode = filter_chain[1];
-          var dryGainNode = filter_chain[2];
-          var wetGainNode = filter_chain[3];
-          var feedbackGainNode = filter_chain[4];
-          var delayNode = filter_chain[5];
+          const inputNode = filter_chain[0];
+          const outputNode = filter_chain[1];
+          const dryGainNode = filter_chain[2];
+          const wetGainNode = filter_chain[3];
+          const feedbackGainNode = filter_chain[4];
+          const delayNode = filter_chain[5];
 
           if (!val.delay.length) delayNode.delayTime.value = val.delay.val;
           else {
-            for (var i = 0; i < val.delay.length; ++i) {
+            for (let i = 0; i < val.delay.length; ++i) {
               delayNode.delayTime.linearRampToValueAtTime(
                 val.delay[i].val,
                 val.delay[i].time + audio_ctx.currentTime
@@ -1316,7 +1316,7 @@ export function AudioUtils(app, wavesurfer) {
 
           if (!val.feedback.length) feedbackGainNode.gain.value = val.feedback.val;
           else {
-            for (var i = 0; i < val.feedback.length; ++i) {
+            for (let i = 0; i < val.feedback.length; ++i) {
               feedbackGainNode.gain.linearRampToValueAtTime(
                 val.feedback[i].val,
                 val.feedback[i].time + audio_ctx.currentTime
@@ -1328,7 +1328,7 @@ export function AudioUtils(app, wavesurfer) {
             dryGainNode.gain.value = 1 - (val.mix.val - 0.5) * 2;
             wetGainNode.gain.value = 1 - (0.5 - val.mix.val) * 2;
           } else {
-            for (var i = 0; i < val.mix.length; ++i) {
+            for (let i = 0; i < val.mix.length; ++i) {
               dryGainNode.gain.linearRampToValueAtTime(
                 1 - (val.mix[i].val - 0.5) * 2,
                 val.mix[i].time + audio_ctx.currentTime
@@ -1347,16 +1347,16 @@ export function AudioUtils(app, wavesurfer) {
     Distortion: function (val) {
       return {
         filter: function (audio_ctx, destination, source, duration) {
-          var wave_shaper = audio_ctx.createWaveShaper();
+          const wave_shaper = audio_ctx.createWaveShaper();
           // var gain = parseInt (0.5 * 100, 10);
-          var compute_dist = function (val) {
-            var gain = parseInt((val / 1) * 100, 10);
-            var n_samples = 44100;
-            var curve = new Float32Array(n_samples);
-            var deg = Math.PI / 180;
-            var x;
+          const compute_dist = function (val) {
+            const gain = parseInt((val / 1) * 100, 10);
+            const n_samples = 44100;
+            const curve = new Float32Array(n_samples);
+            const deg = Math.PI / 180;
+            let x;
 
-            for (var i = 0; i < n_samples; ++i) {
+            for (let i = 0; i < n_samples; ++i) {
               x = (i * 2) / n_samples - 1;
               curve[i] = ((3 + gain) * x * 20 * deg) / (Math.PI + gain * Math.abs(x));
             }
@@ -1364,10 +1364,10 @@ export function AudioUtils(app, wavesurfer) {
             return curve;
           };
 
-          for (var k = 0; k < val.length; ++k) {
-            var curr = val[k];
+          for (let k = 0; k < val.length; ++k) {
+            const curr = val[k];
             if (curr.length) {
-              for (var i = 0; i < curr.length; ++i) {
+              for (let i = 0; i < curr.length; ++i) {
                 wave_shaper.curve.linearRampToValueAtTime(
                   compute_dist(curr[i].val),
                   audio_ctx.currentTime + curr[i].time
@@ -1385,14 +1385,14 @@ export function AudioUtils(app, wavesurfer) {
         },
 
         update: function (filter, audio_ctx, val) {
-          var compute_dist = function (val) {
-            var gain = parseInt((val / 1) * 100, 10);
-            var n_samples = 44100;
-            var curve = new Float32Array(n_samples);
-            var deg = Math.PI / 180;
-            var x;
+          const compute_dist = function (val) {
+            const gain = parseInt((val / 1) * 100, 10);
+            const n_samples = 44100;
+            const curve = new Float32Array(n_samples);
+            const deg = Math.PI / 180;
+            let x;
 
-            for (var i = 0; i < n_samples; ++i) {
+            for (let i = 0; i < n_samples; ++i) {
               x = (i * 2) / n_samples - 1;
               curve[i] = ((3 + gain) * x * 20 * deg) / (Math.PI + gain * Math.abs(x));
             }
@@ -1400,10 +1400,10 @@ export function AudioUtils(app, wavesurfer) {
             return curve;
           };
 
-          for (var k = 0; k < val.length; ++k) {
-            var curr = val[k];
+          for (let k = 0; k < val.length; ++k) {
+            const curr = val[k];
             if (curr.length) {
-              for (var i = 0; i < curr.length; ++i) {
+              for (let i = 0; i < curr.length; ++i) {
                 filter.curve.linearRampToValueAtTime(
                   compute_dist(curr[i].val),
                   audio_ctx.currentTime + curr[i].time
@@ -1422,11 +1422,11 @@ export function AudioUtils(app, wavesurfer) {
       return {
         filter: function (audio_ctx, destination, source, duration) {
           // ----
-          var inputNode = audio_ctx.createGain();
-          var reverbNode = audio_ctx.createConvolver();
-          var outputNode = audio_ctx.createGain();
-          var wetGainNode = audio_ctx.createGain();
-          var dryGainNode = audio_ctx.createGain();
+          const inputNode = audio_ctx.createGain();
+          const reverbNode = audio_ctx.createConvolver();
+          const outputNode = audio_ctx.createGain();
+          const wetGainNode = audio_ctx.createGain();
+          const dryGainNode = audio_ctx.createGain();
 
           source.connect(inputNode);
 
@@ -1437,17 +1437,17 @@ export function AudioUtils(app, wavesurfer) {
           wetGainNode.connect(outputNode);
           outputNode.connect(destination);
 
-          var filter_chain = [inputNode, outputNode, reverbNode, dryGainNode, wetGainNode];
+          const filter_chain = [inputNode, outputNode, reverbNode, dryGainNode, wetGainNode];
 
           // set defaults
           dryGainNode.gain.value = 1 - (val.mix - 0.5) * 2;
           wetGainNode.gain.value = 1 - (0.5 - val.mix) * 2;
 
-          var length = audio_ctx.sampleRate * val.time;
-          var impulse = audio_ctx.createBuffer(2, length, audio_ctx.sampleRate);
-          var impulseL = impulse.getChannelData(0);
-          var impulseR = impulse.getChannelData(1);
-          var n, i;
+          const length = audio_ctx.sampleRate * val.time;
+          const impulse = audio_ctx.createBuffer(2, length, audio_ctx.sampleRate);
+          const impulseL = impulse.getChannelData(0);
+          const impulseR = impulse.getChannelData(1);
+          let n, i;
 
           for (i = 0; i < length; i++) {
             n = val.reverse ? length - i : i;
@@ -1462,18 +1462,18 @@ export function AudioUtils(app, wavesurfer) {
         update: function (filter_chain, audio_ctx, val) {
           audio_ctx = wavesurfer.backend.ac;
 
-          var reverbNode = filter_chain[2];
-          var dryGainNode = filter_chain[3];
-          var wetGainNode = filter_chain[4];
+          const reverbNode = filter_chain[2];
+          const dryGainNode = filter_chain[3];
+          const wetGainNode = filter_chain[4];
 
           dryGainNode.gain.value = 1 - (val.mix - 0.5) * 2;
           wetGainNode.gain.value = 1 - (0.5 - val.mix) * 2;
 
-          var length = audio_ctx.sampleRate * val.time;
-          var impulse = audio_ctx.createBuffer(2, length, audio_ctx.sampleRate);
-          var impulseL = impulse.getChannelData(0);
-          var impulseR = impulse.getChannelData(1);
-          var n, i;
+          const length = audio_ctx.sampleRate * val.time;
+          const impulse = audio_ctx.createBuffer(2, length, audio_ctx.sampleRate);
+          const impulseL = impulse.getChannelData(0);
+          const impulseR = impulse.getChannelData(1);
+          let n, i;
 
           for (i = 0; i < length; i++) {
             n = val.reverse ? length - i : i;

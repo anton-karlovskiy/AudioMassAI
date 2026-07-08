@@ -17,16 +17,16 @@
 self.FLAC_SCRIPT_LOCATION = '/vendor/';
 importScripts('../vendor/libflac.js');
 
-var flacEncoder;
-var isEncoderInitialized = false;
-var sampleRate = 44100;
-var compressionLevel = 5; // FLAC compression level (0-8).
-var channelCount = 1;
-var encodedChunks = [];
-var encodedByteCount = 0;
-var awaitingFirstBuffer = true;
-var leftChannelSamples = null;
-var rightChannelSamples = null;
+let flacEncoder;
+let isEncoderInitialized = false;
+let sampleRate = 44100;
+let compressionLevel = 5; // FLAC compression level (0-8).
+let channelCount = 1;
+let encodedChunks = [];
+let encodedByteCount = 0;
+let awaitingFirstBuffer = true;
+let leftChannelSamples = null;
+let rightChannelSamples = null;
 
 function initEncoder() {
   if (isEncoderInitialized) return true;
@@ -43,7 +43,7 @@ function initEncoder() {
     0
   );
   if (flacEncoder != 0) {
-    var status = Flac.init_encoder_stream(flacEncoder, function (buffer) {
+    const status = Flac.init_encoder_stream(flacEncoder, function (buffer) {
       encodedChunks.push(new Uint8Array(buffer));
       encodedByteCount += buffer.byteLength;
     });
@@ -56,11 +56,11 @@ function initEncoder() {
 }
 
 function interleave(leftSamples, rightSamples) {
-  var length = leftSamples.length + rightSamples.length;
-  var result = new Int32Array(length);
+  const length = leftSamples.length + rightSamples.length;
+  const result = new Int32Array(length);
 
-  var writeIndex = 0;
-  var readIndex = 0;
+  let writeIndex = 0;
+  let readIndex = 0;
 
   while (writeIndex < length) {
     result[writeIndex++] = leftSamples[readIndex];
@@ -103,7 +103,7 @@ onmessage = function (event) {
   postMessage({ percentage: 50 });
 
   if (channelCount > 1) {
-    var interleaved = interleave(leftChannelSamples, rightChannelSamples);
+    const interleaved = interleave(leftChannelSamples, rightChannelSamples);
     Flac.FLAC__stream_encoder_process_interleaved(
       flacEncoder,
       interleaved,
@@ -111,8 +111,8 @@ onmessage = function (event) {
     );
   } else {
     // libflac expects Int32 sample arrays.
-    var monoSamples = new Int32Array(leftChannelSamples.length);
-    var index = 0;
+    const monoSamples = new Int32Array(leftChannelSamples.length);
+    let index = 0;
     while (index < leftChannelSamples.length) {
       monoSamples[index] = leftChannelSamples[index];
       ++index;
@@ -123,9 +123,9 @@ onmessage = function (event) {
   Flac.FLAC__stream_encoder_finish(flacEncoder);
 
   // Combine all encoded chunks into a single buffer.
-  var outputData = new Uint8Array(encodedByteCount);
-  var offset = 0;
-  for (var i = 0; i < encodedChunks.length; i++) {
+  const outputData = new Uint8Array(encodedByteCount);
+  let offset = 0;
+  for (let i = 0; i < encodedChunks.length; i++) {
     outputData.set(encodedChunks[i], offset);
     offset += encodedChunks[i].length;
   }

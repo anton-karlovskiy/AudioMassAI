@@ -8,8 +8,8 @@
 
 import { AudioEffectModal } from '../ui/modals.js';
 
-var modal_name = 'modalfx';
-var modal_esc_key = modal_name + 'esc';
+const modal_name = 'modalfx';
+const modal_esc_key = modal_name + 'esc';
 
 ///////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -24,8 +24,8 @@ function getOfflineAudioContext(channels, sampleRate, duration) {
   );
 }
 function _normalize_array(data) {
-  var new_array = [];
-  for (var i = 0; i < data.length; ++i) {
+  const new_array = [];
+  for (let i = 0; i < data.length; ++i) {
     new_array.push(Math.abs(Math.round((data[i + 1] - data[i]) * 1000)));
   }
 
@@ -33,8 +33,8 @@ function _normalize_array(data) {
 }
 
 function _normalize_array2(data) {
-  var new_array = [];
-  for (var i = 0; i < data.length; ++i) {
+  const new_array = [];
+  for (let i = 0; i < data.length; ++i) {
     new_array.push(Math.round(Math.abs(data[i] * 1000)));
   }
 
@@ -44,24 +44,24 @@ function _normalize_array2(data) {
 function _group_rhythm(data, diff_arr) {
   if (diff_arr.length <= 1) return;
 
-  var peak_median = 0;
-  for (var i = 0; i < data.length; ++i) {
+  let peak_median = 0;
+  for (let i = 0; i < data.length; ++i) {
     peak_median += data[i];
   }
 
   peak_median /= diff_arr.length;
   peak_median -= peak_median * 0.2;
 
-  var diff_median = 0;
-  for (var i = 0; i < diff_arr.length; ++i) {
+  let diff_median = 0;
+  for (let i = 0; i < diff_arr.length; ++i) {
     diff_median += diff_arr[i];
   }
 
   diff_median /= diff_arr.length;
   if (diff_median > 1) diff_median -= diff_median * 0.2;
 
-  var existing = 0;
-  for (var i = 0; i < diff_arr.length; ++i) {
+  let existing = 0;
+  for (let i = 0; i < diff_arr.length; ++i) {
     if (diff_arr[i] <= diff_median) continue;
     ++existing;
   }
@@ -71,7 +71,7 @@ function _group_rhythm(data, diff_arr) {
   // console.log ( JSON.stringify( data ) );
   // console.log ("----------");
 
-  for (var i = 0, j = 0; i < data.length; ++i) {
+  for (let i = 0, j = 0; i < data.length; ++i) {
     if (data[i] !== 0) {
       if (diff_arr[j] && diff_arr[j] < diff_median) {
         if (data[i] > peak_median && diff_arr[j] > diff_median * 0.6) {
@@ -93,11 +93,11 @@ function _group_rhythm(data, diff_arr) {
   // console.log ( JSON.stringify( data ) );
 
   // now count distance between peaks
-  var distances = {};
-  var unique_distances = [];
-  var first_found = 0;
-  var is_first = true;
-  for (var i = 0; i < data.length - 1; ++i) // #### do not litter the last data
+  const distances = {};
+  const unique_distances = [];
+  let first_found = 0;
+  let is_first = true;
+  for (let i = 0; i < data.length - 1; ++i) // #### do not litter the last data
   {
     if (data[i] === 0) {
       ++first_found;
@@ -114,16 +114,16 @@ function _group_rhythm(data, diff_arr) {
 
     first_found = 0;
 
-    var own = [];
+    const own = [];
     unique_distances.push(own);
 
     // console.log ('----------------------------------');
     // console.log ('COMPUTING DISTANCE OF ' + i + '    value ' + data[i] );
 
-    var interval = 0;
-    var total = 12;
-    var last_found = 0;
-    for (var j = i + 1; j < 1000; ++j) {
+    let interval = 0;
+    let total = 12;
+    let last_found = 0;
+    for (let j = i + 1; j < 1000; ++j) {
       if (data[j] === 0) {
         ++interval;
         ++last_found;
@@ -155,9 +155,9 @@ function _group_rhythm(data, diff_arr) {
   // grab only the big peaks.
 
   function getmax(a) {
-    var m = -Infinity,
-      i = 0,
-      n = a.length;
+    let m = -Infinity,
+      i = 0;
+    const n = a.length;
 
     for (; i != n; ++i) {
       if (a[i] > m) {
@@ -168,9 +168,9 @@ function _group_rhythm(data, diff_arr) {
   }
 
   function getmin(a) {
-    var m = Infinity,
-      i = 0,
-      n = a.length;
+    let m = Infinity,
+      i = 0;
+    const n = a.length;
 
     for (; i != n; ++i) {
       if (a[i] !== 0 && a[i] < m) {
@@ -180,13 +180,13 @@ function _group_rhythm(data, diff_arr) {
     return m;
   }
 
-  var max = getmax(data);
-  var min = getmin(data);
-  var count = 0;
-  var threshold = Math.round((max - min) * 0.3);
+  const max = getmax(data);
+  const min = getmin(data);
+  const count = 0;
+  const threshold = Math.round((max - min) * 0.3);
 
-  var velocities = [];
-  for (var i = 0; i < data.length; ++i) {
+  const velocities = [];
+  for (let i = 0; i < data.length; ++i) {
     if (data[i] === 0) continue;
 
     if (data[i] >= max - threshold) {
@@ -205,33 +205,33 @@ function _group_rhythm(data, diff_arr) {
 
 export function openTempoTools(app) {
   app.fireEvent('RequestSelect', 1);
-  var filter_id = 'tempo_tools';
-  var act_index = 1;
-  var act_tool = null;
+  const filter_id = 'tempo_tools';
+  let act_index = 1;
+  let act_tool = null;
 
   // ------
-  var TempoMetro = function (app, modal) {
-    var q = this;
+  const TempoMetro = function (app, modal) {
+    const q = this;
     q.app = app;
 
-    var bpm = 120;
-    var tick = null;
-    var count = 0;
-    var time = ((60.0 / bpm) * 1000) >> 0;
-    var audioContext = null; // new AudioContext();
-    var osc = null;
-    var amp = null;
-    var ready = false;
-    var volume = 0.5;
-    var accentuate = true;
+    let bpm = 120;
+    let tick = null;
+    let count = 0;
+    let time = ((60.0 / bpm) * 1000) >> 0;
+    let audioContext = null; // new AudioContext();
+    let osc = null;
+    let amp = null;
+    let ready = false;
+    let volume = 0.5;
+    let accentuate = true;
 
-    var DidStopPlay = null;
-    var DidPlay = null;
-    var MetronomeAct = null;
-    var MetronomeInAct = null;
+    let DidStopPlay = null;
+    let DidPlay = null;
+    let MetronomeAct = null;
+    let MetronomeInAct = null;
 
     q.Init = function (container) {
-      var q = this;
+      const q = this;
 
       q.el = container;
 
@@ -257,7 +257,7 @@ export function openTempoTools(app) {
         }
 
         if (audioContext) {
-          var now = audioContext.currentTime;
+          const now = audioContext.currentTime;
           osc.stop(now);
 
           amp.disconnect();
@@ -278,7 +278,7 @@ export function openTempoTools(app) {
     };
 
     function _make_ui(q) {
-      var el_drawer = document.createElement('div');
+      const el_drawer = document.createElement('div');
       el_drawer.className = 'pk_row';
 
       el_drawer.innerHTML =
@@ -306,13 +306,13 @@ export function openTempoTools(app) {
     }
 
     function _make_evs(q) {
-      var range = q.body.getElementsByClassName('pk_horiz')[0];
-      var span = q.body.getElementsByClassName('pk_val')[0];
+      const range = q.body.getElementsByClassName('pk_horiz')[0];
+      const span = q.body.getElementsByClassName('pk_val')[0];
 
-      var range2 = q.body.getElementsByClassName('pk_horiz')[1];
-      var span2 = q.body.getElementsByClassName('pk_val')[1];
+      const range2 = q.body.getElementsByClassName('pk_horiz')[1];
+      const span2 = q.body.getElementsByClassName('pk_val')[1];
 
-      var checkbox = q.body.getElementsByClassName('pk_check')[0];
+      const checkbox = q.body.getElementsByClassName('pk_check')[0];
 
       range.oninput = function () {
         bpm = range.value / 1;
@@ -322,7 +322,7 @@ export function openTempoTools(app) {
       };
 
       range2.oninput = function () {
-        var val = range2.value / 1;
+        const val = range2.value / 1;
         volume = val;
 
         span2.innerHTML = ((val * 100) >> 0) + '%';
@@ -332,9 +332,9 @@ export function openTempoTools(app) {
         accentuate = checkbox.checked;
       };
 
-      var metronome_btn = q.body.getElementsByClassName('pk_modal_a_bottom')[0];
-      var play_btn = q.body.getElementsByClassName('pk_modal_a_bottom')[1];
-      var both_btn = q.body.getElementsByClassName('pk_modal_a_bottom')[2];
+      const metronome_btn = q.body.getElementsByClassName('pk_modal_a_bottom')[0];
+      const play_btn = q.body.getElementsByClassName('pk_modal_a_bottom')[1];
+      const both_btn = q.body.getElementsByClassName('pk_modal_a_bottom')[2];
 
       metronome_btn.onclick = function () {
         if (tick) {
@@ -346,7 +346,7 @@ export function openTempoTools(app) {
           return;
         }
 
-        var play = function () {
+        const play = function () {
           tick = setTimeout(function () {
             if (!tick) return;
 
@@ -446,17 +446,17 @@ export function openTempoTools(app) {
     }
   };
 
-  var TempoTap = function (app, modal) {
-    var q = this;
+  const TempoTap = function (app, modal) {
+    const q = this;
     q.app = app;
 
-    var DidStopPlay = null;
-    var DidPlay = null;
-    var DidSetLoop = null;
-    var DidAudioProcess = null;
+    let DidStopPlay = null;
+    let DidPlay = null;
+    let DidSetLoop = null;
+    let DidAudioProcess = null;
 
     q.Init = function (container) {
-      var q = this;
+      const q = this;
 
       q.el = container;
 
@@ -486,7 +486,7 @@ export function openTempoTools(app) {
     };
 
     function _make_ui(q) {
-      var el_drawer = document.createElement('div');
+      const el_drawer = document.createElement('div');
       el_drawer.className = 'pk_row';
 
       // Estimate tempo for selected area button
@@ -530,42 +530,42 @@ export function openTempoTools(app) {
     }
 
     function _make_evs(q) {
-      var tap_graph = q.body.querySelectorAll('#pk_tmp_tap')[0];
-      var tap_area = q.body.querySelectorAll('#pk_tmp_tap3')[0];
-      var reset_btn = q.body.getElementsByClassName('pk_modal_a_bottom')[0];
-      var play_btn = q.body.getElementsByClassName('pk_modal_a_bottom')[1];
-      var loop_btn = q.body.getElementsByClassName('pk_modal_a_bottom')[2];
+      const tap_graph = q.body.querySelectorAll('#pk_tmp_tap')[0];
+      const tap_area = q.body.querySelectorAll('#pk_tmp_tap3')[0];
+      const reset_btn = q.body.getElementsByClassName('pk_modal_a_bottom')[0];
+      const play_btn = q.body.getElementsByClassName('pk_modal_a_bottom')[1];
+      const loop_btn = q.body.getElementsByClassName('pk_modal_a_bottom')[2];
 
-      var canvas = q.body.getElementsByTagName('canvas')[0];
-      var ctx = canvas.getContext('2d', { alpha: false, antialias: false });
+      const canvas = q.body.getElementsByTagName('canvas')[0];
+      const ctx = canvas.getContext('2d', { alpha: false, antialias: false });
 
-      var tempCanvas = document.createElement('canvas');
+      const tempCanvas = document.createElement('canvas');
       tempCanvas.width = 500 * 2;
       tempCanvas.height = 100 * 2;
-      var tempCtx = tempCanvas.getContext('2d', { alpha: false, antialias: false });
+      const tempCtx = tempCanvas.getContext('2d', { alpha: false, antialias: false });
 
       ctx.imageSmoothingEnabled = true;
       tempCtx.imageSmoothingEnabled = true;
 
-      var value_els = q.body.getElementsByClassName('pk_val');
-      var tap_msg = tap_graph.getElementsByClassName('pk_obj2');
-      var tap_msg2 = tap_area.getElementsByTagName('span')[0];
+      const value_els = q.body.getElementsByClassName('pk_val');
+      const tap_msg = tap_graph.getElementsByClassName('pk_obj2');
+      const tap_msg2 = tap_area.getElementsByTagName('span')[0];
 
-      var bpm_el = value_els[0];
-      var bpm_el_round = value_els[1];
-      var bpm_el_count = value_els[2];
-      var reset_wait = 3000;
+      const bpm_el = value_els[0];
+      const bpm_el_round = value_els[1];
+      const bpm_el_count = value_els[2];
+      const reset_wait = 3000;
 
-      var time_msec = 0;
-      var time_msec_prev = 0;
-      var time_msec_first = 0;
-      var count = 0;
-      var bpm = 0;
-      var steps_count = 0;
-      var first = true;
-      var is_playing = false;
+      let time_msec = 0;
+      let time_msec_prev = 0;
+      let time_msec_first = 0;
+      let count = 0;
+      let bpm = 0;
+      let steps_count = 0;
+      let first = true;
+      let is_playing = false;
 
-      var _reset_count = function (force) {
+      const _reset_count = function (force) {
         if (first) {
           tap_msg[1].style.opacity = '0';
         }
@@ -607,8 +607,8 @@ export function openTempoTools(app) {
           bpm_el_round.value = '-';
           bpm_el_count.value = '-';
 
-          var els = tap_graph.parentNode.getElementsByClassName('pk_obj');
-          var l = els.length;
+          const els = tap_graph.parentNode.getElementsByClassName('pk_obj');
+          let l = els.length;
 
           while (l-- > 0) {
             if (els[l]) {
@@ -652,11 +652,11 @@ export function openTempoTools(app) {
       q.app.listenFor('DidStopPlay', DidStopPlay);
       q.app.listenFor('DidPlay', DidPlay);
 
-      var old_left_time = -999999;
-      var old_right_time = -999999;
-      var peaks = [];
-      var skipp = false;
-      var remaining = 0;
+      const old_left_time = -999999;
+      let old_right_time = -999999;
+      let peaks = [];
+      const skipp = false;
+      let remaining = 0;
 
       DidAudioProcess = function () {
         //if (skipp) {
@@ -665,33 +665,33 @@ export function openTempoTools(app) {
         //}
         //skipp = true;
 
-        var wv = app.engine.wavesurfer;
-        var buffer = wv.backend.buffer;
-        var chan_data = buffer.getChannelData(0);
-        var sample_rate = buffer.sampleRate;
+        const wv = app.engine.wavesurfer;
+        const buffer = wv.backend.buffer;
+        const chan_data = buffer.getChannelData(0);
+        const sample_rate = buffer.sampleRate;
 
-        var curr_time = wv.getCurrentTime();
-        var width = 500;
-        var height = 100;
-        var half_height = (height / 2) * 2;
-        var new_width = width;
-        var cached_index = 0;
-        var pixels = 0;
-        var raw_pixels = 0;
-        var limit = 3;
+        const curr_time = wv.getCurrentTime();
+        const width = 500;
+        const height = 100;
+        const half_height = (height / 2) * 2;
+        let new_width = width;
+        let cached_index = 0;
+        let pixels = 0;
+        let raw_pixels = 0;
+        const limit = 3;
 
-        var left_time = curr_time - limit / 2;
-        var right_time = curr_time + limit / 2;
-        var quick_render = false;
+        const left_time = curr_time - limit / 2;
+        const right_time = curr_time + limit / 2;
+        let quick_render = false;
 
-        var start_offset = (left_time * sample_rate) >> 0;
-        var end_offset = ((left_time + limit) * sample_rate) >> 0;
-        var length = end_offset - start_offset;
-        var mod = (length / width) >> 0;
+        let start_offset = (left_time * sample_rate) >> 0;
+        let end_offset = ((left_time + limit) * sample_rate) >> 0;
+        let length = end_offset - start_offset;
+        let mod = (length / width) >> 0;
 
         if (left_time < old_right_time) {
           // find pixels
-          var diff = right_time - old_right_time;
+          const diff = right_time - old_right_time;
           // pixels = Math.round ( (diff / limit) * width);
 
           raw_pixels = (diff / limit) * width;
@@ -718,17 +718,17 @@ export function openTempoTools(app) {
 
         old_right_time = right_time;
 
-        var max = 0;
-        var min = 0;
+        let max = 0;
+        let min = 0;
 
-        for (var i = 0; i < new_width; ++i) {
-          var new_offset = start_offset + mod * i;
+        for (let i = 0; i < new_width; ++i) {
+          const new_offset = start_offset + mod * i;
 
           max = 0;
           min = 0;
 
           if (new_offset >= 0) {
-            for (var j = 0; j < mod; j += 3) {
+            for (let j = 0; j < mod; j += 3) {
               if (chan_data[new_offset + j] > max) {
                 max = chan_data[new_offset + j];
               } else if (chan_data[new_offset + j] < min) {
@@ -753,7 +753,7 @@ export function openTempoTools(app) {
         ctx.fillStyle = '#99c2c6';
 
         if (quick_render) {
-          var forward = Math.round(raw_pixels * 2);
+          let forward = Math.round(raw_pixels * 2);
           remaining += forward - raw_pixels * 2;
           if (remaining > 1) {
             forward -= 1;
@@ -769,19 +769,19 @@ export function openTempoTools(app) {
 
           ctx.beginPath();
 
-          var peak = peaks[(width - pixels - 2) * 2];
-          var _h = Math.round(peak * half_height);
+          let peak = peaks[(width - pixels - 2) * 2];
+          let _h = Math.round(peak * half_height);
           ctx.moveTo((width - pixels - 2) * 2, half_height - _h);
 
-          for (var i = width - pixels - 1; i < width; ++i) {
+          for (let i = width - pixels - 1; i < width; ++i) {
             peak = peaks[i * 2];
             _h = Math.round(peak * half_height);
             ctx.lineTo(i * 2, half_height - _h);
           }
 
-          for (var i = width - 1; i >= width - pixels - 1; --i) {
-            var peak = peaks[i * 2 + 1];
-            var _h = Math.round(peak * half_height);
+          for (let i = width - 1; i >= width - pixels - 1; --i) {
+            const peak = peaks[i * 2 + 1];
+            const _h = Math.round(peak * half_height);
             ctx.lineTo(i * 2, half_height - _h);
           }
 
@@ -791,15 +791,15 @@ export function openTempoTools(app) {
           ctx.beginPath();
           ctx.moveTo(0, half_height);
 
-          for (var i = 0; i < width; ++i) {
-            var peak = peaks[i * 2];
-            var _h = Math.round(peak * half_height);
+          for (let i = 0; i < width; ++i) {
+            const peak = peaks[i * 2];
+            const _h = Math.round(peak * half_height);
             ctx.lineTo(i * 2, half_height - _h);
           }
 
-          for (var i = width - 1; i >= 0; --i) {
-            var peak = peaks[i * 2 + 1];
-            var _h = Math.round(peak * half_height);
+          for (let i = width - 1; i >= 0; --i) {
+            const peak = peaks[i * 2 + 1];
+            const _h = Math.round(peak * half_height);
             ctx.lineTo(i * 2, half_height - _h);
           }
 
@@ -827,7 +827,7 @@ export function openTempoTools(app) {
       tap_graph.parentNode.addEventListener('transitionend', function (e) {
         if (!tap_graph) return;
 
-        var el = e.target;
+        const el = e.target;
         if (el.tagName !== 'DIV') return;
 
         el.parentNode.removeChild(el);
@@ -875,7 +875,7 @@ export function openTempoTools(app) {
           bpm_el_count.value = count;
         }
 
-        var step = document.createElement('div');
+        const step = document.createElement('div');
         step.className = 'pk_obj';
 
         if (is_playing) {
@@ -916,12 +916,12 @@ export function openTempoTools(app) {
   };
 
   // events
-  var TempoEstimation = function (app, modal) {
-    var q = this;
+  const TempoEstimation = function (app, modal) {
+    const q = this;
     q.app = app;
 
     q.Init = function (container) {
-      var q = this;
+      const q = this;
 
       q.el = container;
 
@@ -939,33 +939,33 @@ export function openTempoTools(app) {
     };
 
     q.Est = function (selection) {
-      var q = this;
+      const q = this;
 
-      var wavesurfer = q.app.engine.wavesurfer;
-      var buffer = wavesurfer.backend.buffer;
+      const wavesurfer = q.app.engine.wavesurfer;
+      const buffer = wavesurfer.backend.buffer;
 
-      var starting_time = 20.375;
-      var ending_time = wavesurfer.getDuration();
-      var sample_rate = buffer.sampleRate;
+      const starting_time = 20.375;
+      const ending_time = wavesurfer.getDuration();
+      const sample_rate = buffer.sampleRate;
 
-      var look_ahead = 10 * sample_rate;
-      var offset_rate = starting_time * sample_rate;
-      var duration_rate = ending_time * sample_rate;
-      var dist_rhythm = {};
+      const look_ahead = 10 * sample_rate;
+      const offset_rate = starting_time * sample_rate;
+      const duration_rate = ending_time * sample_rate;
+      const dist_rhythm = {};
 
       // now run offline
-      var audio_ctx = getOfflineAudioContext(1, buffer.sampleRate, buffer.length);
+      const audio_ctx = getOfflineAudioContext(1, buffer.sampleRate, buffer.length);
 
-      var source = audio_ctx.createBufferSource();
+      const source = audio_ctx.createBufferSource();
       source.buffer = buffer;
 
-      var filter = audio_ctx.createBiquadFilter();
+      const filter = audio_ctx.createBiquadFilter();
       filter.type = 'highpass';
       filter.frequency.value = 50;
       filter.Q.value = 1.1;
       source.connect(filter);
 
-      var filter2 = audio_ctx.createBiquadFilter();
+      const filter2 = audio_ctx.createBiquadFilter();
       filter2.type = 'lowpass';
       filter2.frequency.value = 140;
       filter2.Q.value = 2.5;
@@ -974,38 +974,38 @@ export function openTempoTools(app) {
 
       source.start(0);
 
-      var offline_callback = function (rendered_buffer) {
+      const offline_callback = function (rendered_buffer) {
         _pass(rendered_buffer, offset_rate, duration_rate);
       };
 
-      var _pass = function (rendered_buffer, offset, duration) {
-        var chan_data = rendered_buffer.getChannelData(0);
-        var new_arr = [];
-        var diff_arr = [];
-        var currval = 0;
-        var prev_val = 0;
-        var bottom = 100000;
-        var top = -100000;
-        var found_pick = false;
-        var going_up = false;
-        var peak_dist = 0;
-        var peak_prev = 0;
-        var next_offset = offset + look_ahead;
+      const _pass = function (rendered_buffer, offset, duration) {
+        const chan_data = rendered_buffer.getChannelData(0);
+        const new_arr = [];
+        const diff_arr = [];
+        let currval = 0;
+        let prev_val = 0;
+        let bottom = 100000;
+        let top = -100000;
+        let found_pick = false;
+        let going_up = false;
+        let peak_dist = 0;
+        let peak_prev = 0;
+        const next_offset = offset + look_ahead;
 
-        var trimmed_arr = [];
-        var modulus_coefficient = Math.round(look_ahead / 200);
-        var plus_one = look_ahead + modulus_coefficient;
+        let trimmed_arr = [];
+        const modulus_coefficient = Math.round(look_ahead / 200);
+        const plus_one = look_ahead + modulus_coefficient;
 
-        for (var i = 0; i < plus_one; ++i) {
+        for (let i = 0; i < plus_one; ++i) {
           if (i % modulus_coefficient === 0) {
             // look into 50 neighboring entries for higher values.
-            var val_clean = chan_data[offset + i];
-            var val = Math.abs(val_clean);
+            let val_clean = chan_data[offset + i];
+            let val = Math.abs(val_clean);
 
             //console.log( "was ", val_clean );
 
-            var tmp_val = 0;
-            for (var uu = 1; uu < 50; ++uu) {
+            let tmp_val = 0;
+            for (let uu = 1; uu < 50; ++uu) {
               tmp_val = Math.abs(chan_data[offset + i - uu]);
 
               if (tmp_val > val) {
@@ -1014,7 +1014,7 @@ export function openTempoTools(app) {
               }
             }
 
-            for (var uu = 1; uu < 50; ++uu) {
+            for (let uu = 1; uu < 50; ++uu) {
               tmp_val = Math.abs(chan_data[offset + i + uu]);
 
               if (tmp_val > val) {
@@ -1035,7 +1035,7 @@ export function openTempoTools(app) {
 
         // ------------
         prev_val = trimmed_arr[0];
-        for (var j = 1; j < trimmed_arr.length; ++j) {
+        for (let j = 1; j < trimmed_arr.length; ++j) {
           currval = trimmed_arr[j];
 
           if (currval > prev_val) {
@@ -1101,18 +1101,18 @@ export function openTempoTools(app) {
         // window.chan = chan_data;
 
         // ----
-        var ret = _group_rhythm(new_arr, diff_arr);
+        const ret = _group_rhythm(new_arr, diff_arr);
         if (!ret) {
           console.log('something weird happened, error 244');
           return;
         }
 
-        var distances = ret[0];
+        const distances = ret[0];
 
         // console.log( diff_arr );
         // console.log( ret[1] );
 
-        for (var k in distances) {
+        for (const k in distances) {
           if (!dist_rhythm[k]) dist_rhythm[k] = 0;
 
           dist_rhythm[k] += distances[k];
@@ -1131,7 +1131,7 @@ export function openTempoTools(app) {
         // ----
       };
 
-      var offline_renderer = audio_ctx.startRendering();
+      const offline_renderer = audio_ctx.startRendering();
       if (offline_renderer)
         offline_renderer.then(offline_callback).catch(function (err) {
           console.log('Rendering failed: ' + err);
@@ -1143,7 +1143,7 @@ export function openTempoTools(app) {
     };
 
     function _make_ui(q) {
-      var el_drawer = document.createElement('div');
+      const el_drawer = document.createElement('div');
       el_drawer.className = 'pk_row';
 
       // Estimate tempo for selected area button
@@ -1162,7 +1162,7 @@ export function openTempoTools(app) {
     }
 
     function _make_evs(q) {
-      var btn_est = q.body.getElementsByTagName('a')[0];
+      const btn_est = q.body.getElementsByTagName('a')[0];
       if (!btn_est) return;
 
       btn_est.onclick = function () {
@@ -1172,7 +1172,7 @@ export function openTempoTools(app) {
     }
   };
 
-  var fxModal = AudioEffectModal(
+  const fxModal = AudioEffectModal(
     {
       id: filter_id,
       title: 'Tempo & Rhythm Tools',
@@ -1201,9 +1201,9 @@ export function openTempoTools(app) {
       //			}],
 
       setup: function (q) {
-        var toplinks = q.el_body.getElementsByClassName('pk_tbsa');
+        const toplinks = q.el_body.getElementsByClassName('pk_tbsa');
 
-        var destroy = function () {
+        const destroy = function () {
           if (act_tool) {
             act_tool.Destroy();
             act_tool = null;
@@ -1211,7 +1211,7 @@ export function openTempoTools(app) {
           }
         };
 
-        var activate = function () {
+        const activate = function () {
           // get the active state
           if (act_index === 0) {
             // toplinks[0].className += ' pk_act';

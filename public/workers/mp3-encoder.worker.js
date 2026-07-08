@@ -13,14 +13,14 @@
 
 importScripts('../vendor/lame.js');
 
-var sampleRate = 44100;
-var bitrateKbps = 128;
-var channelCount = 1;
-var mp3Encoder = null;
+let sampleRate = 44100;
+let bitrateKbps = 128;
+let channelCount = 1;
+let mp3Encoder = null;
 
-var leftChannelSamples = null;
-var rightChannelSamples = null;
-var awaitingFirstBuffer = true;
+let leftChannelSamples = null;
+let rightChannelSamples = null;
+let awaitingFirstBuffer = true;
 
 onmessage = function (event) {
   if (!event.data) return;
@@ -49,23 +49,23 @@ onmessage = function (event) {
     mp3Encoder = new lamejs.Mp3Encoder(channelCount, sampleRate, bitrateKbps);
   }
 
-  var sampleBlockSize = 1152 * 2;
-  var mp3Chunks = [];
-  var lastReportedPercentage = 0;
+  const sampleBlockSize = 1152 * 2;
+  const mp3Chunks = [];
+  let lastReportedPercentage = 0;
 
-  var leftChunk = null;
-  var rightChunk = null;
+  let leftChunk = null;
+  let rightChunk = null;
 
-  for (var offset = 0; offset < leftChannelSamples.length; offset += sampleBlockSize) {
+  for (let offset = 0; offset < leftChannelSamples.length; offset += sampleBlockSize) {
     leftChunk = leftChannelSamples.subarray(offset, offset + sampleBlockSize);
 
     if (rightChannelSamples) {
       rightChunk = rightChannelSamples.subarray(offset, offset + sampleBlockSize);
     }
 
-    var mp3Buffer = mp3Encoder.encodeBuffer(leftChunk, rightChunk);
+    const mp3Buffer = mp3Encoder.encodeBuffer(leftChunk, rightChunk);
 
-    var percentage = ((offset / leftChannelSamples.length) * 100) >> 0;
+    const percentage = ((offset / leftChannelSamples.length) * 100) >> 0;
     if (percentage > lastReportedPercentage) {
       lastReportedPercentage = percentage;
       postMessage({ percentage: percentage });
@@ -76,7 +76,7 @@ onmessage = function (event) {
     }
   }
 
-  var finalBuffer = mp3Encoder.flush();
+  const finalBuffer = mp3Encoder.flush();
   if (finalBuffer.length > 0) {
     mp3Chunks.push(finalBuffer);
   }

@@ -16,10 +16,10 @@ import { openRecordingModal } from '../effects/recording-modal.js';
 
 // Custom FX presets, persisted in localStorage.
 function FxPresetStore() {
-  var presets = {};
+  let presets = {};
 
   this.Set = function (filter_id, obj) {
-    var arr = presets[filter_id];
+    let arr = presets[filter_id];
 
     if (!arr) {
       arr = [];
@@ -45,9 +45,9 @@ function FxPresetStore() {
     if (!filter_id) return false;
     if (!custom_id) return false;
 
-    var arr = presets[filter_id];
-    var l = arr.length;
-    var found = null;
+    const arr = presets[filter_id];
+    let l = arr.length;
+    let found = null;
 
     while (l-- > 0) {
       if (arr[l].id === custom_id) {
@@ -63,9 +63,9 @@ function FxPresetStore() {
   this.Del = function (filter_id, custom_id) {
     if (!filter_id) return presets;
 
-    var arr = presets[filter_id];
-    var l = arr.length;
-    var found = false;
+    const arr = presets[filter_id];
+    let l = arr.length;
+    let found = false;
 
     while (l-- > 0) {
       if (arr[l].id === custom_id) {
@@ -86,8 +86,8 @@ function FxPresetStore() {
     return;
   }
 
-  var json = window.localStorage.getItem('pk_presetfx');
-  var tmp = null;
+  const json = window.localStorage.getItem('pk_presetfx');
+  let tmp = null;
 
   if (!json) return;
   try {
@@ -98,13 +98,13 @@ function FxPresetStore() {
 }
 
 export function registerEffectsUI(app) {
-  var UI = app.ui;
+  const UI = app.ui;
 
-  var curr_filter_ui = null;
-  var modal_name = 'modalfx';
-  var modal_esc_key = modal_name + 'esc';
+  let curr_filter_ui = null;
+  const modal_name = 'modalfx';
+  const modal_esc_key = modal_name + 'esc';
 
-  var custom_presets = new FxPresetStore();
+  const custom_presets = new FxPresetStore();
 
   app.listenFor('DidCloseFX_UI', function () {
     curr_filter_ui = null;
@@ -115,12 +115,12 @@ export function registerEffectsUI(app) {
   });
 
   app.listenFor('RequestFXUI_SELCUT', function () {
-    var eng = app.engine;
-    var wv = eng.wavesurfer;
-    var bk = wv.backend;
-    var rate = bk.buffer.sampleRate;
+    const eng = app.engine;
+    const wv = eng.wavesurfer;
+    const bk = wv.backend;
+    const rate = bk.buffer.sampleRate;
 
-    var region = wv.regions.list[0];
+    const region = wv.regions.list[0];
     if (!region) return false;
 
     app.fireEvent('RequestPause');
@@ -128,7 +128,7 @@ export function registerEffectsUI(app) {
     // mark the region as
     region.element.style.background = 'red';
 
-    var reg = {
+    const reg = {
       pos: {
         start: (region.start * rate) >> 0,
         end: (region.end * rate) >> 0,
@@ -141,7 +141,7 @@ export function registerEffectsUI(app) {
 
     wv.backend.reg = reg;
 
-    var update_reg = function (region) {
+    const update_reg = function (region) {
       reg.pos.start = (region.start * rate) >> 0;
       reg.pos.end = (region.end * rate) >> 0;
 
@@ -155,23 +155,23 @@ export function registerEffectsUI(app) {
   app.listenFor('RequestFXUI_Gain', function () {
     app.fireEvent('RequestSelect', 1);
 
-    var filter_id = 'gain';
-    var auto = null;
+    const filter_id = 'gain';
+    const auto = null;
 
-    var getvalue = function (modal) {
-      var value;
+    const getvalue = function (modal) {
+      let value;
 
       if (auto) {
         value = auto.GetValue();
       } else {
-        var input = modal.el_body.getElementsByTagName('input')[0];
+        const input = modal.el_body.getElementsByTagName('input')[0];
         value = [{ val: input.value / 1 }];
       }
 
       return value;
     };
 
-    var fxModal = AudioEffectModal(
+    const fxModal = AudioEffectModal(
       {
         id: filter_id,
         title: 'Apply Gain to selected range',
@@ -190,7 +190,7 @@ export function registerEffectsUI(app) {
           app.ui.KeyHandler.removeCallback(modal_esc_key);
         },
         preview: function (modal) {
-          var value = getvalue(modal);
+          const value = getvalue(modal);
           app.fireEvent('RequestActionFX_PREVIEW_GAIN', value);
         },
         buttons: [
@@ -198,7 +198,7 @@ export function registerEffectsUI(app) {
             title: 'Apply Gain',
             clss: 'pk_modal_a_accpt',
             callback: function (modal) {
-              var value = getvalue(modal);
+              const value = getvalue(modal);
 
               if (value[0].val != 1.0) app.fireEvent('RequestActionFX_GAIN', value);
 
@@ -213,8 +213,8 @@ export function registerEffectsUI(app) {
           '<div class="pk_row" style="border:none;padding:0">',
 
         setup: function (modal) {
-          var range = modal.el_body.getElementsByTagName('input')[0];
-          var span = modal.el_body.getElementsByTagName('span')[0];
+          const range = modal.el_body.getElementsByTagName('input')[0];
+          const span = modal.el_body.getElementsByTagName('span')[0];
 
           range.oninput = function () {
             span.innerHTML = ((range.value * 100) >> 0) + '%';
@@ -244,9 +244,9 @@ export function registerEffectsUI(app) {
   app.listenFor('RequestActionFXUI_Rate', function () {
     app.fireEvent('RequestSelect', 1);
 
-    var filter_id = 'speed';
+    const filter_id = 'speed';
 
-    var fxModal = AudioEffectModal(
+    const fxModal = AudioEffectModal(
       {
         id: filter_id,
         title: 'Change Speed',
@@ -262,8 +262,8 @@ export function registerEffectsUI(app) {
           app.ui.KeyHandler.removeCallback(modal_esc_key);
         },
         preview: function (modal) {
-          var input = modal.el_body.getElementsByTagName('input')[0];
-          var value = input.value.trim() / 1;
+          const input = modal.el_body.getElementsByTagName('input')[0];
+          const value = input.value.trim() / 1;
           app.fireEvent('RequestActionFX_PREVIEW_RATE', value);
         },
 
@@ -272,8 +272,8 @@ export function registerEffectsUI(app) {
             title: 'Apply Rate',
             clss: 'pk_modal_a_accpt',
             callback: function (modal) {
-              var input = modal.el_body.getElementsByTagName('input')[0];
-              var value = input.value.trim() / 1;
+              const input = modal.el_body.getElementsByTagName('input')[0];
+              const value = input.value.trim() / 1;
 
               if (value != 1.0) app.fireEvent('RequestActionFX_RATE', value);
 
@@ -286,8 +286,8 @@ export function registerEffectsUI(app) {
           '<input type="range" class="pk_horiz" min="0.2" max="2.0" step="0.05" value="1.0" />' +
           '<span class="pk_val">1.0</span></div>',
         setup: function (modal) {
-          var range = modal.el_body.getElementsByTagName('input')[0];
-          var span = modal.el_body.getElementsByTagName('span')[0];
+          const range = modal.el_body.getElementsByTagName('input')[0];
+          const span = modal.el_body.getElementsByTagName('span')[0];
 
           range.oninput = function () {
             span.innerHTML = range.value;
@@ -316,9 +316,9 @@ export function registerEffectsUI(app) {
   app.listenFor('RequestActionFXUI_Speed', function () {
     app.fireEvent('RequestSelect', 1);
 
-    var filter_id = 'speed';
+    const filter_id = 'speed';
 
-    var fxModal = AudioEffectModal(
+    const fxModal = AudioEffectModal(
       {
         id: filter_id,
         title: 'Change Speed',
@@ -336,8 +336,8 @@ export function registerEffectsUI(app) {
           app.ui.KeyHandler.removeCallback(modal_esc_key);
         },
         preview: function (modal) {
-          var input = modal.el_body.getElementsByTagName('input')[0];
-          var value = input.value.trim() / 1;
+          const input = modal.el_body.getElementsByTagName('input')[0];
+          const value = input.value.trim() / 1;
           app.fireEvent('RequestActionFX_PREVIEW_SPEED', value);
         },
 
@@ -346,8 +346,8 @@ export function registerEffectsUI(app) {
             title: 'Apply Rate',
             clss: 'pk_modal_a_accpt',
             callback: function (modal) {
-              var input = modal.el_body.getElementsByTagName('input')[0];
-              var value = input.value.trim() / 1;
+              const input = modal.el_body.getElementsByTagName('input')[0];
+              const value = input.value.trim() / 1;
 
               if (value != 1.0) app.fireEvent('RequestActionFX_SPEED', value);
 
@@ -360,8 +360,8 @@ export function registerEffectsUI(app) {
           '<input type="range" class="pk_horiz" min="0.2" max="2.0" step="0.05" value="1.0" />' +
           '<span class="pk_val">1.0</span></div>',
         setup: function (modal) {
-          var range = modal.el_body.getElementsByTagName('input')[0];
-          var span = modal.el_body.getElementsByTagName('span')[0];
+          const range = modal.el_body.getElementsByTagName('input')[0];
+          const span = modal.el_body.getElementsByTagName('span')[0];
 
           range.oninput = function () {
             span.innerHTML = range.value;
@@ -393,10 +393,10 @@ export function registerEffectsUI(app) {
     app.fireEvent('RequestRegionClear');
     app.fireEvent('RequestSelect', 1);
 
-    var filter_id = 'flip';
-    var mode = 0;
+    const filter_id = 'flip';
+    let mode = 0;
 
-    var fxModal = AudioEffectModal(
+    const fxModal = AudioEffectModal(
       {
         id: filter_id,
         title: 'Channel Info',
@@ -411,11 +411,11 @@ export function registerEffectsUI(app) {
             callback: function (modal) {
               if (mode === 1) {
                 // check if we are doing force mono, or force flip
-                var mono = modal.el_body.getElementsByClassName('pk_c_mm')[0];
-                var flip = modal.el_body.getElementsByClassName('pk_c_fl')[0];
+                const mono = modal.el_body.getElementsByClassName('pk_c_mm')[0];
+                const flip = modal.el_body.getElementsByClassName('pk_c_fl')[0];
 
                 if (mono.checked) {
-                  var chans = modal.el_body.getElementsByClassName('pk_c_c');
+                  const chans = modal.el_body.getElementsByClassName('pk_c_c');
                   // check which channel we pick
 
                   if (chans[0].checked) {
@@ -427,7 +427,7 @@ export function registerEffectsUI(app) {
                   app.fireEvent('RequestActionFX_Flip', 'flip');
                 }
               } else if (mode === 2) {
-                var stereo = modal.el_body.getElementsByClassName('pk_c_ms')[0];
+                const stereo = modal.el_body.getElementsByClassName('pk_c_ms')[0];
                 if (stereo.checked) {
                   app.fireEvent('RequestActionFX_Flip', 'stereo');
                 }
@@ -456,17 +456,17 @@ export function registerEffectsUI(app) {
           '<label for="xms">Make Stereo</label></div>' +
           '</div>',
         setup: function (modal) {
-          var main = null;
-          var num = app.engine.wavesurfer.backend.buffer.numberOfChannels;
+          let main = null;
+          const num = app.engine.wavesurfer.backend.buffer.numberOfChannels;
           if (num === 2) {
             mode = 1;
             main = modal.el_body.getElementsByClassName('pk_mm')[0];
 
-            var mono = main.getElementsByClassName('pk_c_mm')[0];
-            var flip = main.getElementsByClassName('pk_c_fl')[0];
-            var chans = main.getElementsByClassName('pk_c_c');
-            var tmp = main.getElementsByClassName('pk_dis');
-            var lbls = [tmp[0], tmp[1]];
+            const mono = main.getElementsByClassName('pk_c_mm')[0];
+            const flip = main.getElementsByClassName('pk_c_fl')[0];
+            const chans = main.getElementsByClassName('pk_c_c');
+            const tmp = main.getElementsByClassName('pk_dis');
+            const lbls = [tmp[0], tmp[1]];
 
             mono.onchange = function (e) {
               if (mono.checked) {
@@ -515,7 +515,7 @@ export function registerEffectsUI(app) {
   });
 
   app.listenFor('RequestFXUI_Silence', function () {
-    var fxModal = new SimpleModal({
+    const fxModal = new SimpleModal({
       title: 'Insert Silence',
       ondestroy: function (modal) {
         UI.InteractionHandler.on = false;
@@ -526,11 +526,11 @@ export function registerEffectsUI(app) {
           title: 'Insert Silence',
           clss: 'pk_modal_a_accpt',
           callback: function (modal) {
-            var input = modal.el_body.getElementsByClassName('pk_horiz')[0];
-            var value = input.value.trim() / 1;
+            const input = modal.el_body.getElementsByClassName('pk_horiz')[0];
+            const value = input.value.trim() / 1;
 
-            var radios = modal.el_body.getElementsByClassName('pk_check');
-            var offset = 0;
+            const radios = modal.el_body.getElementsByClassName('pk_check');
+            let offset = 0;
 
             if (radios[1].checked) offset = app.engine.wavesurfer.getCurrentTime().toFixed(3) / 1;
 
@@ -548,11 +548,11 @@ export function registerEffectsUI(app) {
         '<input type="range" min="0.0" max="30.0" class="pk_horiz" step="0.01" value="5.0" />' +
         '<span class="pk_val">5s</span></div>',
       setup: function (modal) {
-        var cursor_pos_el = modal.el_body.getElementsByClassName('pkcdpk')[0];
+        const cursor_pos_el = modal.el_body.getElementsByClassName('pkcdpk')[0];
         cursor_pos_el.innerHTML = app.engine.wavesurfer.getCurrentTime().toFixed(2) + 's';
 
-        var range = modal.el_body.getElementsByClassName('pk_horiz')[0];
-        var span = modal.el_body.getElementsByClassName('pk_val')[0];
+        const range = modal.el_body.getElementsByClassName('pk_horiz')[0];
+        const span = modal.el_body.getElementsByClassName('pk_val')[0];
 
         range.oninput = function () {
           span.innerHTML = (range.value / 1).toFixed(2) + 's';
@@ -575,16 +575,15 @@ export function registerEffectsUI(app) {
   app.listenFor('RequestActionFXUI_Compressor', function () {
     app.fireEvent('RequestSelect', 1);
 
-    var filter_id = 'compressor';
-    var auto = null;
-    var getvalue = function (modal) {
-      var ret;
-      var value = [];
+    const filter_id = 'compressor';
+    const auto = null;
+    const getvalue = function (modal) {
+      let value = [];
 
       if (auto) {
         value = auto.GetValue();
       } else {
-        var inputs = modal.el_body.getElementsByTagName('input');
+        const inputs = modal.el_body.getElementsByTagName('input');
         value[0] = { val: inputs[0].value / 1 };
         value[1] = { val: inputs[1].value / 1 };
         value[2] = { val: inputs[2].value / 1 };
@@ -592,7 +591,7 @@ export function registerEffectsUI(app) {
         value[4] = { val: inputs[4].value / 1 };
       }
 
-      ret = {
+      const ret = {
         threshold: value[0],
         knee: value[1],
         ratio: value[2],
@@ -603,7 +602,7 @@ export function registerEffectsUI(app) {
       return ret;
     };
 
-    var fxModal = AudioEffectModal(
+    const fxModal = AudioEffectModal(
       {
         id: filter_id,
         title: 'Apply Compression to selected range',
@@ -620,8 +619,8 @@ export function registerEffectsUI(app) {
         ],
         custom_pres: custom_presets.Get(filter_id),
         preview: function (modal) {
-          var inputs = modal.el_body.getElementsByTagName('input');
-          var val = getvalue(modal);
+          const inputs = modal.el_body.getElementsByTagName('input');
+          const val = getvalue(modal);
           app.fireEvent('RequestActionFX_PREVIEW_COMPRESSOR', val);
         },
 
@@ -630,8 +629,8 @@ export function registerEffectsUI(app) {
             title: 'Apply',
             clss: 'pk_modal_a_accpt',
             callback: function (modal) {
-              var inputs = modal.el_body.getElementsByTagName('input');
-              var val = getvalue(modal);
+              const inputs = modal.el_body.getElementsByTagName('input');
+              const val = getvalue(modal);
 
               app.fireEvent('RequestActionFX_Compressor', val);
 
@@ -656,10 +655,10 @@ export function registerEffectsUI(app) {
           '<input class="pk_horiz" type="range" min="0.0" max="1.0" step="0.001" value="0.25" />' +
           '<span class="pk_val">0.25</span></div>',
         setup: function (modal) {
-          var inputs = modal.el_body.getElementsByTagName('input');
-          for (var i = 0; i < inputs.length; ++i) {
+          const inputs = modal.el_body.getElementsByTagName('input');
+          for (let i = 0; i < inputs.length; ++i) {
             inputs[i].oninput = function () {
-              var span = this.parentNode.getElementsByTagName('span')[0];
+              const span = this.parentNode.getElementsByTagName('span')[0];
               span.innerHTML = (this.value / 1).toFixed(3);
 
               updateFilter();
@@ -669,7 +668,7 @@ export function registerEffectsUI(app) {
           //};
 
           function updateFilter() {
-            var val = getvalue(modal);
+            const val = getvalue(modal);
             app.fireEvent('RequestActionFX_UPDATE_PREVIEW', val);
           }
 
@@ -694,7 +693,7 @@ export function registerEffectsUI(app) {
   app.listenFor('RequestActionFXUI_Normalize', function () {
     app.fireEvent('RequestSelect', 1);
 
-    var fxModal = new SimpleModal({
+    const fxModal = new SimpleModal({
       title: 'Normalize',
       ondestroy: function (modal) {
         app.ui.InteractionHandler.on = false;
@@ -705,10 +704,10 @@ export function registerEffectsUI(app) {
           title: 'Normalize Audio',
           clss: 'pk_modal_a_accpt',
           callback: function (modal) {
-            var input = modal.el_body.getElementsByClassName('pk_horiz')[0];
-            var value = input.value / 1;
+            const input = modal.el_body.getElementsByClassName('pk_horiz')[0];
+            const value = input.value / 1;
 
-            var toggle = modal.el_body.getElementsByClassName('pk_check')[0].checked;
+            const toggle = modal.el_body.getElementsByClassName('pk_check')[0].checked;
             app.fireEvent('RequestActionFX_Normalize', [toggle, value]);
             modal.Destroy();
           },
@@ -722,8 +721,8 @@ export function registerEffectsUI(app) {
         '<input type="range" min="0.0" max="2.0" class="pk_horiz" step="0.01" value="1.0" />' +
         '<span class="pk_val">100%</span></div>',
       setup: function (modal) {
-        var range = modal.el_body.getElementsByClassName('pk_horiz')[0];
-        var span = modal.el_body.getElementsByClassName('pk_val')[0];
+        const range = modal.el_body.getElementsByClassName('pk_horiz')[0];
+        const span = modal.el_body.getElementsByClassName('pk_val')[0];
 
         range.oninput = function () {
           span.innerHTML = (((range.value / 1) * 100) >> 0) + '%';
@@ -758,18 +757,18 @@ export function registerEffectsUI(app) {
   app.listenFor('RequestActionFXUI_GraphicEQ', function (num_of_bands) {
     app.fireEvent('RequestSelect', 1);
 
-    var filter_id = 'graph_eq';
-    var auto = null;
-    var getvalue = function (ranges) {
-      var val = {};
+    let filter_id = 'graph_eq';
+    const auto = null;
+    const getvalue = function (ranges) {
+      let val = {};
 
       if (auto) {
         val = auto.GetValue();
       } else {
         val = [];
-        var len = ranges.length;
-        for (var i = 0; i < len; ++i) {
-          var range = ranges[i];
+        const len = ranges.length;
+        for (let i = 0; i < len; ++i) {
+          const range = ranges[i];
           val.push({
             type: range.getAttribute('data-type'),
             freq: range.getAttribute('data-freq') / 1,
@@ -782,7 +781,7 @@ export function registerEffectsUI(app) {
       return val;
     };
 
-    var bands_str =
+    let bands_str =
       '<div class="pk_col"><span class="pk_val">0 db</span>' +
       '<input class="pk_vert" data-freq="32" data-type="lowshelf" ' +
       'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
@@ -823,12 +822,12 @@ export function registerEffectsUI(app) {
       '<input class="pk_vert" data-freq="16000" data-type="highshelf" ' +
       'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
       '<span class="pk_btm"> >16000hz</span></div>';
-    var presets = [
+    let presets = [
       { name: 'Reset', val: '0,0,0,0,0,0,0,0,0,0' },
       { name: 'Old Radio', val: '-25,-22,-20,-18,-9,0,8,10,-8,-25' },
       { name: 'Lo Fi', val: '-18,-12,0,2,0,4,4,-1,-6,-8' },
     ];
-    var band_q = 4.6;
+    let band_q = 4.6;
 
     if (num_of_bands === 20) {
       filter_id += '_2';
@@ -917,7 +916,7 @@ export function registerEffectsUI(app) {
         '<span class="pk_btm"> >22khz</span></div>';
     }
 
-    var fxModal = AudioEffectModal(
+    const fxModal = AudioEffectModal(
       {
         id: filter_id,
         title: 'Graphic EQ',
@@ -928,8 +927,8 @@ export function registerEffectsUI(app) {
           app.ui.KeyHandler.removeCallback(modal_esc_key);
         },
         preview: function (modal) {
-          var ranges = modal.el_body.getElementsByTagName('input');
-          var len = ranges.length;
+          const ranges = modal.el_body.getElementsByTagName('input');
+          const len = ranges.length;
 
           app.fireEvent('RequestActionFX_PREVIEW_PARAMEQ', getvalue(ranges));
         },
@@ -939,7 +938,7 @@ export function registerEffectsUI(app) {
             title: 'Apply EQ',
             clss: 'pk_modal_a_accpt',
             callback: function (modal) {
-              var ranges = modal.el_body.getElementsByTagName('input');
+              const ranges = modal.el_body.getElementsByTagName('input');
               app.fireEvent('RequestActionFX_PARAMEQ', getvalue(ranges));
 
               modal.Destroy();
@@ -949,8 +948,8 @@ export function registerEffectsUI(app) {
         presets: presets,
         body: '<div class="pk_h200">' + bands_str + '<div style="clear:both;"></div></div>',
         setup: function (modal) {
-          var ranges = modal.el_body.getElementsByTagName('input');
-          var len = ranges.length;
+          const ranges = modal.el_body.getElementsByTagName('input');
+          const len = ranges.length;
 
           //			obj.type = range.getAttribute ('data-type');
           //			obj.freq = range.getAttribute ('data-freq')/1;
@@ -958,11 +957,11 @@ export function registerEffectsUI(app) {
           //		});
           //};
 
-          for (var i = 0; i < len; ++i) {
-            var range = ranges[i];
+          for (let i = 0; i < len; ++i) {
+            const range = ranges[i];
 
             range.oninput = function () {
-              var span = this.parentNode.getElementsByTagName('span')[0];
+              const span = this.parentNode.getElementsByTagName('span')[0];
               span.innerHTML = (this.value >> 0) + ' db';
               app.fireEvent('RequestActionFX_UPDATE_PREVIEW', getvalue(ranges));
             };
@@ -988,7 +987,7 @@ export function registerEffectsUI(app) {
   app.listenFor('RequestActionFXUI_HardLimiter', function () {
     app.fireEvent('RequestSelect', 1);
 
-    var fxModal = AudioEffectModal(
+    const fxModal = AudioEffectModal(
       {
         title: 'Hard Limiting',
         ondestroy: function (modal) {
@@ -1021,30 +1020,30 @@ export function registerEffectsUI(app) {
           '<input type="range" min="1.0" max="500.0" class="pk_horiz pk_w180" step="0.01" value="10.0" />' +
           '<span class="pk_val">10 ms</span></div>',
         updateFilter: function (modal) {
-          var val = [modal.el_body.getElementsByClassName('pk_check')[0].checked];
-          var ranges = modal.el_body.getElementsByClassName('pk_horiz');
+          const val = [modal.el_body.getElementsByClassName('pk_check')[0].checked];
+          const ranges = modal.el_body.getElementsByClassName('pk_horiz');
 
-          for (var i = 0; i < ranges.length; ++i) {
-            var range = ranges[i];
+          for (let i = 0; i < ranges.length; ++i) {
+            const range = ranges[i];
             val.push(range.value / 1);
           }
           return val;
         },
         setup: function (modal) {
-          var ranges = modal.el_body.getElementsByClassName('pk_horiz');
+          const ranges = modal.el_body.getElementsByClassName('pk_horiz');
 
           ranges[0].oninput = function () {
-            var span = this.parentNode.getElementsByTagName('span')[0];
+            const span = this.parentNode.getElementsByTagName('span')[0];
             span.innerHTML = (((this.value / 1) * 100) >> 0) + '%';
             app.fireEvent('RequestActionFX_UPDATE_PREVIEW', modal.updateFilter(modal));
           };
           ranges[1].oninput = function () {
-            var span = this.parentNode.getElementsByTagName('span')[0];
+            const span = this.parentNode.getElementsByTagName('span')[0];
             span.innerHTML = 'Ratio ' + (((this.value / 1) * 100) >> 0) + '%';
             app.fireEvent('RequestActionFX_UPDATE_PREVIEW', modal.updateFilter(modal));
           };
           ranges[2].oninput = function () {
-            var span = this.parentNode.getElementsByTagName('span')[0];
+            const span = this.parentNode.getElementsByTagName('span')[0];
             span.innerHTML = this.value / 1 + 'ms';
             app.fireEvent('RequestActionFX_UPDATE_PREVIEW', modal.updateFilter(modal));
           };
@@ -1068,22 +1067,21 @@ export function registerEffectsUI(app) {
   app.listenFor('RequestActionFXUI_Delay', function () {
     app.fireEvent('RequestSelect', 1);
 
-    var filter_id = 'delay';
-    var auto = null;
-    var getvalue = function (modal) {
-      var ret;
-      var value = [];
+    const filter_id = 'delay';
+    const auto = null;
+    const getvalue = function (modal) {
+      let value = [];
 
       if (auto) {
         value = auto.GetValue();
       } else {
-        var inputs = modal.el_body.getElementsByTagName('input');
+        const inputs = modal.el_body.getElementsByTagName('input');
         value[0] = { val: inputs[0].value / 1 };
         value[1] = { val: inputs[1].value / 1 };
         value[2] = { val: inputs[2].value / 1 };
       }
 
-      ret = {
+      const ret = {
         delay: value[0],
         feedback: value[1],
         mix: value[2],
@@ -1092,7 +1090,7 @@ export function registerEffectsUI(app) {
       return ret;
     };
 
-    var fxModal = AudioEffectModal(
+    const fxModal = AudioEffectModal(
       {
         id: filter_id,
         title: 'Apply Delay to selected range',
@@ -1107,7 +1105,7 @@ export function registerEffectsUI(app) {
         ],
         custom_pres: custom_presets.Get(filter_id),
         preview: function (modal) {
-          var val = getvalue(modal);
+          const val = getvalue(modal);
 
           app.fireEvent('RequestActionFX_PREVIEW_DELAY', val);
         },
@@ -1117,7 +1115,7 @@ export function registerEffectsUI(app) {
             title: 'Apply',
             clss: 'pk_modal_a_accpt',
             callback: function (modal) {
-              var val = getvalue(modal);
+              const val = getvalue(modal);
 
               app.fireEvent('RequestActionFX_DELAY', val);
 
@@ -1136,10 +1134,10 @@ export function registerEffectsUI(app) {
           '<input class="pk_horiz" type="range" min="0.0" max="1.0" step="0.01" value="0.4" />' +
           '<span class="pk_val">0.4</span></div>',
         setup: function (modal) {
-          var inputs = modal.el_body.getElementsByTagName('input');
-          for (var i = 0; i < inputs.length; ++i) {
+          const inputs = modal.el_body.getElementsByTagName('input');
+          for (let i = 0; i < inputs.length; ++i) {
             inputs[i].oninput = function () {
-              var span = this.parentNode.getElementsByTagName('span')[0];
+              const span = this.parentNode.getElementsByTagName('span')[0];
               span.innerHTML = (this.value / 1).toFixed(3);
 
               updateFilter();
@@ -1149,7 +1147,7 @@ export function registerEffectsUI(app) {
           //};
 
           function updateFilter() {
-            var val = getvalue(modal);
+            const val = getvalue(modal);
             app.fireEvent('RequestActionFX_UPDATE_PREVIEW', val);
           }
 
@@ -1174,22 +1172,22 @@ export function registerEffectsUI(app) {
   app.listenFor('RequestActionFXUI_Distortion', function () {
     app.fireEvent('RequestSelect', 1);
 
-    var filter_id = 'dist';
-    var auto = null;
-    var getvalue = function (modal) {
-      var value;
+    const filter_id = 'dist';
+    const auto = null;
+    const getvalue = function (modal) {
+      let value;
 
       if (auto) {
         value = auto.GetValue();
       } else {
-        var input = modal.el_body.getElementsByTagName('input')[0];
+        const input = modal.el_body.getElementsByTagName('input')[0];
         value = [{ val: input.value / 1 }];
       }
 
       return value;
     };
 
-    var fxModal = AudioEffectModal(
+    const fxModal = AudioEffectModal(
       {
         id: filter_id,
         title: 'Apply Distortion to selected range',
@@ -1199,7 +1197,7 @@ export function registerEffectsUI(app) {
           app.ui.KeyHandler.removeCallback(modal_esc_key);
         },
         preview: function (modal) {
-          var val = getvalue(modal);
+          const val = getvalue(modal);
           app.fireEvent('RequestActionFX_PREVIEW_DISTORT', val);
         },
 
@@ -1208,7 +1206,7 @@ export function registerEffectsUI(app) {
             title: 'Apply',
             clss: 'pk_modal_a_accpt',
             callback: function (modal) {
-              var val = getvalue(modal);
+              const val = getvalue(modal);
               app.fireEvent('RequestActionFX_DISTORT', val);
 
               modal.Destroy();
@@ -1221,10 +1219,10 @@ export function registerEffectsUI(app) {
           '<span class="pk_val">0.5</span></div>',
 
         setup: function (modal) {
-          var inputs = modal.el_body.getElementsByTagName('input');
-          for (var i = 0; i < inputs.length; ++i) {
+          const inputs = modal.el_body.getElementsByTagName('input');
+          for (let i = 0; i < inputs.length; ++i) {
             inputs[i].oninput = function () {
-              var span = this.parentNode.getElementsByTagName('span')[0];
+              const span = this.parentNode.getElementsByTagName('span')[0];
               span.innerHTML = (this.value / 1).toFixed(2);
 
               updateFilter();
@@ -1234,7 +1232,7 @@ export function registerEffectsUI(app) {
           //};
 
           function updateFilter() {
-            var val = getvalue(modal);
+            const val = getvalue(modal);
             app.fireEvent('RequestActionFX_UPDATE_PREVIEW', val);
           }
 
@@ -1259,9 +1257,9 @@ export function registerEffectsUI(app) {
   app.listenFor('RequestActionFXUI_Reverb', function () {
     app.fireEvent('RequestSelect', 1);
 
-    var filter_id = 'reverb';
+    const filter_id = 'reverb';
 
-    var fxModal = AudioEffectModal(
+    const fxModal = AudioEffectModal(
       {
         id: filter_id,
         title: 'Apply Reverb to selected range',
@@ -1276,8 +1274,8 @@ export function registerEffectsUI(app) {
         ],
         custom_pres: custom_presets.Get(filter_id),
         preview: function (modal) {
-          var inputs = modal.el_body.getElementsByTagName('input');
-          var val = {
+          const inputs = modal.el_body.getElementsByTagName('input');
+          const val = {
             time: inputs[0].value / 1,
             decay: inputs[1].value / 1,
             mix: inputs[2].value / 1,
@@ -1290,8 +1288,8 @@ export function registerEffectsUI(app) {
             title: 'Apply',
             clss: 'pk_modal_a_accpt',
             callback: function (modal) {
-              var inputs = modal.el_body.getElementsByTagName('input');
-              var val = {
+              const inputs = modal.el_body.getElementsByTagName('input');
+              const val = {
                 time: inputs[0].value / 1,
                 decay: inputs[1].value / 1,
                 mix: inputs[2].value / 1,
@@ -1314,10 +1312,10 @@ export function registerEffectsUI(app) {
           '<input class="pk_horiz" type="range" min="0.0" max="1.0" step="0.01" value="0.6" />' +
           '<span class="pk_val">0.6</span></div>',
         setup: function (modal) {
-          var inputs = modal.el_body.getElementsByTagName('input');
-          for (var i = 0; i < inputs.length; ++i) {
+          const inputs = modal.el_body.getElementsByTagName('input');
+          for (let i = 0; i < inputs.length; ++i) {
             inputs[i].oninput = function () {
-              var span = this.parentNode.getElementsByTagName('span')[0];
+              const span = this.parentNode.getElementsByTagName('span')[0];
               span.innerHTML = (this.value / 1).toFixed(3);
 
               updateFilter();
@@ -1325,8 +1323,8 @@ export function registerEffectsUI(app) {
           }
 
           function updateFilter() {
-            var inputs = modal.el_body.getElementsByTagName('input');
-            var val = {
+            const inputs = modal.el_body.getElementsByTagName('input');
+            const val = {
               time: inputs[0].value / 1,
               decay: inputs[1].value / 1,
               mix: inputs[2].value / 1,
@@ -1355,17 +1353,17 @@ export function registerEffectsUI(app) {
 
   // -----
 
-  var current_tags = null;
+  let current_tags = null;
   app.listenFor('RequestActionID3', function (flag, new_tags) {
     if (flag) {
       current_tags = new_tags;
       return;
     }
 
-    var modal_id = '_id3';
+    const modal_id = '_id3';
 
-    var render_tags = function (el, tags) {
-      var str = '<div style="margin-top:18px">';
+    const render_tags = function (el, tags) {
+      let str = '<div style="margin-top:18px">';
 
       str +=
         '<div><span class="pk_id3ttl">Artist</span><span>' + (tags.artist || '-') + '</span></div>';
@@ -1389,9 +1387,9 @@ export function registerEffectsUI(app) {
         '</span></div>';
 
       if ('picture' in tags) {
-        var image = tags.picture;
-        var base64str = '';
-        for (var i = 0; i < image.data.length; ++i) {
+        const image = tags.picture;
+        let base64str = '';
+        for (let i = 0; i < image.data.length; ++i) {
           base64str += String.fromCharCode(image.data[i]);
         }
 
@@ -1420,14 +1418,14 @@ export function registerEffectsUI(app) {
         '<input type="file" accept="audio/*" />' +
         '<div class="pk_row pk_ttx">Choose file to view audio metatags!</div>',
       setup: function (modal) {
-        var input = modal.el_body.getElementsByTagName('input')[0];
-        var txt_el = modal.el_body.getElementsByClassName('pk_ttx')[0];
+        const input = modal.el_body.getElementsByTagName('input')[0];
+        const txt_el = modal.el_body.getElementsByClassName('pk_ttx')[0];
 
         input.onchange = function (e) {
-          var reader = new FileReader();
+          const reader = new FileReader();
 
           reader.onload = function () {
-            var tags = app.engine.ID3(this.result);
+            const tags = app.engine.ID3(this.result);
 
             if (!tags) {
               txt_el.innerHTML = '<div style="padding:30px 0">No audio metadata found...</div>';
@@ -1460,11 +1458,11 @@ export function registerEffectsUI(app) {
   app.listenFor('RequestSavePreset', function () {
     if (!curr_filter_ui) return;
 
-    var el = curr_filter_ui.el_body;
+    const el = curr_filter_ui.el_body;
     if (!el) return;
 
-    var escapeHtml = function (text) {
-      var map = {
+    const escapeHtml = function (text) {
+      const map = {
         '&': '&amp;',
         '<': '&lt;',
         '>': '&gt;',
@@ -1478,13 +1476,13 @@ export function registerEffectsUI(app) {
     };
 
     // check if the preset is custom
-    var is_new = true;
-    var custom_id = null;
-    var el_presets = curr_filter_ui.el_presets;
-    var sel_opt = el_presets.options[el_presets.selectedIndex];
+    let is_new = true;
+    let custom_id = null;
+    const el_presets = curr_filter_ui.el_presets;
+    const sel_opt = el_presets.options[el_presets.selectedIndex];
 
-    var inputs = el.querySelectorAll('select, input');
-    var preset_obj = {
+    const inputs = el.querySelectorAll('select, input');
+    const preset_obj = {
       target: curr_filter_ui.id,
       name: 'My Preset',
       id: curr_filter_ui.id + '_' + ((Math.random() * 99) >> 0),
@@ -1498,7 +1496,7 @@ export function registerEffectsUI(app) {
     }
 
     // ----------
-    for (var i = 0; i < inputs.length; ++i) {
+    for (let i = 0; i < inputs.length; ++i) {
       if (inputs[i].type === 'checkbox') {
         preset_obj.val += (inputs[i].checked ? '1' : '0') + ',';
       } else {
@@ -1510,12 +1508,12 @@ export function registerEffectsUI(app) {
       preset_obj.val = preset_obj.val.substring(0, preset_obj.val.length - 1);
 
       // open ui for setting preset name
-      var modal_id = '_ctPr';
-      var default_txt = '';
+      const modal_id = '_ctPr';
+      let default_txt = '';
 
-      var btn_delete = {};
-      var btn_update = {};
-      var custom_obj = null;
+      let btn_delete = {};
+      let btn_update = {};
+      let custom_obj = null;
 
       if (!is_new) {
         custom_obj = custom_presets.GetSingle(preset_obj.target, custom_id);
@@ -1527,7 +1525,7 @@ export function registerEffectsUI(app) {
           callback: function (modal) {
             showToast('Successfully deleted preset!', 1400);
 
-            var custom = custom_presets.Del(preset_obj.target, custom_id);
+            const custom = custom_presets.Del(preset_obj.target, custom_id);
             app.fireEvent('DidSetPresets', preset_obj.target, custom);
 
             modal.Destroy();
@@ -1539,8 +1537,8 @@ export function registerEffectsUI(app) {
           title: 'Update',
           callback: function (modal) {
             if (custom_obj) {
-              var input = modal.el_body.getElementsByTagName('input')[0];
-              var value = input.value.trim();
+              const input = modal.el_body.getElementsByTagName('input')[0];
+              let value = input.value.trim();
 
               value = escapeHtml(value);
 
@@ -1553,7 +1551,7 @@ export function registerEffectsUI(app) {
 
                 custom_presets.Save();
 
-                var arr = custom_presets.Get(preset_obj.target);
+                const arr = custom_presets.Get(preset_obj.target);
                 app.fireEvent('DidSetPresets', preset_obj.target, arr);
 
                 modal.Destroy();
@@ -1566,9 +1564,9 @@ export function registerEffectsUI(app) {
         };
       }
 
-      var title = 'Save Custom Preset for filter "' + curr_filter_ui.id + '"';
+      let title = 'Save Custom Preset for filter "' + curr_filter_ui.id + '"';
       if (!is_new) {
-        var cname = custom_obj.name;
+        const cname = custom_obj.name;
         title = 'Edit Custom Preset "' + cname + '", for filter "' + curr_filter_ui.id + '"';
       }
 
@@ -1587,8 +1585,8 @@ export function registerEffectsUI(app) {
             title: is_new ? 'Save' : 'Save As New',
             clss: 'pk_modal_a_accpt',
             callback: function (modal) {
-              var input = modal.el_body.getElementsByTagName('input')[0];
-              var value = input.value.trim();
+              const input = modal.el_body.getElementsByTagName('input')[0];
+              let value = input.value.trim();
 
               value = escapeHtml(value);
 
@@ -1598,7 +1596,7 @@ export function registerEffectsUI(app) {
                 // add preset to localStorage
                 preset_obj.name = value;
 
-                var custom = custom_presets.Set(preset_obj.target, preset_obj);
+                const custom = custom_presets.Set(preset_obj.target, preset_obj);
 
                 app.fireEvent('DidSetPresets', preset_obj.target, custom);
                 app.fireEvent('RequestSetPresetActive', preset_obj.target, preset_obj.id);
@@ -1646,7 +1644,7 @@ export function registerEffectsUI(app) {
 
           setTimeout(function () {
             if (modal.el) {
-              var inp = modal.el.getElementsByTagName('input')[0];
+              const inp = modal.el.getElementsByTagName('input')[0];
               inp.focus();
 
               if (inp.value.length > 0) {
@@ -1664,12 +1662,12 @@ export function registerEffectsUI(app) {
 
   // ---- windows ----
 
-  var eq_win = {};
+  let eq_win = {};
 
   app.listenFor('WillUnload', function () {
-    var cur;
+    let cur;
 
-    for (var k in eq_win) {
+    for (const k in eq_win) {
       cur = eq_win[k];
       if (cur && !cur.type) {
         cur.destroy && cur.destroy();
@@ -1685,7 +1683,7 @@ export function registerEffectsUI(app) {
       return;
     }
 
-    var cur_win = eq_win[url];
+    const cur_win = eq_win[url];
 
     if (!cur_win || !cur_win.el) return;
 
@@ -1694,17 +1692,17 @@ export function registerEffectsUI(app) {
 
     cur_win.win.document.body.classList.add('c');
 
-    var el_back = document.createElement('div');
+    let el_back = document.createElement('div');
     el_back.className = 'pk_modal_back';
     document.body.appendChild(el_back);
 
-    var is_drag = true;
-    var x = 0;
-    var y = 0;
-    var moved = 2;
+    let is_drag = true;
+    let x = 0;
+    let y = 0;
+    let moved = 2;
 
-    var top = parseInt(cur_win.el.style.top) || 0;
-    var left = parseInt(cur_win.el.style.left) || 0;
+    let top = parseInt(cur_win.el.style.top) || 0;
+    let left = parseInt(cur_win.el.style.left) || 0;
 
     app.ui.InteractionHandler.on = true;
 
@@ -1728,8 +1726,8 @@ export function registerEffectsUI(app) {
         return;
       }
 
-      var dist_x = e.pageX - x;
-      var dist_y = e.pageY - y;
+      const dist_x = e.pageX - x;
+      const dist_y = e.pageY - y;
 
       top += dist_y;
       left += dist_x;
@@ -1758,10 +1756,10 @@ export function registerEffectsUI(app) {
         if (moved > 0) {
           cur_win.el.style.top = '0px';
 
-          var ch = app.ui.BarBtm.el.childNodes;
+          const ch = app.ui.BarBtm.el.childNodes;
 
-          var lw = 0;
-          for (var ji = 0; ji < ch.length; ++ji) {
+          let lw = 0;
+          for (let ji = 0; ji < ch.length; ++ji) {
             if (cur_win.el === ch[ji]) break;
             lw += ch[ji].clientWidth + 18;
           }
@@ -1793,16 +1791,16 @@ export function registerEffectsUI(app) {
       return;
     }
 
-    var toggle = args_arr[0];
-    var type = args_arr[1];
-    var title = 'Frequency Analysis';
-    var curr_win = eq_win[url];
+    const toggle = args_arr[0];
+    const type = args_arr[1];
+    let title = 'Frequency Analysis';
+    let curr_win = eq_win[url];
 
     if (url === 'sp') title = 'Spectrum Analysis';
 
-    var toggled = false;
+    let toggled = false;
     if (curr_win && toggle) {
-      var ext = false;
+      let ext = false;
       if (curr_win.type === type) ext = true;
 
       curr_win.destroy();
@@ -1814,11 +1812,11 @@ export function registerEffectsUI(app) {
       toggled = true;
     }
 
-    var freq_cb = function (_, freq) {
+    const freq_cb = function (_, freq) {
       curr_win && curr_win.win.update && curr_win.win.update(freq);
     };
 
-    var setEvents = function (obj, _url) {
+    const setEvents = function (obj, _url) {
       obj.win.destroy = function () {
         app.stopListeningFor('DidAudioProcess', freq_cb);
         app.fireEvent('DidToggleFreqAn', _url, null);
@@ -1828,8 +1826,8 @@ export function registerEffectsUI(app) {
           eq_win[url] = null;
         }
 
-        var stop = true;
-        for (var k in eq_win) {
+        let stop = true;
+        for (const k in eq_win) {
           if (eq_win[k]) {
             stop = false;
             break;
@@ -1845,8 +1843,8 @@ export function registerEffectsUI(app) {
     };
 
     if (!type) {
-      var makePopup = function (dat) {
-        var extra = '';
+      const makePopup = function (dat) {
+        let extra = '';
         if (dat && dat[0]) {
           dat[0] = Math.max(0, dat[0] - 200) >> 0;
           dat[1] = Math.max(0, dat[1]) >> 0;
@@ -1854,7 +1852,7 @@ export function registerEffectsUI(app) {
           extra = ',left=' + dat[0] + ',top=' + dat[1];
         }
 
-        var wnd = window.open(
+        const wnd = window.open(
           '/' + url + '.html',
           title,
           'directories=no,titlebar=no,toolbar=no,' +
@@ -1889,14 +1887,14 @@ export function registerEffectsUI(app) {
           makePopup(toggle);
         }, 130);
     } else if (type === 1) {
-      var iframe = document.createElement('iframe');
+      let iframe = document.createElement('iframe');
       iframe.className = 'pk_frqan';
       iframe.id = 'pk_fr' + url;
 
       if (app.ui.BarBtm.on) {
-        var ch = app.ui.BarBtm.el.childNodes;
-        var lw = 0;
-        for (var ji = 0; ji < ch.length; ++ji) {
+        const ch = app.ui.BarBtm.el.childNodes;
+        let lw = 0;
+        for (let ji = 0; ji < ch.length; ++ji) {
           lw += ch[ji].clientWidth + 18;
         }
 
@@ -1914,15 +1912,15 @@ export function registerEffectsUI(app) {
           iframe.parentNode.removeChild(iframe);
           iframe = null;
 
-          var ch = app.ui.BarBtm.el.childNodes;
+          const ch = app.ui.BarBtm.el.childNodes;
           if (ch.length === 0) {
             app.ui.BarBtm.Hide();
             return;
           }
 
           setTimeout(function () {
-            var lw = 0;
-            for (var ji = 0; ji < ch.length; ++ji) {
+            let lw = 0;
+            for (let ji = 0; ji < ch.length; ++ji) {
               if (!ch[ji] || !ch[ji].parentNode) continue;
 
               if (ch[ji].offsetTop > -20) {

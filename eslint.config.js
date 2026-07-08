@@ -38,6 +38,9 @@ export default [
     rules: {
       // The ported legacy modules intentionally keep some defensive patterns.
       'no-unused-vars': ['warn', { args: 'none', caughtErrors: 'none' }],
+      // Modernize declarations: prefer block-scoped bindings over `var`.
+      'no-var': 'error',
+      'prefer-const': 'error',
     },
   },
 
@@ -82,6 +85,10 @@ export default [
         Flac: 'readonly',
       },
     },
+    rules: {
+      'no-var': 'error',
+      'prefer-const': 'error',
+    },
   },
 
   // AI workers: ES module workers (import from CDN at runtime).
@@ -93,6 +100,10 @@ export default [
       globals: {
         ...globals.worker,
       },
+    },
+    rules: {
+      'no-var': 'error',
+      'prefer-const': 'error',
     },
   },
 
