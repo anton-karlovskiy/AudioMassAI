@@ -29,7 +29,7 @@ async function bootApp(page) {
 
 async function loadSample(page) {
   await page.getByText('here to use a sample').first().click();
-  await page.waitForFunction(() => window.PKAudioEditor.engine.is_ready, null, {
+  await page.waitForFunction(() => window.PKAudioEditor.engine.isReady, null, {
     timeout: 20_000,
   });
 }
