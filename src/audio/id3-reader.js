@@ -94,7 +94,7 @@ const StringUtils = {
     const arr = [];
     maxBytes = maxBytes || bytes.length;
     let i = 0;
-    for (; i < maxBytes; ) {
+    for (; i < maxBytes;) {
       const byte1 = bytes[i++];
       if (byte1 == 0x00) break;
       arr[i - 1] = String.fromCharCode(byte1);

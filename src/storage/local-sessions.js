@@ -23,7 +23,6 @@ const compressors = {
 
       let lz4Instance;
 
-       
       lz4BlockCodec.createInstance('wasm').then((instance) => {
         lz4Instance = instance;
 
