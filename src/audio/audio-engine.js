@@ -42,12 +42,12 @@ export function AudioEngine(app) {
   this.wavesurfer = wavesurfer;
 
   const audioUtils = new AudioUtils(app, wavesurfer);
-  engine.is_ready = false;
+  engine.isReady = false;
 
-  this.TrimTo = function (val, num) {
-    const nums = { 0: 1, 1: 10, 2: 100, 3: 1000, 4: 10000, 5: 100000 };
-    const dec = nums[num];
-    return ((val * dec) >> 0) / dec;
+  this.TrimTo = function (value, decimalPlaces) {
+    const powersOfTen = { 0: 1, 1: 10, 2: 100, 3: 1000, 4: 10000, 5: 100000 };
+    const multiplier = powersOfTen[decimalPlaces];
+    return ((value * multiplier) >> 0) / multiplier;
   };
 
   // When a track is already loaded, ask whether to replace it or append
@@ -55,7 +55,7 @@ export function AudioEngine(app) {
   const promptOpenOrAppend = function (loadFunc) {
     new SimpleModal({
       title: 'Open or append',
-      clss: 'pk_modal_anim pk_fnt10',
+      className: 'pk_modal_anim pk_fnt10',
       ondestroy: function () {
         app.ui.InteractionHandler.on = false;
         app.ui.KeyHandler.removeCallback('modalTempErr');
@@ -96,7 +96,7 @@ export function AudioEngine(app) {
     const func = function () {
       app.listenFor('RequestCancelModal', function () {
         wavesurfer.cancelBufferLoad();
-        if (wavesurfer.arraybuffer) engine.is_ready = true;
+        if (wavesurfer.arraybuffer) engine.isReady = true;
 
         app.fireEvent('RequestResize');
         setTimeout(function () {
@@ -110,14 +110,14 @@ export function AudioEngine(app) {
       app.fireEvent('RequestZoomUI', 0);
 
       app.fireEvent('WillDownloadFile');
-      engine.is_ready = false;
+      engine.isReady = false;
       wavesurfer.loadBlob(e);
       app.fireEvent('DidUnloadFile');
 
       wavesurfer.regions && wavesurfer.regions.clear();
     };
 
-    if (engine.is_ready) {
+    if (engine.isReady) {
       promptOpenOrAppend(func);
       return;
     }
@@ -128,7 +128,7 @@ export function AudioEngine(app) {
   };
 
   this.LoadDB = function (e) {
-    const new_buffer = wavesurfer.backend.ac.createBuffer(
+    const newBuffer = wavesurfer.backend.ac.createBuffer(
       e.data.length,
       e.data[0].byteLength / 4,
       e.samplerate
@@ -137,28 +137,28 @@ export function AudioEngine(app) {
     for (let i = 0; i < e.data.length; ++i) {
       const arr = new Float32Array(e.data[i]);
 
-      if (new_buffer.copyToChannel) {
-        new_buffer.copyToChannel(arr, i, 0);
+      if (newBuffer.copyToChannel) {
+        newBuffer.copyToChannel(arr, i, 0);
       } else {
-        const chan = new_buffer.getChannelData(i);
+        const chan = newBuffer.getChannelData(i);
         chan.set(arr);
       }
     }
 
     const append = wavesurfer.backend._add;
-    const old_duration = wavesurfer.getDuration();
+    const oldDuration = wavesurfer.getDuration();
 
-    wavesurfer.loadDecodedBuffer(new_buffer);
+    wavesurfer.loadDecodedBuffer(newBuffer);
     computeActiveChannels();
-    const new_duration = wavesurfer.getDuration();
-    app.fireEvent('DidUpdateLen', new_duration);
+    const newDuration = wavesurfer.getDuration();
+    app.fireEvent('DidUpdateLen', newDuration);
 
     if (!append) app.fireEvent('RequestSeekTo', 0);
     else {
       wavesurfer.regions.clear();
       wavesurfer.regions.add({
-        start: old_duration,
-        end: new_duration,
+        start: oldDuration,
+        end: newDuration,
         id: 't',
       });
     }
@@ -179,7 +179,7 @@ export function AudioEngine(app) {
           app.listenFor('RequestCancelModal', function () {
             wavesurfer.cancelBufferLoad();
             audioUtils.DownloadFileCancel();
-            if (wavesurfer.arraybuffer) engine.is_ready = true;
+            if (wavesurfer.arraybuffer) engine.isReady = true;
 
             app.fireEvent('RequestResize');
             setTimeout(function () {
@@ -191,13 +191,13 @@ export function AudioEngine(app) {
           });
 
           app.fireEvent('WillDownloadFile');
-          engine.is_ready = false;
+          engine.isReady = false;
           wavesurfer.loadBlob(e.files[0]);
           app.fireEvent('DidUnloadFile');
           wavesurfer.regions && wavesurfer.regions.clear();
         };
 
-        if (engine.is_ready) {
+        if (engine.isReady) {
           promptOpenOrAppend(func);
           return;
         }
@@ -211,13 +211,13 @@ export function AudioEngine(app) {
   };
 
   this.DownloadFile = function (name, format, kbps, selection, stereo) {
-    if (!engine.is_ready) return;
+    if (!engine.isReady) return;
 
     app.fireEvent('WillDownloadFile');
 
     app.listenFor('RequestCancelModal', function () {
       audioUtils.DownloadFileCancel();
-      if (wavesurfer.arraybuffer) engine.is_ready = true;
+      if (wavesurfer.arraybuffer) engine.isReady = true;
 
       app.fireEvent('RequestResize');
       setTimeout(function () {
@@ -227,13 +227,13 @@ export function AudioEngine(app) {
     });
 
     setTimeout(function () {
-      audioUtils.DownloadFile(name, format, kbps, selection, stereo, function (val) {
-        if (val === 'done') {
+      audioUtils.DownloadFile(name, format, kbps, selection, stereo, function (value) {
+        if (value === 'done') {
           setTimeout(function () {
             app.fireEvent('DidDownloadFile');
           }, 12);
           app.stopListeningForName('RequestCancelModal');
-        } else app.fireEvent('DidProgressModal', val);
+        } else app.fireEvent('DidProgressModal', value);
       });
     }, 220);
   };
@@ -243,7 +243,7 @@ export function AudioEngine(app) {
     setTimeout(function () {
       app.listenFor('RequestCancelModal', function () {
         if (wavesurfer.cancelAjax()) {
-          if (wavesurfer.arraybuffer) engine.is_ready = true;
+          if (wavesurfer.arraybuffer) engine.isReady = true;
 
           app.fireEvent('RequestResize');
           setTimeout(function () {
@@ -256,7 +256,7 @@ export function AudioEngine(app) {
       });
 
       app.fireEvent('RequestZoomUI', 0);
-      engine.is_ready = false;
+      engine.isReady = false;
       wavesurfer.load('/samples/test.mp3');
     }, 180);
   };
@@ -266,7 +266,7 @@ export function AudioEngine(app) {
     setTimeout(function () {
       app.listenFor('RequestCancelModal', function () {
         if (wavesurfer.cancelAjax()) {
-          if (wavesurfer.arraybuffer) engine.is_ready = true;
+          if (wavesurfer.arraybuffer) engine.isReady = true;
 
           app.fireEvent('RequestResize');
           setTimeout(function () {
@@ -279,7 +279,7 @@ export function AudioEngine(app) {
       });
 
       wavesurfer.load(url);
-      engine.is_ready = false;
+      engine.isReady = false;
     }, 180);
   };
 
@@ -304,8 +304,8 @@ export function AudioEngine(app) {
       wavesurfer.backend._add = 0;
     }
 
-    if (engine.is_ready) return;
-    engine.is_ready = true;
+    if (engine.isReady) return;
+    engine.isReady = true;
 
     // dirty hack for default message
     let dirtymsg = document.getElementsByClassName('pk_tmpMsg');
@@ -314,7 +314,7 @@ export function AudioEngine(app) {
       dirtymsg.parentNode.removeChild(dirtymsg);
     }
 
-    copy_buffer = null;
+    copyBuffer = null;
     app.fireEvent('DidDownloadFile');
 
     app.fireEvent('StateRequestClearAll');
@@ -340,14 +340,14 @@ export function AudioEngine(app) {
       wavesurfer.drawer.params.ActiveChannels = wavesurfer.ActiveChannels;
       wavesurfer.SelectedChannelsLen = 1;
 
-      app.el.classList.add('pk_mono');
+      app.element.classList.add('pk_mono');
     } else if (wavesurfer.backend.buffer.numberOfChannels === 2) {
       wavesurfer.backend.SetNumberOfChannels(2);
       wavesurfer.ActiveChannels = [1, 1];
       wavesurfer.drawer.params.ActiveChannels = wavesurfer.ActiveChannels;
       wavesurfer.SelectedChannelsLen = 2;
 
-      app.el.classList.remove('pk_mono');
+      app.element.classList.remove('pk_mono');
     }
     // ---
   });
@@ -365,7 +365,7 @@ export function AudioEngine(app) {
     app.fireEvent('DidAudioProcess', [time, loudness, stamp]);
   });
 
-  app.listenFor('RequestStop', function (val) {
+  app.listenFor('RequestStop', function (value) {
     if (app.recorder.isActive()) {
       app.fireEvent('RequestActionRecordStop');
       return false;
@@ -374,11 +374,11 @@ export function AudioEngine(app) {
     const region = wavesurfer.regions.list[0];
     if (region) wavesurfer.ActiveMarker = region.start / wavesurfer.getDuration();
 
-    wavesurfer.stop(val);
+    wavesurfer.stop(value);
   });
   app.listenFor('RequestPlay', function (x) {
     // unique listener
-    if (engine.in_fx) return;
+    if (engine.inFx) return;
 
     app.fireEvent('RequestActionRecordStop');
 
@@ -403,15 +403,15 @@ export function AudioEngine(app) {
   });
 
   app.listenFor('RequestSetLoop', function () {
-    if (!engine.is_ready) return;
+    if (!engine.isReady) return;
 
-    let skip_seek = false;
+    let skipSeek = false;
 
     if (wavesurfer.regions.list[0]) {
       if (wavesurfer.regions.list[0].loop) wavesurfer.regions.list[0].loop = false;
       else wavesurfer.regions.list[0].loop = true;
     } else {
-      skip_seek = true;
+      skipSeek = true;
       wavesurfer.regions.add({
         start: 0.01,
         end: wavesurfer.getDuration() - 0.01,
@@ -420,21 +420,21 @@ export function AudioEngine(app) {
       wavesurfer.regions.list[0].loop = true;
     }
 
-    const will_loop = wavesurfer.regions.list[0].loop;
-    app.fireEvent('DidSetLoop', will_loop);
-    if (will_loop && !skip_seek /*&& wavesurfer.isPlaying ()*/) {
+    const willLoop = wavesurfer.regions.list[0].loop;
+    app.fireEvent('DidSetLoop', willLoop);
+    if (willLoop && !skipSeek /*&& wavesurfer.isPlaying ()*/) {
       app.fireEvent('RequestSeekTo', wavesurfer.regions.list[0].start / wavesurfer.getDuration());
     }
   });
-  app.listenFor('RequestSkipBack', function (val) {
-    wavesurfer.skipBackward(val);
+  app.listenFor('RequestSkipBack', function (value) {
+    wavesurfer.skipBackward(value);
   });
-  app.listenFor('RequestSkipFront', function (val) {
-    wavesurfer.skipForward(val);
+  app.listenFor('RequestSkipFront', function (value) {
+    wavesurfer.skipForward(value);
   });
-  app.listenFor('RequestSeekTo', function (val) {
-    if (val > 1.0) return;
-    wavesurfer.seekTo(val);
+  app.listenFor('RequestSeekTo', function (value) {
+    if (value > 1.0) return;
+    wavesurfer.seekTo(value);
   });
   app.ui.KeyHandler.addCallback(
     'zkA',
@@ -463,9 +463,9 @@ export function AudioEngine(app) {
   app.ui.KeyHandler.addSingleCallback(
     'KeyTilda',
     function (e) {
-      const open_el = app.ui.TopHeader.getOpenElement();
+      const openElement = app.ui.TopHeader.getOpenElement();
 
-      if (open_el) {
+      if (openElement) {
         app.ui.TopHeader.closeMenu();
         e.preventDefault();
         return;
@@ -607,7 +607,7 @@ export function AudioEngine(app) {
 
   // select all... ####
   app.listenFor('RequestSelect', function (ifnot, custom) {
-    if (!engine.is_ready) return;
+    if (!engine.isReady) return;
 
     if (ifnot) {
       const region = wavesurfer.regions.list[0];
@@ -663,7 +663,7 @@ export function AudioEngine(app) {
         input.onchange = null;
         input = null;
       };
-      app.el.appendChild(input); // maybe not append?
+      app.element.appendChild(input); // maybe not append?
 
       input.click();
     });
@@ -682,24 +682,24 @@ export function AudioEngine(app) {
   wavesurfer.container.addEventListener(
     'click',
     function (e) {
-      if (!engine.is_ready) return;
+      if (!engine.isReady) return;
 
       if (!app.ui.KeyHandler.keyMap[16]) wavesurfer.regions.clear();
     },
     false
   );
 
-  let resize_debounce = null;
+  let resizeDebounce = null;
   window.addEventListener(
     'resize',
     function () {
       if (!wavesurfer) return;
 
-      if (resize_debounce) {
-        clearTimeout(resize_debounce);
+      if (resizeDebounce) {
+        clearTimeout(resizeDebounce);
       }
 
-      resize_debounce = setTimeout(function () {
+      resizeDebounce = setTimeout(function () {
         //requestAnimationFrame(function (){
         app.fireEvent('RequestResize');
 
@@ -723,14 +723,14 @@ export function AudioEngine(app) {
     // e.returnValue = '';
   });
 
-  wavesurfer.on('error', function (error_msg) {
+  wavesurfer.on('error', function (errorMessage) {
     // if loading - cancel loading
     setTimeout(function () {
       app.fireEvent('DidDownloadFile'); // just hides the interface
-      engine.is_ready = false;
+      engine.isReady = false;
     }, 20);
 
-    app.fireEvent('ShowError', error_msg);
+    app.fireEvent('ShowError', errorMessage);
   });
 
   wavesurfer.on('audioprocess', function (time, stamp) {
@@ -758,7 +758,7 @@ export function AudioEngine(app) {
     wavesurfer.regions.clear();
   });
   app.listenFor('RequestRegionSet', function (start, end) {
-    if (!engine.is_ready) return;
+    if (!engine.isReady) return;
 
     if (!start) {
       start = wavesurfer.LeftProgress / 1;
@@ -776,10 +776,10 @@ export function AudioEngine(app) {
     });
   });
 
-  let copy_buffer = null;
+  let copyBuffer = null;
 
   this.GetCopyBuff = function () {
-    return copy_buffer;
+    return copyBuffer;
   };
 
   this.GetSel = function () {
@@ -794,68 +794,68 @@ export function AudioEngine(app) {
     return copybuffer;
   };
 
-  this.PlayBuff = function (buff_arr, chans, sample_rate, aud_cont) {
-    let audio_ctx;
+  this.PlayBuff = function (bufferArray, channelCount, sampleRate, providedAudioContext) {
+    let audioContext;
 
-    if (aud_cont) audio_ctx = aud_cont;
-    else audio_ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (providedAudioContext) audioContext = providedAudioContext;
+    else audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-    if (!audio_ctx) return;
+    if (!audioContext) return;
 
-    const bytes = buff_arr[0].byteLength / 4;
+    const bytes = bufferArray[0].byteLength / 4;
 
-    const buffer = audio_ctx.createBuffer(chans, bytes, sample_rate);
+    const buffer = audioContext.createBuffer(channelCount, bytes, sampleRate);
 
-    for (let i = 0; i < chans; ++i) {
-      buffer.getChannelData(i).set(new Float32Array(buff_arr[i]));
+    for (let i = 0; i < channelCount; ++i) {
+      buffer.getChannelData(i).set(new Float32Array(bufferArray[i]));
     }
 
-    const source = audio_ctx.createBufferSource();
+    const source = audioContext.createBufferSource();
     source.buffer = buffer;
 
-    source.connect(audio_ctx.destination);
+    source.connect(audioContext.destination);
     source.start(0);
 
     return source;
   };
 
-  this.GetFX = function (fx, val) {
-    return audioUtils.FXBank[fx](val);
+  this.GetFX = function (fx, value) {
+    return audioUtils.FXBank[fx](value);
   };
 
   this.GetWave = function (buffer, ww, hh, offset, llen, cnv, cx) {
-    const chan_data = buffer.getChannelData(0);
-    const sample_rate = buffer.sampleRate;
+    const channelData = buffer.getChannelData(0);
+    const sampleRate = buffer.sampleRate;
 
     const peaks = [];
-    const curr_time = 0;
+    const currentTime = 0;
     const width = ww || 200;
     const height = hh || 80;
-    const half_height = height / 2;
-    const new_width = width;
+    const halfHeight = height / 2;
+    const newWidth = width;
     const pixels = 0;
-    const raw_pixels = 0;
+    const rawPixels = 0;
 
-    const start_offset = offset || 0;
-    const end_offset = llen || (buffer.duration * sample_rate) >> 0;
-    const length = end_offset - start_offset;
+    const startOffset = offset || 0;
+    const endOffset = llen || (buffer.duration * sampleRate) >> 0;
+    const length = endOffset - startOffset;
     const mod = (length / width) >> 0;
 
     let max = 0;
     let min = 0;
 
-    for (let i = 0; i < new_width; ++i) {
-      const new_offset = start_offset + mod * i;
+    for (let i = 0; i < newWidth; ++i) {
+      const newOffset = startOffset + mod * i;
 
       max = 0;
       min = 0;
 
-      if (new_offset >= 0) {
+      if (newOffset >= 0) {
         for (let j = 0; j < mod; j += 3) {
-          if (chan_data[new_offset + j] > max) {
-            max = chan_data[new_offset + j];
-          } else if (chan_data[new_offset + j] < min) {
-            min = chan_data[new_offset + j];
+          if (channelData[newOffset + j] > max) {
+            max = channelData[newOffset + j];
+          } else if (channelData[newOffset + j] < min) {
+            min = channelData[newOffset + j];
           }
         }
       }
@@ -865,44 +865,44 @@ export function AudioEngine(app) {
     }
 
     let canvas = cnv;
-    let ctx = cx;
+    let canvasContext = cx;
 
     if (!canvas) {
       canvas = document.createElement('canvas');
       canvas.width = width;
       canvas.height = height;
 
-      ctx = canvas.getContext('2d', { alpha: false, antialias: false });
+      canvasContext = canvas.getContext('2d', { alpha: false, antialias: false });
     }
 
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, width, height);
-    ctx.fillStyle = '#99c2c6';
+    canvasContext.fillStyle = '#000';
+    canvasContext.fillRect(0, 0, width, height);
+    canvasContext.fillStyle = '#99c2c6';
 
-    ctx.beginPath();
-    ctx.moveTo(0, half_height);
+    canvasContext.beginPath();
+    canvasContext.moveTo(0, halfHeight);
 
     for (let i = 0; i < width; ++i) {
       const peak = peaks[i * 2];
-      const _h = Math.round(peak * half_height);
-      ctx.lineTo(i, half_height - _h);
+      const _h = Math.round(peak * halfHeight);
+      canvasContext.lineTo(i, halfHeight - _h);
     }
 
     for (let i = width - 1; i >= 0; --i) {
       const peak = peaks[i * 2 + 1];
-      const _h = Math.round(peak * half_height);
-      ctx.lineTo(i, half_height - _h);
+      const _h = Math.round(peak * halfHeight);
+      canvasContext.lineTo(i, halfHeight - _h);
     }
 
-    ctx.closePath();
-    ctx.fill();
+    canvasContext.closePath();
+    canvasContext.fill();
 
     return canvas.toDataURL('image/jpeg', 0.56);
     // ---
   };
 
-  app.listenFor('RequestActionCut', function (use_clipboard) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionCut', function (useClipboard) {
+    if (!engine.isReady) return;
 
     const region = wavesurfer.regions.list[0];
     if (!region) return false;
@@ -913,7 +913,7 @@ export function AudioEngine(app) {
     const end = engine.TrimTo(region.end - region.start, 3);
 
     app.fireEvent('StateRequestPush', {
-      desc: use_clipboard ? 'Cut' : 'Delete',
+      desc: useClipboard ? 'Cut' : 'Delete',
       meta: [start, end],
       data: wavesurfer.backend.buffer,
     });
@@ -926,8 +926,8 @@ export function AudioEngine(app) {
 
     app.fireEvent('RequestSeekTo', tmp / wavesurfer.getDuration());
 
-    if (use_clipboard) {
-      copy_buffer = cutbuffer;
+    if (useClipboard) {
+      copyBuffer = cutbuffer;
 
       app.fireEvent('DidSetClipboard', 1);
       app.fireEvent('DidCut', cutbuffer);
@@ -945,7 +945,7 @@ export function AudioEngine(app) {
   });
 
   app.listenFor('RequestActionCopy', function () {
-    if (!engine.is_ready) return;
+    if (!engine.isReady) return;
 
     const region = wavesurfer.regions.list[0];
     if (!region) return false;
@@ -957,22 +957,22 @@ export function AudioEngine(app) {
 
     const copybuffer = audioUtils.Copy(start, end);
 
-    copy_buffer = copybuffer;
+    copyBuffer = copybuffer;
     app.fireEvent('DidSetClipboard', 1);
     app.fireEvent('DidCopy', copybuffer);
 
     showToast('Copied range');
   });
 
-  app.listenFor('RequestActionSilence', function (offset, silence_duration) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionSilence', function (offset, silenceDuration) {
+    if (!engine.isReady) return;
 
     app.fireEvent('RequestPause');
 
     const region = wavesurfer.regions.list[0];
     let dims = [0, 0];
 
-    if (!silence_duration || silence_duration < 0) silence_duration = 1;
+    if (!silenceDuration || silenceDuration < 0) silenceDuration = 1;
 
     function handleStateInline(start, end) {
       app.fireEvent('StateRequestPush', {
@@ -983,10 +983,10 @@ export function AudioEngine(app) {
     }
 
     const start = offset;
-    const end = silence_duration;
+    const end = silenceDuration;
 
     handleStateInline(start, end);
-    dims = audioUtils.Insert(offset, audioUtils.MakeSilence(silence_duration));
+    dims = audioUtils.Insert(offset, audioUtils.MakeSilence(silenceDuration));
 
     // add a region where the paste happened
     wavesurfer.regions.clear();
@@ -1002,8 +1002,8 @@ export function AudioEngine(app) {
   });
 
   app.listenFor('RequestActionPaste', function () {
-    if (!engine.is_ready) return;
-    if (!copy_buffer) return false;
+    if (!engine.isReady) return;
+    if (!copyBuffer) return false;
 
     app.fireEvent('RequestPause');
 
@@ -1022,14 +1022,14 @@ export function AudioEngine(app) {
       const offset = engine.TrimTo(wavesurfer.getCurrentTime(), 3);
 
       handleStateInline(offset);
-      dims = audioUtils.Insert(offset, copy_buffer);
+      dims = audioUtils.Insert(offset, copyBuffer);
     } else {
       const start = engine.TrimTo(region.start, 3);
       const end = engine.TrimTo(region.end - region.start, 3);
 
       handleStateInline(start, end);
 
-      dims = audioUtils.Replace(start, end, copy_buffer);
+      dims = audioUtils.Replace(start, end, copyBuffer);
     }
 
     // add a region where the paste happened
@@ -1040,18 +1040,18 @@ export function AudioEngine(app) {
       id: 't',
     });
 
-    let new_seek = 0;
+    let newSeek = 0;
     if (wavesurfer.getDuration() > 0.0001) {
-      new_seek = dims[0] / wavesurfer.getDuration();
+      newSeek = dims[0] / wavesurfer.getDuration();
     }
-    app.fireEvent('RequestSeekTo', new_seek);
+    app.fireEvent('RequestSeekTo', newSeek);
 
     showToast('Paste to ' + dims[0].toFixed(2), 982);
   });
 
-  let record_toggle_pending = false;
+  let recordTogglePending = false;
   app.listenFor('RequestActionRecordToggle', function () {
-    if (!engine.is_ready) {
+    if (!engine.isReady) {
       // if not ready then bring up the new recording toggle!
       app.fireEvent('RequestActionNewRec');
 
@@ -1062,35 +1062,35 @@ export function AudioEngine(app) {
       app.fireEvent('RequestActionRecordStop');
     } else {
       // skipping the sounds of keyboard
-      if (record_toggle_pending) return;
+      if (recordTogglePending) return;
 
-      record_toggle_pending = true;
+      recordTogglePending = true;
       setTimeout(function () {
         app.fireEvent('RequestActionRecordStart');
         setTimeout(function () {
-          record_toggle_pending = false;
+          recordTogglePending = false;
         }, 50);
       }, 26);
     }
   });
 
   app.listenFor('RequestActionRecordStop', function () {
-    if (!engine.is_ready) return;
+    if (!engine.isReady) return;
     if (!app.recorder.isActive()) return false;
 
     app.recorder.stop();
   });
 
   app.listenFor('RequestActionRecordStart', function () {
-    if (!engine.is_ready) return;
+    if (!engine.isReady) return;
 
     app.fireEvent('RequestPause');
 
     if (app.recorder.isActive()) return false;
 
-    const pos = wavesurfer.getCurrentTime() * wavesurfer.backend.buffer.sampleRate;
+    const position = wavesurfer.getCurrentTime() * wavesurfer.backend.buffer.sampleRate;
     app.recorder.start(
-      pos,
+      position,
       function (offset, buffers) {
         // app.fireEvent ('RequestPause');
         function handleStateInline(start, end) {
@@ -1135,8 +1135,8 @@ export function AudioEngine(app) {
       app.recorder.setEndingOffset(wavesurfer.getDuration() * wavesurfer.backend.buffer.sampleRate);
   });
 
-  app.listenFor('RequestActionFX_PREVIEW_HardLimit', function (val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_PREVIEW_HardLimit', function (value) {
+    if (!engine.isReady) return;
     if (audioUtils.previewing) {
       audioUtils.FXPreviewStop();
       app.fireEvent('DidStopPreview');
@@ -1158,11 +1158,11 @@ export function AudioEngine(app) {
     const start = engine.TrimTo(region.start, 3);
     const end = engine.TrimTo(region.end - region.start, 3);
 
-    audioUtils.FXPreview(start, end, audioUtils.FXBank.HardLimit(val));
+    audioUtils.FXPreview(start, end, audioUtils.FXBank.HardLimit(value));
     app.fireEvent('DidStartPreview');
   });
-  app.listenFor('RequestActionFX_HardLimit', function (val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_HardLimit', function (value) {
+    if (!engine.isReady) return;
 
     app.fireEvent('RequestPause');
 
@@ -1190,13 +1190,13 @@ export function AudioEngine(app) {
     const end = engine.TrimTo(region.end - region.start, 3);
 
     handleStateInline(start, end);
-    audioUtils.FX(start, end, audioUtils.FXBank.HardLimit(val));
+    audioUtils.FX(start, end, audioUtils.FXBank.HardLimit(value));
 
     showToast('Applied Hard Limit (fx)');
   });
 
-  app.listenFor('RequestActionFX_PARAMEQ', function (val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_PARAMEQ', function (value) {
+    if (!engine.isReady) return;
 
     app.fireEvent('RequestPause');
 
@@ -1224,12 +1224,12 @@ export function AudioEngine(app) {
     const end = engine.TrimTo(region.end - region.start, 3);
 
     handleStateInline(start, end);
-    audioUtils.FX(start, end, audioUtils.FXBank.ParametricEQ(val));
+    audioUtils.FX(start, end, audioUtils.FXBank.ParametricEQ(value));
 
     showToast('Applied Parametric EQ (fx)');
   });
-  app.listenFor('RequestActionFX_PREVIEW_PARAMEQ', function (val) {
-    if (!engine.is_ready || !val) return;
+  app.listenFor('RequestActionFX_PREVIEW_PARAMEQ', function (value) {
+    if (!engine.isReady || !value) return;
     if (audioUtils.previewing) {
       audioUtils.FXPreviewStop();
       app.fireEvent('DidStopPreview');
@@ -1251,12 +1251,12 @@ export function AudioEngine(app) {
     const start = engine.TrimTo(region.start, 3);
     const end = engine.TrimTo(region.end - region.start, 3);
 
-    audioUtils.FXPreview(start, end, audioUtils.FXBank.ParametricEQ(val));
+    audioUtils.FXPreview(start, end, audioUtils.FXBank.ParametricEQ(value));
     app.fireEvent('DidStartPreview');
   });
 
-  app.listenFor('RequestActionFX_PREVIEW_DISTORT', function (val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_PREVIEW_DISTORT', function (value) {
+    if (!engine.isReady) return;
     if (audioUtils.previewing) {
       audioUtils.FXPreviewStop();
       app.fireEvent('DidStopPreview');
@@ -1278,11 +1278,11 @@ export function AudioEngine(app) {
     const start = engine.TrimTo(region.start, 3);
     const end = engine.TrimTo(region.end - region.start, 3);
 
-    audioUtils.FXPreview(start, end, audioUtils.FXBank.Distortion(val));
+    audioUtils.FXPreview(start, end, audioUtils.FXBank.Distortion(value));
     app.fireEvent('DidStartPreview');
   });
-  app.listenFor('RequestActionFX_DISTORT', function (val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_DISTORT', function (value) {
+    if (!engine.isReady) return;
 
     app.fireEvent('RequestPause');
 
@@ -1310,13 +1310,13 @@ export function AudioEngine(app) {
     const end = engine.TrimTo(region.end - region.start, 3);
 
     handleStateInline(start, end);
-    audioUtils.FX(start, end, audioUtils.FXBank.Distortion(val));
+    audioUtils.FX(start, end, audioUtils.FXBank.Distortion(value));
 
     showToast('Applied Distortion (fx)');
   });
 
-  app.listenFor('RequestActionFX_PREVIEW_DELAY', function (val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_PREVIEW_DELAY', function (value) {
+    if (!engine.isReady) return;
     if (audioUtils.previewing) {
       audioUtils.FXPreviewStop();
       app.fireEvent('DidStopPreview');
@@ -1338,11 +1338,11 @@ export function AudioEngine(app) {
     const start = engine.TrimTo(region.start, 3);
     const end = engine.TrimTo(region.end - region.start, 3);
 
-    audioUtils.FXPreview(start, end, audioUtils.FXBank.Delay(val));
+    audioUtils.FXPreview(start, end, audioUtils.FXBank.Delay(value));
     app.fireEvent('DidStartPreview');
   });
-  app.listenFor('RequestActionFX_DELAY', function (val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_DELAY', function (value) {
+    if (!engine.isReady) return;
 
     app.fireEvent('RequestPause');
 
@@ -1370,13 +1370,13 @@ export function AudioEngine(app) {
     const end = engine.TrimTo(region.end - region.start, 3);
 
     handleStateInline(start, end);
-    audioUtils.FX(start, end, audioUtils.FXBank.Delay(val));
+    audioUtils.FX(start, end, audioUtils.FXBank.Delay(value));
 
     showToast('Applied Delay (fx)');
   });
 
-  app.listenFor('RequestActionFX_PREVIEW_REVERB', function (val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_PREVIEW_REVERB', function (value) {
+    if (!engine.isReady) return;
     if (audioUtils.previewing) {
       audioUtils.FXPreviewStop();
       app.fireEvent('DidStopPreview');
@@ -1398,11 +1398,11 @@ export function AudioEngine(app) {
     const start = engine.TrimTo(region.start, 3);
     const end = engine.TrimTo(region.end - region.start, 3);
 
-    audioUtils.FXPreview(start, end, audioUtils.FXBank.Reverb(val));
+    audioUtils.FXPreview(start, end, audioUtils.FXBank.Reverb(value));
     app.fireEvent('DidStartPreview');
   });
-  app.listenFor('RequestActionFX_REVERB', function (val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_REVERB', function (value) {
+    if (!engine.isReady) return;
 
     app.fireEvent('RequestPause');
 
@@ -1430,13 +1430,13 @@ export function AudioEngine(app) {
     const end = engine.TrimTo(region.end - region.start, 3);
 
     handleStateInline(start, end);
-    audioUtils.FX(start, end, audioUtils.FXBank.Reverb(val));
+    audioUtils.FX(start, end, audioUtils.FXBank.Reverb(value));
 
     showToast('Applied Reverb (fx)');
   });
 
-  app.listenFor('RequestActionFX_PREVIEW_COMPRESSOR', function (val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_PREVIEW_COMPRESSOR', function (value) {
+    if (!engine.isReady) return;
     if (audioUtils.previewing) {
       audioUtils.FXPreviewStop();
       app.fireEvent('DidStopPreview');
@@ -1458,12 +1458,12 @@ export function AudioEngine(app) {
     const start = engine.TrimTo(region.start, 3);
     const end = engine.TrimTo(region.end - region.start, 3);
 
-    audioUtils.FXPreview(start, end, audioUtils.FXBank.Compressor(val));
+    audioUtils.FXPreview(start, end, audioUtils.FXBank.Compressor(value));
     app.fireEvent('DidStartPreview');
   });
 
-  app.listenFor('RequestActionFX_Compressor', function (val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_Compressor', function (value) {
+    if (!engine.isReady) return;
 
     app.fireEvent('RequestPause');
 
@@ -1491,12 +1491,12 @@ export function AudioEngine(app) {
     const end = engine.TrimTo(region.end - region.start, 3);
 
     handleStateInline(start, end);
-    audioUtils.FX(start, end, audioUtils.FXBank.Compressor(val));
+    audioUtils.FX(start, end, audioUtils.FXBank.Compressor(value));
 
     showToast('Applied Compressor (fx)');
   });
-  app.listenFor('RequestActionFX_Normalize', function (val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_Normalize', function (value) {
+    if (!engine.isReady) return;
 
     app.fireEvent('RequestPause');
 
@@ -1524,13 +1524,13 @@ export function AudioEngine(app) {
     const end = engine.TrimTo(region.end - region.start, 3);
 
     handleStateInline(start, end);
-    audioUtils.FX(start, end, audioUtils.FXBank.Normalize(val));
+    audioUtils.FX(start, end, audioUtils.FXBank.Normalize(value));
 
     showToast('Applied Normalize');
   });
 
-  app.listenFor('RequestActionFX_Invert', function (val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_Invert', function (value) {
+    if (!engine.isReady) return;
 
     app.fireEvent('RequestPause');
 
@@ -1563,8 +1563,8 @@ export function AudioEngine(app) {
     showToast('Applied Invert');
   });
 
-  app.listenFor('RequestActionFX_RemSil', function (val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_RemSil', function (value) {
+    if (!engine.isReady) return;
 
     app.fireEvent('RequestPause');
 
@@ -1594,11 +1594,11 @@ export function AudioEngine(app) {
     handleStateInline(start, end);
 
     const originalBuffer = wavesurfer.backend.buffer;
-    const sil_arr = [];
-    const sil_offset = 210;
-    const vol_offset = 56;
+    const silenceArray = [];
+    const silenceOffset = 210;
+    const volumeOffset = 56;
     let count = 0;
-    let inv_count = 0;
+    let inverseCount = 0;
     start = 0;
     end = 0;
     let found = false;
@@ -1613,22 +1613,22 @@ export function AudioEngine(app) {
             if (j > jump) start = j - jump;
             else start = j;
           }
-          if (++count > sil_offset) {
-            inv_count = 0;
+          if (++count > silenceOffset) {
+            inverseCount = 0;
             end = j;
             found = true;
           }
         } else {
           if (found) {
-            if (++inv_count > vol_offset) {
-              sil_arr.push([start, end]);
+            if (++inverseCount > volumeOffset) {
+              silenceArray.push([start, end]);
               j += jump;
 
               count = 0;
               start = 0;
               end = 0;
               found = false;
-              inv_count = 0;
+              inverseCount = 0;
             } else {
               end = j;
             }
@@ -1637,20 +1637,20 @@ export function AudioEngine(app) {
             start = 0;
             end = 0;
             found = false;
-            inv_count = 0;
+            inverseCount = 0;
           }
         }
       }
 
       if (found) {
-        sil_arr.push([start, end]);
+        silenceArray.push([start, end]);
       }
     }
 
-    if (sil_arr.length > 0) {
+    if (silenceArray.length > 0) {
       let reduce = 0;
-      for (let i = 0; i < sil_arr.length; ++i) {
-        reduce += sil_arr[i][1] - sil_arr[i][0];
+      for (let i = 0; i < silenceArray.length; ++i) {
+        reduce += silenceArray[i][1] - silenceArray[i][0];
       }
 
       const emptySegment = wavesurfer.backend.ac.createBuffer(
@@ -1661,39 +1661,40 @@ export function AudioEngine(app) {
 
       for (let i = 0; i < originalBuffer.numberOfChannels; ++i) {
         const channel = originalBuffer.getChannelData(i);
-        const new_channel = emptySegment.getChannelData(i);
+        const newChannel = emptySegment.getChannelData(i);
 
-        let sil_offset = 0;
+        let silenceOffset = 0;
         let o = 0;
-        let sil_curr = sil_arr[o];
-        let sil_curr_start = sil_curr[0];
-        let sil_curr_end = sil_curr[1];
+        let currentSilence = silenceArray[o];
+        let currentSilenceStart = currentSilence[0];
+        let currentSilenceEnd = currentSilence[1];
         let h = 0;
-        const use_old = false;
-        const old_h = 0;
+        const useOld = false;
+        const oldHeight = 0;
 
-        for (let j = 0; j < new_channel.length; ++j) {
-          h = j + sil_offset;
-          if (h > sil_curr_start && h < sil_curr_end) {
-            if (h < sil_curr_start + jump) {
-              const perc = (jump - (h - sil_curr_start)) / jump;
-              new_channel[j] = channel[h] * perc; // / (h - sil_curr_start));
-              new_channel[j] +=
-                (1 - perc) * channel[j + (sil_offset + (sil_curr_end - sil_curr_start))];
+        for (let j = 0; j < newChannel.length; ++j) {
+          h = j + silenceOffset;
+          if (h > currentSilenceStart && h < currentSilenceEnd) {
+            if (h < currentSilenceStart + jump) {
+              const perc = (jump - (h - currentSilenceStart)) / jump;
+              newChannel[j] = channel[h] * perc; // / (h - currentSilenceStart));
+              newChannel[j] +=
+                (1 - perc) *
+                channel[j + (silenceOffset + (currentSilenceEnd - currentSilenceStart))];
 
               continue;
             } else {
-              sil_offset = sil_offset + (sil_curr_end - sil_curr_start);
-              sil_curr = sil_arr[++o];
-              if (sil_curr) {
-                sil_curr_start = sil_curr[0];
-                sil_curr_end = sil_curr[1];
+              silenceOffset = silenceOffset + (currentSilenceEnd - currentSilenceStart);
+              currentSilence = silenceArray[++o];
+              if (currentSilence) {
+                currentSilenceStart = currentSilence[0];
+                currentSilenceEnd = currentSilence[1];
               }
-              h = j + sil_offset;
+              h = j + silenceOffset;
             }
           }
 
-          new_channel[j] = channel[h];
+          newChannel[j] = channel[h];
         }
       }
 
@@ -1709,22 +1710,22 @@ export function AudioEngine(app) {
 
   const computeActiveChannels = function () {
     const buff = wavesurfer.backend.buffer;
-    const chans = buff.numberOfChannels;
+    const channelCount = buff.numberOfChannels;
 
-    if (chans === 1) {
+    if (channelCount === 1) {
       wavesurfer.ActiveChannels = [1];
-      app.el.classList.add('pk_mono');
+      app.element.classList.add('pk_mono');
     } else {
       wavesurfer.ActiveChannels = [1, 1];
-      app.el.classList.remove('pk_mono');
+      app.element.classList.remove('pk_mono');
     }
 
     wavesurfer.drawer.params.ActiveChannels = wavesurfer.ActiveChannels;
-    wavesurfer.SelectedChannelsLen = chans;
+    wavesurfer.SelectedChannelsLen = channelCount;
   };
 
-  app.listenFor('RequestActionFX_Flip', function (val, val2) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_Flip', function (value, val2) {
+    if (!engine.isReady) return;
 
     app.fireEvent('RequestPause');
 
@@ -1740,10 +1741,10 @@ export function AudioEngine(app) {
       });
     }
 
-    if (val === 'flip') {
+    if (value === 'flip') {
       handleStateInline(start, end, 'Flip Channels');
-      audioUtils.FX(start, end, audioUtils.FXBank.Flip(val));
-    } else if (val === 'stereo') {
+      audioUtils.FX(start, end, audioUtils.FXBank.Flip(value));
+    } else if (value === 'stereo') {
       handleStateInline(start, end, 'Make Stereo', function () {
         computeActiveChannels();
       });
@@ -1769,7 +1770,7 @@ export function AudioEngine(app) {
       computeActiveChannels();
 
       app.fireEvent('RequestSeekTo', 0.0);
-    } else if (val === 'mono') {
+    } else if (value === 'mono') {
       handleStateInline(start, end, 'Make Mono', function () {
         computeActiveChannels();
       });
@@ -1795,11 +1796,11 @@ export function AudioEngine(app) {
       app.fireEvent('RequestSeekTo', 0.0);
     }
 
-    showToast('Applied Channel Change: ' + val);
+    showToast('Applied Channel Change: ' + value);
   });
 
-  app.listenFor('RequestActionFX_Reverse', function (val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_Reverse', function (value) {
+    if (!engine.isReady) return;
 
     app.fireEvent('RequestPause');
 
@@ -1835,9 +1836,9 @@ export function AudioEngine(app) {
   // RNNoise-based noise reduction. The WASM build (~2MB) is loaded lazily
   // the first time the effect is used; `wasm_denoise_stream_perf` is the
   // global it exposes (see public/vendor/rnn_denoise.js).
-  let rnnoise_loaded = false;
+  let rnnoiseLoaded = false;
   app.listenFor('RequestActionFX_NoiseRNN', function () {
-    if (!engine.is_ready) return;
+    if (!engine.isReady) return;
 
     app.fireEvent('RequestPause');
 
@@ -1873,7 +1874,7 @@ export function AudioEngine(app) {
       showToast('Applied Noise RNN (fx)');
     };
 
-    if (rnnoise_loaded) {
+    if (rnnoiseLoaded) {
       applyDenoise();
       return;
     }
@@ -1881,7 +1882,7 @@ export function AudioEngine(app) {
     const script = document.createElement('script');
     script.src = '/vendor/rnn_denoise.js';
     script.onload = function () {
-      rnnoise_loaded = true;
+      rnnoiseLoaded = true;
 
       // Wait until the Emscripten runtime is fully initialized.
       const waitForWasm = function () {
@@ -1899,8 +1900,8 @@ export function AudioEngine(app) {
     document.head.appendChild(script);
   });
 
-  app.listenFor('RequestActionFX_FadeIn', function (val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_FadeIn', function (value) {
+    if (!engine.isReady) return;
 
     app.fireEvent('RequestPause');
 
@@ -1932,8 +1933,8 @@ export function AudioEngine(app) {
 
     showToast('Applied Fade In (fx)');
   });
-  app.listenFor('RequestActionFX_FadeOut', function (val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_FadeOut', function (value) {
+    if (!engine.isReady) return;
 
     app.fireEvent('RequestPause');
 
@@ -1966,17 +1967,17 @@ export function AudioEngine(app) {
     showToast('Applied Fade Out (fx)');
   });
 
-  let fx_preview_debounce = null;
-  app.listenFor('RequestActionFX_UPDATE_PREVIEW', function (val) {
+  let fxPreviewDebounce = null;
+  app.listenFor('RequestActionFX_UPDATE_PREVIEW', function (value) {
     if (!audioUtils.previewing) return;
 
-    clearTimeout(fx_preview_debounce);
-    fx_preview_debounce = setTimeout(function () {
-      audioUtils.FXPreviewUpdate(val);
+    clearTimeout(fxPreviewDebounce);
+    fxPreviewDebounce = setTimeout(function () {
+      audioUtils.FXPreviewUpdate(value);
     }, 44);
   });
-  app.listenFor('RequestActionFX_TOGGLE', function (val) {
-    if (val) {
+  app.listenFor('RequestActionFX_TOGGLE', function (value) {
+    if (value) {
       audioUtils.FXPreviewInit(true);
       return;
     }
@@ -1987,8 +1988,8 @@ export function AudioEngine(app) {
     audioUtils.FXPreviewStop();
     app.fireEvent('DidStopPreview');
   });
-  app.listenFor('RequestActionFX_PREVIEW_GAIN', function (val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_PREVIEW_GAIN', function (value) {
+    if (!engine.isReady) return;
     if (audioUtils.previewing) {
       audioUtils.FXPreviewStop();
       app.fireEvent('DidStopPreview');
@@ -2010,13 +2011,13 @@ export function AudioEngine(app) {
     const start = engine.TrimTo(region.start, 3);
     const end = engine.TrimTo(region.end - region.start, 3);
 
-    audioUtils.FXPreview(start, end, audioUtils.FXBank.Gain(val));
+    audioUtils.FXPreview(start, end, audioUtils.FXBank.Gain(value));
 
     app.fireEvent('DidStartPreview');
   });
 
-  app.listenFor('RequestActionFX_GAIN', function (val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_GAIN', function (value) {
+    if (!engine.isReady) return;
 
     app.fireEvent('RequestPause');
 
@@ -2044,13 +2045,13 @@ export function AudioEngine(app) {
     const end = engine.TrimTo(region.end - region.start, 3);
 
     handleStateInline(start, end);
-    audioUtils.FX(start, end, audioUtils.FXBank.Gain(val));
+    audioUtils.FX(start, end, audioUtils.FXBank.Gain(value));
 
     showToast('Applied Gain (fx)');
   });
 
-  app.listenFor('RequestActionFX_PREVIEW_SPEED', function (val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_PREVIEW_SPEED', function (value) {
+    if (!engine.isReady) return;
     if (audioUtils.previewing) {
       audioUtils.FXPreviewStop();
       app.fireEvent('DidStopPreview');
@@ -2072,13 +2073,13 @@ export function AudioEngine(app) {
     const start = engine.TrimTo(region.start, 3);
     const end = engine.TrimTo(region.end - region.start, 3);
 
-    audioUtils.FXPreview(start, end, audioUtils.FXBank.Speed(val));
+    audioUtils.FXPreview(start, end, audioUtils.FXBank.Speed(value));
 
     app.fireEvent('DidStartPreview');
   });
 
-  app.listenFor('RequestActionFX_RATE', function (val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_RATE', function (value) {
+    if (!engine.isReady) return;
 
     app.fireEvent('RequestPause');
 
@@ -2104,17 +2105,17 @@ export function AudioEngine(app) {
 
     const start = engine.TrimTo(region.start, 3);
     const end = engine.TrimTo(region.end - region.start, 3);
-    let duration = (region.end - region.start) / val;
+    let duration = (region.end - region.start) / value;
     duration = engine.TrimTo(duration, 3);
 
     handleStateInline(start, end);
 
-    let fx_buffer = audioUtils.Copy(start, end);
+    let fxBuffer = audioUtils.Copy(start, end);
     const originalBuffer = wavesurfer.backend.buffer;
-    const new_offset = ((start / 1) * originalBuffer.sampleRate) >> 0;
-    const new_len = ((duration / 1) * originalBuffer.sampleRate) >> 0;
-    const old_len = ((end / 1) * originalBuffer.sampleRate) >> 0;
-    const stretch_ratio = new_len / old_len;
+    const newOffset = ((start / 1) * originalBuffer.sampleRate) >> 0;
+    const newLength = ((duration / 1) * originalBuffer.sampleRate) >> 0;
+    const oldLength = ((end / 1) * originalBuffer.sampleRate) >> 0;
+    const stretchRatio = newLength / oldLength;
 
     const getOfflineAudioContext = function (channels, sampleRate, duration) {
       return new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(
@@ -2123,19 +2124,19 @@ export function AudioEngine(app) {
         sampleRate
       );
     };
-    const audio_ctx = getOfflineAudioContext(
-      // offlineCtx
-      wavesurfer.SelectedChannelsLen, // orig_buffer.numberOfChannels,
-      fx_buffer.sampleRate,
-      new_len
+    const audioContext = getOfflineAudioContext(
+      // offlineContext
+      wavesurfer.SelectedChannelsLen, // originalBuffer.numberOfChannels,
+      fxBuffer.sampleRate,
+      newLength
     );
 
-    const stretchAudio = function (input_buffer, sampleRate, stretchRatio) {
+    const stretchAudio = function (inputBuffer, sampleRate, stretchRatio) {
       // Parameters (in seconds)
-      const channels_len = input_buffer.numberOfChannels;
-      const samples = [input_buffer.getChannelData(0)];
-      for (let i = 1; i < channels_len; ++i) {
-        samples.push(input_buffer.getChannelData(i));
+      const channelCount = inputBuffer.numberOfChannels;
+      const samples = [inputBuffer.getChannelData(0)];
+      for (let i = 1; i < channelCount; ++i) {
+        samples.push(inputBuffer.getChannelData(i));
       }
 
       let grainDurationSec = 0.05; // 50 ms
@@ -2164,7 +2165,7 @@ export function AudioEngine(app) {
       const numGrains = Math.floor((samples[0].length - grainSize) / analysisHop);
       const outputLength = synthesisHop * numGrains + grainSize;
       const output = [new Float32Array(outputLength)];
-      for (let i = 1; i < channels_len; ++i) {
+      for (let i = 1; i < channelCount; ++i) {
         output.push(new Float32Array(outputLength));
       }
 
@@ -2174,7 +2175,7 @@ export function AudioEngine(app) {
       for (let n = 0; n < numGrains; ++n) {
         // For each sample in the grain, multiply by the window and add to the output
         for (let i = 0; i < grainSize; ++i) {
-          for (let j = 0; j < channels_len; ++j) {
+          for (let j = 0; j < channelCount; ++j) {
             output[j][outputIndex + i] += samples[j][inputIndex + i] * window[i];
           }
         }
@@ -2187,42 +2188,42 @@ export function AudioEngine(app) {
 
     /// -----
     let filter = [];
-    //if (stretch_ratio < 1) {
-    //	var fx = audioUtils.FXBank.Rate( stretch_ratio );
+    //if (stretchRatio < 1) {
+    //	var fx = audioUtils.FXBank.Rate( stretchRatio );
     //	var source = {buffer:null, disconnect:function(){}};
-    //	source.buffer = fx_buffer;
-    //	filter = fx.filter ( audio_ctx, audio_ctx.destination, source, duration );
+    //	source.buffer = fxBuffer;
+    //	filter = fx.filter ( audioContext, audioContext.destination, source, duration );
     //}
     //else
     //{
     // use timestretcher here...
-    // var ts = new TimeStretcher({windowSize:2048,overlapRatio:0.75,seekWindowMs:20}).stretch(fx_buffer,stretch_ratio);
-    const stretchedSamples = stretchAudio(fx_buffer, fx_buffer.sampleRate, stretch_ratio);
+    // var ts = new TimeStretcher({windowSize:2048,overlapRatio:0.75,seekWindowMs:20}).stretch(fxBuffer,stretchRatio);
+    const stretchedSamples = stretchAudio(fxBuffer, fxBuffer.sampleRate, stretchRatio);
 
     // Optionally, if you need an AudioBuffer from the stretchedSamples:
-    // const offlineCtx = new OfflineAudioContext(stretchedSamples.length, stretchedSamples[0].length, fx_buffer.sampleRate);
-    const newBuffer = audio_ctx.createBuffer(
+    // const offlineContext = new OfflineAudioContext(stretchedSamples.length, stretchedSamples[0].length, fxBuffer.sampleRate);
+    const newBuffer = audioContext.createBuffer(
       stretchedSamples.length,
       stretchedSamples[0].length,
-      fx_buffer.sampleRate
+      fxBuffer.sampleRate
     );
 
     for (let i = 0; i < stretchedSamples.length; ++i) {
       newBuffer.copyToChannel(stretchedSamples[i], i);
     }
 
-    const source = audio_ctx.createBufferSource();
+    const source = audioContext.createBufferSource();
     source.buffer = newBuffer;
-    source.connect(audio_ctx.destination);
+    source.connect(audioContext.destination);
     source.start();
     //}
 
-    engine.in_fx = true;
+    engine.inFx = true;
     app.ui.InteractionHandler.on = true;
     // showToast ('Please wait, applying FX', 2600);
 
-    const offline_callback = function (rendered_buffer) {
-      audioUtils.Replace(start, end, rendered_buffer);
+    const offlineCallback = function (renderedBuffer) {
+      audioUtils.Replace(start, end, renderedBuffer);
 
       wavesurfer.regions.clear();
       wavesurfer.regions.add({
@@ -2239,26 +2240,26 @@ export function AudioEngine(app) {
         for (let i = 0; i < filter.length; ++i) filter[i].disconnect();
       } else filter && filter.disconnect && filter.disconnect();
 
-      rendered_buffer = fx_buffer = filter = null;
+      renderedBuffer = fxBuffer = filter = null;
       source.disconnect();
 
-      engine.in_fx = false;
+      engine.inFx = false;
       app.ui.InteractionHandler.on = false;
     };
 
-    const offline_renderer = audio_ctx.startRendering();
-    if (offline_renderer)
-      offline_renderer.then(offline_callback).catch(function (err) {
+    const offlineRenderer = audioContext.startRendering();
+    if (offlineRenderer)
+      offlineRenderer.then(offlineCallback).catch(function (err) {
         console.log('Rendering failed: ' + err);
       });
     else
-      audio_ctx.oncomplete = function (e) {
-        offline_callback(e.renderedBuffer);
+      audioContext.oncomplete = function (e) {
+        offlineCallback(e.renderedBuffer);
       };
   });
 
-  app.listenFor('RequestActionFX_PREVIEW_RATE', function (val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_PREVIEW_RATE', function (value) {
+    if (!engine.isReady) return;
     if (audioUtils.previewing) {
       audioUtils.FXPreviewStop();
       app.fireEvent('DidStopPreview');
@@ -2279,23 +2280,23 @@ export function AudioEngine(app) {
 
     const start = engine.TrimTo(region.start, 3);
     const end = engine.TrimTo(region.end - region.start, 3);
-    const duration = (region.end - region.start) / val;
+    const duration = (region.end - region.start) / value;
 
     const originalBuffer = wavesurfer.backend.buffer;
-    const new_offset = ((start / 1) * originalBuffer.sampleRate) >> 0;
-    const new_len = ((duration / 1) * originalBuffer.sampleRate) >> 0;
-    const old_len = ((end / 1) * originalBuffer.sampleRate) >> 0;
+    const newOffset = ((start / 1) * originalBuffer.sampleRate) >> 0;
+    const newLength = ((duration / 1) * originalBuffer.sampleRate) >> 0;
+    const oldLength = ((end / 1) * originalBuffer.sampleRate) >> 0;
 
     // -----
-    const stretch_ratio = new_len / old_len;
+    const stretchRatio = newLength / oldLength;
 
-    audioUtils.FXPreview(start, end, audioUtils.FXBank.Rate(stretch_ratio));
+    audioUtils.FXPreview(start, end, audioUtils.FXBank.Rate(stretchRatio));
 
     app.fireEvent('DidStartPreview');
   });
 
-  app.listenFor('RequestActionFX_SPEED', function (val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestActionFX_SPEED', function (value) {
+    if (!engine.isReady) return;
 
     app.fireEvent('RequestPause');
 
@@ -2321,27 +2322,27 @@ export function AudioEngine(app) {
 
     const start = engine.TrimTo(region.start, 3);
     const end = engine.TrimTo(region.end - region.start, 3);
-    let duration = (region.end - region.start) / val;
+    let duration = (region.end - region.start) / value;
     duration = engine.TrimTo(duration, 3);
 
     handleStateInline(start, end);
 
-    let fx_buffer = audioUtils.Copy(start, end);
+    let fxBuffer = audioUtils.Copy(start, end);
     const originalBuffer = wavesurfer.backend.buffer;
-    const new_offset = ((start / 1) * originalBuffer.sampleRate) >> 0;
-    const new_len = ((duration / 1) * originalBuffer.sampleRate) >> 0;
-    const old_len = ((end / 1) * originalBuffer.sampleRate) >> 0;
+    const newOffset = ((start / 1) * originalBuffer.sampleRate) >> 0;
+    const newLength = ((duration / 1) * originalBuffer.sampleRate) >> 0;
+    const oldLength = ((end / 1) * originalBuffer.sampleRate) >> 0;
 
     /*
 			var emptySegment = wavesurfer.backend.ac.createBuffer (
 				wavesurfer.SelectedChannelsLen,
-				new_len,
+				newLength,
 				originalBuffer.sampleRate
 			);*/
 
-    engine.in_fx = true;
+    engine.inFx = true;
     app.ui.InteractionHandler.on = true;
-    const fx = audioUtils.FXBank.Speed(val);
+    const fx = audioUtils.FXBank.Speed(value);
 
     const getOfflineAudioContext = function (channels, sampleRate, duration) {
       return new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(
@@ -2350,21 +2351,21 @@ export function AudioEngine(app) {
         sampleRate
       );
     };
-    const audio_ctx = getOfflineAudioContext(
-      wavesurfer.SelectedChannelsLen, // orig_buffer.numberOfChannels,
+    const audioContext = getOfflineAudioContext(
+      wavesurfer.SelectedChannelsLen, // originalBuffer.numberOfChannels,
       originalBuffer.sampleRate,
-      new_len
+      newLength
     );
 
-    const source = audio_ctx.createBufferSource();
-    source.buffer = fx_buffer;
+    const source = audioContext.createBufferSource();
+    source.buffer = fxBuffer;
 
-    let filter = fx.filter(audio_ctx, audio_ctx.destination, source, duration);
+    let filter = fx.filter(audioContext, audioContext.destination, source, duration);
 
     source.start();
 
-    const offline_callback = function (rendered_buffer) {
-      audioUtils.Replace(start, end, rendered_buffer);
+    const offlineCallback = function (renderedBuffer) {
+      audioUtils.Replace(start, end, renderedBuffer);
 
       wavesurfer.regions.clear();
       wavesurfer.regions.add({
@@ -2382,27 +2383,27 @@ export function AudioEngine(app) {
       } else filter && filter.disconnect && filter.disconnect();
 
       // is this needed?
-      rendered_buffer = fx_buffer = filter = null;
+      renderedBuffer = fxBuffer = filter = null;
       source.disconnect();
-      // audio_ctx.close ();
+      // audioContext.close ();
       // -
-      engine.in_fx = false;
+      engine.inFx = false;
       app.ui.InteractionHandler.on = false;
     };
 
-    const offline_renderer = audio_ctx.startRendering();
-    if (offline_renderer)
-      offline_renderer.then(offline_callback).catch(function (err) {
+    const offlineRenderer = audioContext.startRendering();
+    if (offlineRenderer)
+      offlineRenderer.then(offlineCallback).catch(function (err) {
         console.log('Rendering failed: ' + err);
       });
     else
-      audio_ctx.oncomplete = function (e) {
-        offline_callback(e.renderedBuffer);
+      audioContext.oncomplete = function (e) {
+        offlineCallback(e.renderedBuffer);
       };
   });
 
   app.listenFor('StateDidPop', function (state, undo) {
-    if (!engine.is_ready) return;
+    if (!engine.isReady) return;
     app.fireEvent('RequestPause');
 
     wavesurfer.regions.clear();
@@ -2410,8 +2411,8 @@ export function AudioEngine(app) {
 
     if (state.cb) state.cb();
 
-    let new_duration = wavesurfer.getDuration();
-    app.fireEvent('DidUpdateLen', new_duration);
+    let newDuration = wavesurfer.getDuration();
+    app.fireEvent('DidUpdateLen', newDuration);
 
     if (state.meta && state.meta.length > 0) {
       if (state.meta[1]) {
@@ -2421,8 +2422,8 @@ export function AudioEngine(app) {
           id: 't',
         });
       } else {
-        if (!new_duration) new_duration = 0.0001;
-        app.fireEvent('RequestSeekTo', state.meta[0] / new_duration);
+        if (!newDuration) newDuration = 0.0001;
+        app.fireEvent('RequestSeekTo', state.meta[0] / newDuration);
       }
     }
 
@@ -2431,27 +2432,27 @@ export function AudioEngine(app) {
   });
 
   // ---
-  app.listenFor('RequestChanToggle', function (chan_index, force_val) {
-    if (!engine.is_ready) return false;
+  app.listenFor('RequestChanToggle', function (channelIndex, forceValue) {
+    if (!engine.isReady) return false;
 
-    if (wavesurfer.ActiveChannels.length <= chan_index) return false;
+    if (wavesurfer.ActiveChannels.length <= channelIndex) return false;
 
-    const oldval = wavesurfer.ActiveChannels[chan_index];
-    let val = -1;
+    const oldval = wavesurfer.ActiveChannels[channelIndex];
+    let value = -1;
 
-    if (force_val) val = force_val;
+    if (forceValue) value = forceValue;
     else {
-      if (oldval === 1) val = 0;
-      else val = 1;
+      if (oldval === 1) value = 0;
+      else value = 1;
     }
 
-    if (oldval !== val) {
-      wavesurfer.ActiveChannels[chan_index] = val;
-      if (val === 0) {
+    if (oldval !== value) {
+      wavesurfer.ActiveChannels[channelIndex] = value;
+      if (value === 0) {
         --wavesurfer.SelectedChannelsLen;
         // silece the channel itself
 
-        if (chan_index === 0) {
+        if (channelIndex === 0) {
           wavesurfer.backend.gainNode2.gain.value = 0.0;
         } else {
           wavesurfer.backend.gainNode1.gain.value = 0.0;
@@ -2459,7 +2460,7 @@ export function AudioEngine(app) {
       } else {
         ++wavesurfer.SelectedChannelsLen;
 
-        if (chan_index === 0) {
+        if (channelIndex === 0) {
           wavesurfer.backend.gainNode2.gain.value = 1.0;
         } else {
           wavesurfer.backend.gainNode1.gain.value = 1.0;
@@ -2467,7 +2468,7 @@ export function AudioEngine(app) {
       }
 
       wavesurfer.ForceDraw();
-      app.fireEvent('DidChanToggle', chan_index, val);
+      app.fireEvent('DidChanToggle', channelIndex, value);
     }
   });
 
@@ -2489,16 +2490,16 @@ export function AudioEngine(app) {
 
   const wave = wavesurfer.drawer.canvases[0].wave.parentNode;
 
-  let drag_x = 0;
-  const drag_move = function (e) {
-    const diff = drag_x - e.clientX;
+  let dragX = 0;
+  const dragMove = function (e) {
+    const diff = dragX - e.clientX;
 
     // find diff percentage from full width...
 
     // drag the waveform now
     app.fireEvent('RequestPan', diff);
 
-    drag_x = e.clientX;
+    dragX = e.clientX;
   };
 
   app.listenFor('RequestZoom', function (diff, mode) {
@@ -2510,25 +2511,25 @@ export function AudioEngine(app) {
     // compute availabel left ZoomFactor
     if (mode === -1) {
       const width = wv.drawer.width;
-      const available_pixels = width - width / wv.ZoomFactor;
+      const availablePixels = width - width / wv.ZoomFactor;
       const target = wv.ZoomFactor - 1;
       if (target <= 0) return;
 
-      const old_zoomfactor = wv.ZoomFactor;
-      wv.ZoomFactor += (diff * target) / available_pixels;
+      const oldZoomFactor = wv.ZoomFactor;
+      wv.ZoomFactor += (diff * target) / availablePixels;
       if (wv.ZoomFactor < 1) wv.ZoomFactor = 1;
 
-      const new_vis_dur = wv.getDuration() / wv.ZoomFactor;
+      const newVisibleDuration = wv.getDuration() / wv.ZoomFactor;
 
-      if (new_vis_dur <= 0.5) {
-        wv.ZoomFactor = old_zoomfactor;
+      if (newVisibleDuration <= 0.5) {
+        wv.ZoomFactor = oldZoomFactor;
         return;
       }
 
-      wv.VisibleDuration = new_vis_dur;
+      wv.VisibleDuration = newVisibleDuration;
 
-      const time_moved = wv.VisibleDuration * (diff / wv.drawer.width);
-      wv.LeftProgress += time_moved;
+      const timeMoved = wv.VisibleDuration * (diff / wv.drawer.width);
+      wv.LeftProgress += timeMoved;
 
       if (wv.LeftProgress + wv.VisibleDuration >= wv.getDuration()) {
         wv.LeftProgress = wv.getDuration() - wv.VisibleDuration;
@@ -2537,19 +2538,19 @@ export function AudioEngine(app) {
       }
     } else if (mode === 1) {
       const width = wv.drawer.width;
-      const available_pixels = width - width / wv.ZoomFactor;
+      const availablePixels = width - width / wv.ZoomFactor;
       const target = wv.ZoomFactor - 1;
       if (target <= 0) return;
 
-      const old_factor = wv.ZoomFactor;
-      wv.ZoomFactor -= (diff * target) / available_pixels;
+      const oldFactor = wv.ZoomFactor;
+      wv.ZoomFactor -= (diff * target) / availablePixels;
       if (wv.ZoomFactor < 1) wv.ZoomFactor = 1;
       const temp = wv.getDuration() / wv.ZoomFactor;
       if (temp + wv.LeftProgress > wv.getDuration()) {
-        wv.ZoomFactor = old_factor;
+        wv.ZoomFactor = oldFactor;
       } else {
         if (temp <= 0.5) {
-          wv.ZoomFactor = old_factor;
+          wv.ZoomFactor = oldFactor;
           return;
         }
 
@@ -2573,8 +2574,8 @@ export function AudioEngine(app) {
 
     if (mode === 1) diff *= wv.ZoomFactor;
     else if (mode === 2) {
-      const time_moved = wv.getDuration() * (diff / wv.drawer.width);
-      wv.LeftProgress = time_moved;
+      const timeMoved = wv.getDuration() * (diff / wv.drawer.width);
+      wv.LeftProgress = timeMoved;
 
       wv.ForceDraw();
       app.fireEvent('DidZoom', [
@@ -2588,8 +2589,8 @@ export function AudioEngine(app) {
 
     if (wv.ZoomFactor > 0) {
       // drag and draw by X pixels...
-      const time_moved = wv.VisibleDuration * (diff / wv.drawer.width);
-      wv.LeftProgress += time_moved;
+      const timeMoved = wv.VisibleDuration * (diff / wv.drawer.width);
+      wv.LeftProgress += timeMoved;
 
       if (wv.LeftProgress + wv.VisibleDuration >= wv.getDuration()) {
         wv.LeftProgress = wv.getDuration() - wv.VisibleDuration;
@@ -2614,10 +2615,10 @@ export function AudioEngine(app) {
 
         wavesurfer.Interacting |= 1 << 1;
 
-        drag_x = e.clientX;
+        dragX = e.clientX;
         wave.className = 'pk_grabbing';
 
-        document.addEventListener('mousemove', drag_move, false);
+        document.addEventListener('mousemove', dragMove, false);
         return false;
       } else {
         app.fireEvent('MouseDown');
@@ -2630,7 +2631,7 @@ export function AudioEngine(app) {
   wave.addEventListener(
     'mouseleave',
     function (e) {
-      document.removeEventListener('mousemove', drag_move);
+      document.removeEventListener('mousemove', dragMove);
 
       if (wave.className !== '') {
         wave.className = '';
@@ -2651,7 +2652,7 @@ export function AudioEngine(app) {
             wavesurfer.Interacting &= ~(1 << 1);
           }, 20);
         }
-        document.removeEventListener('mousemove', drag_move);
+        document.removeEventListener('mousemove', dragMove);
       }
     },
     false
@@ -2660,45 +2661,45 @@ export function AudioEngine(app) {
   app.fireEvent('RequestResize');
 
   app.listenFor('RequestViewFollowCursorToggle', function () {
-    const val = !wavesurfer.FollowCursor;
-    wavesurfer.FollowCursor = val;
+    const value = !wavesurfer.FollowCursor;
+    wavesurfer.FollowCursor = value;
 
-    // jump to curr cursor position
-    if (val && engine.is_ready) {
+    // jump to current cursor position
+    if (value && engine.isReady) {
       wavesurfer.CursorCenter();
     }
 
-    app.fireEvent('DidViewFollowCursorToggle', val);
+    app.fireEvent('DidViewFollowCursorToggle', value);
   });
   app.listenFor('RequestViewPeakSeparatorToggle', function () {
-    if (!engine.is_ready) return;
+    if (!engine.isReady) return;
 
-    const val = !wavesurfer.params.limits;
-    wavesurfer.params.limits = val;
+    const value = !wavesurfer.params.limits;
+    wavesurfer.params.limits = value;
 
     wavesurfer.ForceDraw();
 
-    app.fireEvent('DidViewPeakSeparatorToggle', val);
+    app.fireEvent('DidViewPeakSeparatorToggle', value);
   });
 
   app.listenFor('RequestViewTimelineToggle', function () {
-    if (!engine.is_ready) return;
+    if (!engine.isReady) return;
 
-    const val = !wavesurfer.params.timeline;
-    wavesurfer.params.timeline = val;
+    const value = !wavesurfer.params.timeline;
+    wavesurfer.params.timeline = value;
 
     wavesurfer.ForceDraw();
 
-    app.fireEvent('DidViewTimelineToggle', val);
+    app.fireEvent('DidViewTimelineToggle', value);
   });
 
   app.listenFor('RequestViewCenterToCursor', function () {
-    if (!engine.is_ready) return;
+    if (!engine.isReady) return;
     wavesurfer.CursorCenter();
   });
 
-  app.listenFor('RequestZoomUI', function (type, val) {
-    if (!engine.is_ready) return;
+  app.listenFor('RequestZoomUI', function (type, value) {
+    if (!engine.isReady) return;
 
     if (type === 0) {
       wavesurfer.ResetZoom();
@@ -2706,11 +2707,11 @@ export function AudioEngine(app) {
     }
 
     if (type === 'h') {
-      wavesurfer.SetZoom(0.5, val);
+      wavesurfer.SetZoom(0.5, value);
     }
 
     if (type === 'v') {
-      wavesurfer.SetZoomVertical(val);
+      wavesurfer.SetZoomVertical(value);
     }
   });
   // -

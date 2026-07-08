@@ -6,7 +6,7 @@
  *   plumbing shared by all FX dialogs (ON/OFF + Preview toolbar, preset
  *   dropdown management, preview event wiring).
  *
- * Instance properties such as `el_body`, `el_title`, `els.bottom` and the
+ * Instance properties such as `bodyElement`, `titleElement`, `elements.bottom` and the
  * `Show()` / `Destroy()` methods are relied upon across the app; treat them
  * as the public API of this module.
  */
@@ -20,35 +20,35 @@ export class SimpleModal {
     this.id = config.id ? config.id : ++nextModalId;
 
     const root = document.createElement('div');
-    this.els = {
+    this.elements = {
       toolbar: [],
       bottom: [],
     };
-    root.className = 'pk_modal ' + (config.clss ? config.clss : '');
-    this.el = root;
+    root.className = 'pk_modal ' + (config.className ? config.className : '');
+    this.element = root;
 
     // Backdrop that dims the rest of the page.
     const backdrop = document.createElement('div');
     backdrop.className = 'pk_modal_back';
-    this.el_back = backdrop;
+    this.backdropElement = backdrop;
 
     // Wrapper used to center the modal.
     const centerer = document.createElement('div');
     centerer.className = 'pk_modal_cnt';
-    this.el_cont = centerer;
+    this.centererElement = centerer;
 
     // Title bar.
     const titleBar = document.createElement('div');
     titleBar.className = 'pk_noselect pk_modal_title';
     titleBar.innerHTML = '<span>' + (config.title || '') + '</span>';
     root.appendChild(titleBar);
-    this.el_title = titleBar;
+    this.titleElement = titleBar;
 
     // Main body.
     const body = document.createElement('div');
     body.className = 'pk_modal_main';
     root.appendChild(body);
-    this.el_body = body;
+    this.bodyElement = body;
 
     // Bottom button row — always starts with CANCEL.
     const bottomBar = document.createElement('div');
@@ -68,10 +68,11 @@ export class SimpleModal {
 
         const button = document.createElement('a');
         button.innerHTML = buttonConfig.title;
-        button.className = 'pk_modal_a_bottom ' + (buttonConfig.clss ? buttonConfig.clss : '');
+        button.className =
+          'pk_modal_a_bottom ' + (buttonConfig.className ? buttonConfig.className : '');
         button.onclick = () => buttonConfig.callback(modal);
 
-        this.els.bottom.push(button);
+        this.elements.bottom.push(button);
         bottomBar.appendChild(button);
       }
     }
@@ -84,27 +85,27 @@ export class SimpleModal {
 
         const link = document.createElement('a');
         link.innerHTML = toolConfig.title;
-        link.className = 'pk_modal_a_top ' + (toolConfig.clss ? toolConfig.clss : '');
+        link.className = 'pk_modal_a_top ' + (toolConfig.className ? toolConfig.className : '');
         titleBar.appendChild(link);
 
         link.onclick = function () {
           toolConfig.callback(modal, this);
         };
-        this.els.toolbar.push(link);
+        this.elements.toolbar.push(link);
       }
     }
 
     this.ondestroy = config.ondestroy;
-    if (config.body) this.el_body.innerHTML = config.body;
+    if (config.body) this.bodyElement.innerHTML = config.body;
     if (config.onpreset) this.onpreset = config.onpreset;
     if (config.setup) config.setup(this);
   }
 
   Show() {
-    this.el_back.appendChild(this.el_cont);
-    this.el_cont.appendChild(this.el);
+    this.backdropElement.appendChild(this.centererElement);
+    this.centererElement.appendChild(this.element);
 
-    document.body.appendChild(this.el_back);
+    document.body.appendChild(this.backdropElement);
 
     return this;
   }
@@ -114,8 +115,8 @@ export class SimpleModal {
       this.ondestroy(this);
       this.ondestroy = null;
     }
-    this.els = null;
-    document.body.removeChild(this.el_back);
+    this.elements = null;
+    document.body.removeChild(this.backdropElement);
   }
 }
 
@@ -125,7 +126,7 @@ export class SimpleModal {
  * event listeners when the dialog closes.
  *
  * @param {object} config  SimpleModal config plus `preview`, `presets`,
- *                         `custom_pres` and `updateFilter` extensions.
+ *                         `customPresetList` and `updateFilter` extensions.
  * @param {object} app     The AudioEditor instance (event bus + ui).
  * @returns {SimpleModal}
  */
@@ -136,7 +137,7 @@ export function AudioEffectModal(config, app) {
     toolbar = [
       {
         title: 'ON',
-        clss: 'pk_inact',
+        className: 'pk_inact',
         callback: function () {
           app.fireEvent('RequestActionFX_TOGGLE');
         },
@@ -153,7 +154,7 @@ export function AudioEffectModal(config, app) {
   const effectModal = new SimpleModal({
     id: config.id,
     title: config.title,
-    clss: config.clss,
+    className: config.className,
     presets: config.presets,
     updateFilter: config.updateFilter,
     ondestroy: function (modal) {
@@ -202,23 +203,24 @@ export function AudioEffectModal(config, app) {
       );
 
       modal._evstart = function () {
-        modal.els.toolbar[0].classList.remove('pk_inact');
-        modal.els.toolbar[1].classList.add('pk_act');
+        modal.elements.toolbar[0].classList.remove('pk_inact');
+        modal.elements.toolbar[1].classList.add('pk_act');
       };
       modal._evstop = function () {
-        modal.els.toolbar[0].classList.add('pk_inact');
-        modal.els.toolbar[1].classList.remove('pk_act');
+        modal.elements.toolbar[0].classList.add('pk_inact');
+        modal.elements.toolbar[1].classList.remove('pk_act');
       };
 
       modal._evtoggle = function (isOn) {
-        const toggleLink = modal.els.toolbar[0];
+        const toggleLink = modal.elements.toolbar[0];
         toggleLink.innerHTML = isOn ? 'ON' : 'OFF';
       };
 
       let stoppedListening = false;
       modal._updpreview = function (mode) {
-        const selectedOption = modal.el_presets.options[modal.el_presets.selectedIndex];
-        const editButton = modal.el.getElementsByClassName('pk_sel_edt')[0];
+        const selectedOption =
+          modal.presetSelectElement.options[modal.presetSelectElement.selectedIndex];
+        const editButton = modal.element.getElementsByClassName('pk_sel_edt')[0];
 
         if (mode === 't') {
           if (selectedOption && selectedOption.getAttribute('data-custom')) {
@@ -250,7 +252,7 @@ export function AudioEffectModal(config, app) {
           return;
         }
 
-        const presetOptions = modal.el_presets.getElementsByTagName('option');
+        const presetOptions = modal.presetSelectElement.getElementsByTagName('option');
         let index = presetOptions.length;
 
         while (index-- > 0) {
@@ -268,7 +270,7 @@ export function AudioEffectModal(config, app) {
           return;
         }
 
-        let presetSelect = modal.el.getElementsByClassName('pk_sel');
+        let presetSelect = modal.element.getElementsByClassName('pk_sel');
 
         // If a preset dropdown already exists, refresh its custom entries.
         if (presetSelect.length > 0) {
@@ -324,7 +326,7 @@ export function AudioEffectModal(config, app) {
 
         presetSelect.onchange = function () {
           const presetValues = this.value.split(',');
-          const inputs = modal.el.getElementsByTagName('input');
+          const inputs = modal.element.getElementsByTagName('input');
 
           modal._updpreview('t');
 
@@ -350,9 +352,9 @@ export function AudioEffectModal(config, app) {
           }
         };
 
-        const bottomBar = modal.el.getElementsByClassName('pk_modal_bottom')[0];
+        const bottomBar = modal.element.getElementsByClassName('pk_modal_bottom')[0];
         bottomBar.appendChild(presetSelect);
-        modal.el_presets = presetSelect;
+        modal.presetSelectElement = presetSelect;
 
         // "Save or modify preset" button next to the dropdown.
         const editPresetsButton = document.createElement('a');
@@ -376,7 +378,7 @@ export function AudioEffectModal(config, app) {
 
       if (config.presets) {
         modal._updatePresets(null, config.presets);
-        if (config.custom_pres) modal._updatePresets(null, config.custom_pres);
+        if (config.customPresetList) modal._updatePresets(null, config.customPresetList);
 
         app.listenFor('DidSetPresets', modal._updatePresets);
       }

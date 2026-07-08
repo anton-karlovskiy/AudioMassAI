@@ -222,7 +222,7 @@ function confirmAndSummarizeWithWorker(app, text, modalBody) {
     let isConfirmed = false;
     const confirmationModal = new SimpleModal({
       title: 'Confirm Model Load',
-      clss: 'pk_modal_anim',
+      className: 'pk_modal_anim',
       body: `<p>Summarization requires loading a ~${SUMMARIZATION_MODEL_SIZE} model. Proceed?</p>`,
       setup: function (modal) {
         app.ui.InteractionHandler.checkAndSet('modal');
@@ -234,7 +234,7 @@ function confirmAndSummarizeWithWorker(app, text, modalBody) {
           [27]
         );
 
-        const cancelButton = modal.el.getElementsByClassName('pk_modal_cancel')[0];
+        const cancelButton = modal.element.getElementsByClassName('pk_modal_cancel')[0];
         cancelButton.innerHTML = 'No';
       },
       ondestroy: function () {
@@ -248,7 +248,7 @@ function confirmAndSummarizeWithWorker(app, text, modalBody) {
       buttons: [
         {
           title: 'Yes',
-          clss: 'pk_modal_a_accpt',
+          className: 'pk_modal_a_accpt',
           callback: async function (modal) {
             isConfirmed = true;
             modal.Destroy();
@@ -304,14 +304,14 @@ async function summarizeTranscript(app, text, modalBody) {
 // --- transcript modal -------------------------------------------------------
 
 function exportTranscript(modal) {
-  const text = modal.el_body.querySelector('textarea').value;
+  const text = modal.bodyElement.querySelector('textarea').value;
   const blob = new Blob([text], { type: 'text/plain' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
 
   // When the Undo button is visible the textarea holds the summary.
-  const isShowingSummary = Array.from(modal.els.bottom).some(
+  const isShowingSummary = Array.from(modal.elements.bottom).some(
     (button) => button.innerHTML.trim() === LABEL_UNDO
   );
   link.download = isShowingSummary ? 'transcription_summary.txt' : 'transcription_original.txt';
@@ -323,19 +323,19 @@ function exportTranscript(modal) {
 }
 
 async function handleSummarizeClick(app, modal) {
-  const summarizeButton = Array.from(modal.els.bottom).find(
+  const summarizeButton = Array.from(modal.elements.bottom).find(
     (button) =>
       button.innerHTML.trim() === LABEL_SUMMARIZE || button.innerHTML.trim() === LABEL_UNDO
   );
-  const transcriptArea = modal.el_body.querySelector('textarea');
+  const transcriptArea = modal.bodyElement.querySelector('textarea');
   const transcript = transcriptArea.value;
 
   // In "Undo" mode the button restores the original transcript.
   if (summarizeButton.innerHTML.trim() === LABEL_UNDO) {
     transcriptArea.value = modal._originalTranscript;
     updateButtonCaption(summarizeButton, LABEL_SUMMARIZE);
-    updateSubTitle(modal.el_body, '');
-    modal.el_title.innerHTML = TITLE_TRANSCRIPTION_ORIGINAL;
+    updateSubTitle(modal.bodyElement, '');
+    modal.titleElement.innerHTML = TITLE_TRANSCRIPTION_ORIGINAL;
     return;
   }
 
@@ -345,12 +345,12 @@ async function handleSummarizeClick(app, modal) {
     updateButtonCaption(summarizeButton, 'Summarizing...');
     disableButton(summarizeButton);
 
-    updateSubTitle(modal.el_body, 'Please wait, preparing summarization...');
+    updateSubTitle(modal.bodyElement, 'Please wait, preparing summarization...');
 
-    const summary = await summarizeTranscript(app, transcript, modal.el_body);
+    const summary = await summarizeTranscript(app, transcript, modal.bodyElement);
 
     transcriptArea.value = summary;
-    modal.el_title.innerHTML = TITLE_TRANSCRIPTION_SUMMARY;
+    modal.titleElement.innerHTML = TITLE_TRANSCRIPTION_SUMMARY;
 
     updateButtonCaption(summarizeButton, LABEL_UNDO);
     enableButton(summarizeButton);
@@ -358,8 +358,8 @@ async function handleSummarizeClick(app, modal) {
     updateButtonCaption(summarizeButton, LABEL_SUMMARIZE);
     enableButton(summarizeButton);
 
-    updateSubTitle(modal.el_body, '');
-    removeProgressBars(modal.el_body);
+    updateSubTitle(modal.bodyElement, '');
+    removeProgressBars(modal.bodyElement);
 
     // Don't surface an error when the user simply cancelled.
     if (error?.message !== ERROR_CANCELLED_BY_USER) {
@@ -374,7 +374,7 @@ async function handleSummarizeClick(app, modal) {
 function showTranscriptModal(app, transcript) {
   const transcriptionModal = new SimpleModal({
     title: TITLE_TRANSCRIPTION_ORIGINAL,
-    clss: 'pk_modal_anim',
+    className: 'pk_modal_anim',
     body: `<textarea readonly style="width: 100%; height: 200px;">${transcript}</textarea><p></p>`,
     setup: function (modal) {
       app.ui.InteractionHandler.checkAndSet('modal');
@@ -393,17 +393,17 @@ function showTranscriptModal(app, transcript) {
     buttons: [
       {
         title: 'Export',
-        clss: 'pk_modal_a_accpt',
+        className: 'pk_modal_a_accpt',
         callback: exportTranscript,
       },
       {
         title: LABEL_SUMMARIZE,
-        clss: 'pk_modal_a_accpt',
+        className: 'pk_modal_a_accpt',
         callback: (modal) => handleSummarizeClick(app, modal),
       },
       {
         title: 'Close',
-        clss: 'pk_modal_a_accpt',
+        className: 'pk_modal_a_accpt',
         callback: function (modal) {
           modal.Destroy();
         },
@@ -424,7 +424,7 @@ export function initTranscription(app) {
 
     const transcribingModal = new SimpleModal({
       title: 'Audio Transcription',
-      clss: 'pk_modal_anim',
+      className: 'pk_modal_anim',
       body: '<p>Please wait, preparing transcription...</p>',
       setup: function (modal) {
         app.fireEvent('RequestPause');
@@ -449,24 +449,24 @@ export function initTranscription(app) {
 
       switch (modelState.status) {
         case 'initiate': {
-          updateSubTitle(transcribingModal.el_body, 'Loading transcription model...');
-          createProgressBar(transcribingModal.el_body, modelState);
+          updateSubTitle(transcribingModal.bodyElement, 'Loading transcription model...');
+          createProgressBar(transcribingModal.bodyElement, modelState);
           break;
         }
         case 'progress': {
-          updateProgressBar(transcribingModal.el_body, modelState);
+          updateProgressBar(transcribingModal.bodyElement, modelState);
           break;
         }
         case 'done': {
           break;
         }
         case 'ready': {
-          updateSubTitle(transcribingModal.el_body, 'Transcribing audio...');
-          removeProgressBars(transcribingModal.el_body);
+          updateSubTitle(transcribingModal.bodyElement, 'Transcribing audio...');
+          removeProgressBars(transcribingModal.bodyElement);
           break;
         }
         case 'complete': {
-          updateSubTitle(transcribingModal.el_body, '');
+          updateSubTitle(transcribingModal.bodyElement, '');
           transcribingModal.Destroy();
 
           showTranscriptModal(app, transcript);

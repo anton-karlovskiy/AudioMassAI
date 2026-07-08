@@ -18,11 +18,11 @@ import { enableFileDrop } from './drag-drop.js';
 export function EditorUI(app) {
   const ui = this;
 
-  this.el = app.el;
+  this.element = app.element;
   this.app = app;
 
   // if mobile add proper class
-  this.el.className += ' pk_app' + (app.isMobile ? ' pk_mob' : '');
+  this.element.className += ' pk_app' + (app.isMobile ? ' pk_mob' : '');
 
   // hold refferences to the event functions
   this.fireEvent = app.fireEvent;
@@ -64,10 +64,10 @@ export function EditorUI(app) {
 
     forceUnset: function (_name) {
       if (this.check(_name)) {
-        const prev = this.arr.pop();
-        if (prev) {
-          this.on = prev.on;
-          this.by = prev.by;
+        const previous = this.arr.pop();
+        if (previous) {
+          this.on = previous.on;
+          this.by = previous.by;
         } else {
           this.on = false;
           this.by = null;
@@ -81,7 +81,7 @@ export function EditorUI(app) {
     document.body.className = 'pk_stndln';
     const fxd = document.createElement('div');
     fxd.className = 'pk_fxd';
-    fxd.appendChild(this.el);
+    fxd.appendChild(this.element);
 
     document.body.appendChild(fxd);
 
@@ -101,7 +101,7 @@ export function EditorUI(app) {
   app.listenFor('ShowError', function (message) {
     new SimpleModal({
       title: 'Oops! Something is not right',
-      clss: 'pk_modal_anim',
+      className: 'pk_modal_anim',
       ondestroy: function (ui) {
         app.ui.InteractionHandler.on = false;
         app.ui.KeyHandler.removeCallback('modalTempErr');
@@ -150,17 +150,17 @@ function _topbarConfig(app, ui) {
               buttons: [
                 {
                   title: 'Export',
-                  clss: 'pk_modal_a_accpt',
+                  className: 'pk_modal_a_accpt',
                   callback: function (modal) {
-                    const input = modal.el_body.getElementsByTagName('input')[0];
+                    const input = modal.bodyElement.getElementsByTagName('input')[0];
                     const value = input.value.trim();
 
                     let format = 'mp3';
                     let kbps = 128;
-                    let export_sel = false;
+                    let exportSelect = false;
                     let stereo = false;
 
-                    const radios = modal.el_body.getElementsByClassName('pk_check');
+                    const radios = modal.bodyElement.getElementsByClassName('pk_check');
                     let l = radios.length;
                     while (l-- > 0) {
                       if (radios[l].checked) {
@@ -169,8 +169,8 @@ function _topbarConfig(app, ui) {
                         } else if (radios[l].name == 'xport') {
                           if (radios[l].value === 'sel') {
                             const region = app.engine.wavesurfer.regions.list[0];
-                            if (!region) export_sel = false;
-                            else export_sel = [region.start, region.end];
+                            if (!region) exportSelect = false;
+                            else exportSelect = [region.start, region.end];
                           }
                         } else if (radios[l].name == 'chnl') {
                           if (radios[l].value === 'stereo') {
@@ -186,7 +186,7 @@ function _topbarConfig(app, ui) {
                       kbps = document.getElementById('flac-comp').value / 1;
                     }
 
-                    app.engine.DownloadFile(value, format, kbps, export_sel, stereo);
+                    app.engine.DownloadFile(value, format, kbps, exportSelect, stereo);
                     modal.Destroy();
                     // -
                   },
@@ -233,13 +233,13 @@ function _topbarConfig(app, ui) {
                 // if no region
                 const region = wv.regions.list[0];
                 if (!region) {
-                  const lbl = modal.el_body.getElementsByClassName('pk_lblmp3')[0];
+                  const lbl = modal.bodyElement.getElementsByClassName('pk_lblmp3')[0];
                   lbl.className = 'pk_dis';
                 }
 
-                const chan_num = wv.backend.buffer.numberOfChannels;
-                if (chan_num === 2) {
-                  modal.el_body.getElementsByClassName('pk_stereo')[0].checked = true;
+                const channelNumber = wv.backend.buffer.numberOfChannels;
+                if (channelNumber === 2) {
+                  modal.bodyElement.getElementsByClassName('pk_stereo')[0].checked = true;
                 }
 
                 app.fireEvent('RequestPause');
@@ -253,8 +253,8 @@ function _topbarConfig(app, ui) {
                 );
 
                 setTimeout(function () {
-                  if (!modal.el) return;
-                  const inputtxt = modal.el.getElementsByTagName('input')[0];
+                  if (!modal.element) return;
+                  const inputtxt = modal.element.getElementsByTagName('input')[0];
                   inputtxt && inputtxt.select();
 
                   const format = document.getElementById('frmtex');
@@ -300,7 +300,7 @@ function _topbarConfig(app, ui) {
               },
             }).Show();
           },
-          clss: 'pk_inact',
+          className: 'pk_inact',
           setup: function (obj) {
             obj.setAttribute('data-id', 'dl');
 
@@ -343,9 +343,9 @@ function _topbarConfig(app, ui) {
               buttons: [
                 {
                   title: 'Load Asset',
-                  clss: 'pk_modal_a_accpt',
+                  className: 'pk_modal_a_accpt',
                   callback: function (modal) {
-                    const input = modal.el_body.getElementsByTagName('input')[0];
+                    const input = modal.bodyElement.getElementsByTagName('input')[0];
                     const value = input.value.trim();
 
                     function isURL(str) {
@@ -394,13 +394,13 @@ function _topbarConfig(app, ui) {
                 app.ui.KeyHandler.addCallback(
                   'modalTempEnter',
                   function (e) {
-                    modal.els.bottom[0].click();
+                    modal.elements.bottom[0].click();
                   },
                   [13]
                 );
 
                 setTimeout(function () {
-                  modal.el && modal.el.getElementsByTagName('input')[0].focus();
+                  modal.element && modal.element.getElementsByTagName('input')[0].focus();
                 }, 20);
               },
             }).Show();
@@ -417,9 +417,9 @@ function _topbarConfig(app, ui) {
 
         {
           name: 'Save Draft Locally',
-          clss: 'pk_inact',
+          className: 'pk_inact',
           action: function (e) {
-            if (!app.engine.is_ready) return;
+            if (!app.engine.isReady) return;
 
             const saving = function (type, name) {
               let buff = app.engine.wavesurfer.backend.buffer;
@@ -457,10 +457,10 @@ function _topbarConfig(app, ui) {
               buttons: [
                 {
                   title: 'Save',
-                  clss: 'pk_modal_a_accpt',
+                  className: 'pk_modal_a_accpt',
                   callback: function (modal) {
                     let type = 'whole';
-                    const input = modal.el_body.getElementsByTagName('input');
+                    const input = modal.bodyElement.getElementsByTagName('input');
                     let name = input[input.length - 1].value;
                     if (name) {
                       name = name.trim();
@@ -503,11 +503,11 @@ function _topbarConfig(app, ui) {
 
                 // if no region
                 const region = wv.regions.list[0];
-                const lblr = modal.el_body.getElementsByClassName('pk_lblsel')[0];
+                const lblr = modal.bodyElement.getElementsByClassName('pk_lblsel')[0];
                 if (!region) {
                   lblr.className = 'pk_dis';
                 } else {
-                  modal.el_body.getElementsByClassName('pk_check')[1].checked = true;
+                  modal.bodyElement.getElementsByClassName('pk_check')[1].checked = true;
                   lblr.childNodes[1].textContent =
                     app.ui.formatTime(region.start) + ' to ' + app.ui.formatTime(region.end);
                 }
@@ -515,13 +515,13 @@ function _topbarConfig(app, ui) {
                 // if no copy buffer
                 const copy = app.engine.GetCopyBuff();
                 if (!copy) {
-                  const lbl = modal.el_body.getElementsByClassName('pk_lblsel2')[0];
+                  const lbl = modal.bodyElement.getElementsByClassName('pk_lblsel2')[0];
                   lbl.className = 'pk_dis';
                 }
 
                 if (!app.isMobile) {
                   setTimeout(function () {
-                    modal.el && modal.el.getElementsByClassName('pk_txt')[0].focus();
+                    modal.element && modal.element.getElementsByClassName('pk_txt')[0].focus();
                   }, 20);
                 }
 
@@ -608,7 +608,7 @@ function _topbarConfig(app, ui) {
           name: 'Open Local Drafts',
           action: function (e) {
             let datenow = new Date();
-            const time_ago = function (arg) {
+            const timeAgo = function (arg) {
               let a = ((datenow - arg) / 1e3) >> 0;
               if (59 >= a) return ((datenow = 1 < a ? 's' : ''), a + ' second' + datenow + ' ago');
               if (60 <= a && 3599 >= a)
@@ -622,13 +622,13 @@ function _topbarConfig(app, ui) {
             };
             const func = function (fls) {
               fls.ListSessions(function (ret) {
-                let msg = '';
+                let message = '';
                 if (ret.length === 0) {
-                  msg += 'No drafts found...';
+                  message += 'No drafts found...';
                 } else {
                   for (let i = 0; i < ret.length; ++i) {
-                    const curr = ret[i];
-                    const date = new Date(curr.created);
+                    const current = ret[i];
+                    const date = new Date(current.created);
                     const datestr =
                       date.getMonth() +
                       1 +
@@ -642,21 +642,21 @@ function _topbarConfig(app, ui) {
                       date.getMinutes() +
                       ':' +
                       date.getSeconds();
-                    const agostr = time_ago(date);
-                    const filename = curr.name || '-';
-                    const duration = curr.durr;
-                    const thumb = curr.thumb;
-                    const chns = curr.chans === 1 ? 'mono' : 'stereo';
+                    const agostr = timeAgo(date);
+                    const filename = current.name || '-';
+                    const duration = current.durr;
+                    const thumb = current.thumb;
+                    const chns = current.chans === 1 ? 'mono' : 'stereo';
 
-                    msg +=
+                    message +=
                       '<div id="pk_' +
-                      curr.id +
+                      current.id +
                       '" class="pk_lcldrf">' +
                       '<div style="padding-bottom:2px"><span><i class="pk_i">name:</i>' +
                       filename +
                       '</span></div>' +
                       '<div><span class="pk_lcls"><i class="pk_i">id:</i><strong>' +
-                      curr.id +
+                      current.id +
                       '</strong><br/><i class="pk_i">chn:</i>' +
                       chns +
                       '</span>' +
@@ -672,56 +672,56 @@ function _topbarConfig(app, ui) {
                       thumb +
                       '" />' +
                       '<a class="pk_lcla2" onclick="PKAudioEditor.fireEvent(\'LoadDraft\',\'' +
-                      curr.id +
+                      current.id +
                       '\', 3);">PLAY</a>' +
                       '<a class="pk_lcla" onclick="PKAudioEditor.fireEvent(\'LoadDraft\',\'' +
-                      curr.id +
+                      current.id +
                       '\');">Open</a>';
 
-                    if (app.engine.is_ready) {
-                      msg +=
+                    if (app.engine.isReady) {
+                      message +=
                         "<a onclick=\"PKAudioEditor.fireEvent('LoadDraft','" +
-                        curr.id +
+                        current.id +
                         '\',1);" class="pk_lcla">Append to Current Track</a>';
                     }
-                    msg +=
+                    message +=
                       '<a class="pk_lcla" style="color:#ad2b2b" onclick="PKAudioEditor.fireEvent(\'LoadDraft\',\'' +
-                      curr.id +
+                      current.id +
                       '\',2);">Del</a>';
-                    msg += '</div></div>';
+                    message += '</div></div>';
                   }
                 }
 
                 let modal;
-                const closeModal = function (val, val2) {
+                const closeModal = function (value, val2) {
                   if (val2 === 2 || val2 === 3) return;
 
                   modal.Destroy();
                   modal = null;
                 };
 
-                const set_act_btn = function (name, state) {
+                const setActiveButton = function (name, state) {
                   let act;
                   if (!state) {
-                    act = modal.el_body.getElementsByClassName('pk_act')[0];
+                    act = modal.bodyElement.getElementsByClassName('pk_act')[0];
                     if (act) {
                       act.classList.remove('pk_act');
                     }
                   } else {
-                    const el = document.getElementById('pk_' + name);
-                    if (el) {
-                      act = el.getElementsByClassName('pk_lcla2')[0];
+                    const element = document.getElementById('pk_' + name);
+                    if (element) {
+                      act = element.getElementsByClassName('pk_lcla2')[0];
                       act && act.classList.add('pk_act');
                     }
                   }
                   // --
                 };
 
-                app.listenFor('_lclStart', set_act_btn);
+                app.listenFor('_lclStart', setActiveButton);
 
                 modal = new SimpleModal({
                   title: 'Local Drafts',
-                  clss: 'pk_bigger',
+                  className: 'pk_bigger',
 
                   ondestroy: function (modal) {
                     app.fireEvent('_lclStop');
@@ -729,12 +729,12 @@ function _topbarConfig(app, ui) {
                     app.ui.InteractionHandler.on = false;
                     app.ui.KeyHandler.removeCallback('modalTempErr');
                     app.stopListeningFor('LoadDraft', closeModal);
-                    app.stopListeningFor('_lclStart', set_act_btn);
+                    app.stopListeningFor('_lclStart', setActiveButton);
                   },
 
                   buttons: [],
 
-                  body: '<div>' + msg + '</div>',
+                  body: '<div>' + message + '</div>',
                   setup: function (modal) {
                     app.fireEvent('RequestPause');
                     app.fireEvent('RequestRegionClear');
@@ -797,14 +797,14 @@ function _topbarConfig(app, ui) {
 
                   app.fls.DelSession(name, function (name) {
                     const id = 'pk_' + name;
-                    let el = document.getElementById(id);
+                    let element = document.getElementById(id);
 
-                    if (el) {
-                      if (el.parentNode.children.length === 1) {
-                        el.parentNode.innerHTML = 'No drafts found...';
-                      } else el.parentNode.removeChild(el);
+                    if (element) {
+                      if (element.parentNode.children.length === 1) {
+                        element.parentNode.innerHTML = 'No drafts found...';
+                      } else element.parentNode.removeChild(element);
 
-                      el = null;
+                      element = null;
                     }
                   });
                   return;
@@ -827,16 +827,23 @@ function _topbarConfig(app, ui) {
                   }
 
                   // generate audio context here...
-                  const aud_cont = new (window.AudioContext || window.webkitAudioContext)();
-                  if (aud_cont && aud_cont.state == 'suspended') {
-                    aud_cont.resume && aud_cont.resume();
+                  const providedAudioContext = new (
+                    window.AudioContext || window.webkitAudioContext
+                  )();
+                  if (providedAudioContext && providedAudioContext.state == 'suspended') {
+                    providedAudioContext.resume && providedAudioContext.resume();
                   }
 
                   app.fls.GetSession(name, function (e) {
                     if (e && e.id === name) {
                       source.id = e.id;
-                      source.aud = aud_cont;
-                      source.src = app.engine.PlayBuff(e.data, e.chans, e.samplerate, aud_cont);
+                      source.aud = providedAudioContext;
+                      source.src = app.engine.PlayBuff(
+                        e.data,
+                        e.chans,
+                        e.samplerate,
+                        providedAudioContext
+                      );
                       if (!source.src) {
                         source.aud && source.aud.close && source.aud.close();
                         source = {};
@@ -872,14 +879,14 @@ function _topbarConfig(app, ui) {
                 })(app, name, append);
 
                 // --- ask if we want to click the first one
-                if (app.engine.is_ready && !append) {
+                if (app.engine.isReady && !append) {
                   const mm = new SimpleModal({
                     title: 'Open in Existing?',
                     body: '<div>Open in new window, or in the current one?</div>',
                     buttons: [
                       {
                         title: 'OPEN',
-                        clss: 'pk_modal_a_accpt',
+                        className: 'pk_modal_a_accpt',
                         callback: function (modal) {
                           overwrite();
 
@@ -888,7 +895,7 @@ function _topbarConfig(app, ui) {
                       },
                       {
                         title: 'OPEN IN NEW',
-                        clss: 'pk_modal_a_accpt',
+                        className: 'pk_modal_a_accpt',
                         callback: function (modal) {
                           window.open(window.location.pathname + '?local=' + name);
                           modal.Destroy();
@@ -927,7 +934,7 @@ function _topbarConfig(app, ui) {
         },
         {
           name: 'Transcribe (with AI)',
-          clss: 'pk_inact',
+          className: 'pk_inact',
           action: function () {
             app.fireEvent('RequestTranscription');
           },
@@ -949,19 +956,19 @@ function _topbarConfig(app, ui) {
       children: [
         {
           name: 'Undo <span class="pk_shrtct">Shft+Z</span>',
-          clss: 'pk_inact',
+          className: 'pk_inact',
           action: function () {
             app.fireEvent('StateRequestUndo');
           },
           setup: function (obj) {
-            app.listenFor('DidStateChange', function (undo_states, redo_states) {
-              if (undo_states.length === 0) {
+            app.listenFor('DidStateChange', function (undoStates, redoStates) {
+              if (undoStates.length === 0) {
                 obj.innerHTML = 'Undo <span class="pk_shrtct">Shft+Z</span>';
                 obj.classList.add('pk_inact');
               } else {
                 obj.innerHTML =
                   'Undo&nbsp;<i style="pointer-events:none">' +
-                  undo_states[undo_states.length - 1].desc +
+                  undoStates[undoStates.length - 1].desc +
                   '</i><span class="pk_shrtct">Shft+Z</span>';
                 obj.classList.remove('pk_inact');
               }
@@ -971,19 +978,19 @@ function _topbarConfig(app, ui) {
 
         {
           name: 'Redo <span class="pk_shrtct">Shft+Y</span>',
-          clss: 'pk_inact',
+          className: 'pk_inact',
           action: function () {
             app.fireEvent('StateRequestRedo');
           },
           setup: function (obj) {
-            app.listenFor('DidStateChange', function (undo_states, redo_states) {
-              if (redo_states.length === 0) {
+            app.listenFor('DidStateChange', function (undoStates, redoStates) {
+              if (redoStates.length === 0) {
                 obj.innerHTML = 'Redo <span class="pk_shrtct">Shft+Y</span>';
                 obj.classList.add('pk_inact');
               } else {
                 obj.innerHTML =
                   'Redo&nbsp;<i style="pointer-events:none">' +
-                  redo_states[0].desc +
+                  redoStates[0].desc +
                   '</i><span class="pk_shrtct">Shft+Y</span>';
                 obj.classList.remove('pk_inact');
               }
@@ -1024,7 +1031,7 @@ function _topbarConfig(app, ui) {
           action: function () {
             app.fireEvent('RequestActionFXUI_Flip');
           },
-          clss: 'pk_inact',
+          className: 'pk_inact',
           setup: function (obj) {
             app.listenFor('DidUnloadFile', function () {
               obj.classList.add('pk_inact');
@@ -1177,10 +1184,10 @@ function _topbarConfig(app, ui) {
           setup: function (obj) {
             // perhaps read from stored settings?
 
-            app.listenFor('DidViewFollowCursorToggle', function (val) {
+            app.listenFor('DidViewFollowCursorToggle', function (value) {
               const txt = 'Follow Cursor';
 
-              if (val) {
+              if (value) {
                 obj.innerHTML = txt + ' &#10004;';
               } else {
                 obj.textContent = txt;
@@ -1195,9 +1202,9 @@ function _topbarConfig(app, ui) {
             app.fireEvent('RequestViewPeakSeparatorToggle');
           },
           setup: function (obj) {
-            app.listenFor('DidViewPeakSeparatorToggle', function (val) {
+            app.listenFor('DidViewPeakSeparatorToggle', function (value) {
               const txt = 'Peak Separators';
-              if (val) {
+              if (value) {
                 obj.innerHTML = txt + ' &#10004;';
               } else {
                 obj.textContent = txt;
@@ -1212,9 +1219,9 @@ function _topbarConfig(app, ui) {
             app.fireEvent('RequestViewTimelineToggle');
           },
           setup: function (obj) {
-            app.listenFor('DidViewTimelineToggle', function (val) {
+            app.listenFor('DidViewTimelineToggle', function (value) {
               const txt = 'Timeline';
-              if (val) {
+              if (value) {
                 obj.innerHTML = txt + ' &#10004;';
               } else {
                 obj.textContent = txt;
@@ -1233,11 +1240,11 @@ function _topbarConfig(app, ui) {
             app.fireEvent('RequestShowFreqAn', 'eq', [1]);
           },
           setup: function (obj) {
-            app.listenFor('DidToggleFreqAn', function (url, val) {
+            app.listenFor('DidToggleFreqAn', function (url, value) {
               if (url !== 'eq') return;
 
               const txt = 'Frequency Analyser';
-              if (val) {
+              if (value) {
                 obj.innerHTML = txt + ' &#10004;';
               } else {
                 obj.textContent = txt;
@@ -1252,11 +1259,11 @@ function _topbarConfig(app, ui) {
             app.fireEvent('RequestShowFreqAn', 'sp', [1]);
           },
           setup: function (obj) {
-            app.listenFor('DidToggleFreqAn', function (url, val) {
+            app.listenFor('DidToggleFreqAn', function (url, value) {
               if (url !== 'sp') return;
 
               const txt = 'Spectrum Analyser';
-              if (val) {
+              if (value) {
                 obj.innerHTML = txt + ' &#10004;';
               } else {
                 obj.textContent = txt;
@@ -1328,83 +1335,83 @@ function _topbarConfig(app, ui) {
 //
 // TOP-BAR CLASS
 //
-function _makeUITopHeader(menu_tree, UI) {
+function _makeUITopHeader(menuTree, UI) {
   const header = document.createElement('div');
   header.className = 'pk_hdr pk_noselect';
 
   const _name = 'TopHeader',
     _default_class = 'pk_btn pk_noselect';
 
-  let target_index = -1;
-  let target_el = null;
-  let target_el_old = null;
-  let target_option = null;
-  const top_els = [];
+  let targetIndex = -1;
+  let targetElement = null;
+  let previousTargetElement = null;
+  let targetOption = null;
+  const topElements = [];
   const menu = this;
 
   // recursively build the interface
-  function build_menus(parent_el, tree_obj, level) {
-    for (let i = 0; i < tree_obj.length; ++i) {
-      const btn_container = document.createElement('div');
-      const curr_obj = tree_obj[i];
+  function buildMenus(parentElementNode, treeObject, level) {
+    for (let i = 0; i < treeObject.length; ++i) {
+      const buttonContainer = document.createElement('div');
+      const currentOption = treeObject[i];
 
       if (level === 0) {
-        btn_container.className = _default_class;
-        const btn = document.createElement('button');
-        btn.innerHTML = curr_obj.name;
-        btn_container.appendChild(btn);
+        buttonContainer.className = _default_class;
+        const button = document.createElement('button');
+        button.innerHTML = currentOption.name;
+        buttonContainer.appendChild(button);
       } else {
-        btn_container.className = 'pk_menu_el';
-        const btn = document.createElement('button');
-        btn.className = 'pk_opt ' + (curr_obj.clss ? curr_obj.clss : '');
-        btn.setAttribute('tab-index', '-1');
-        btn.setAttribute('data-index', i);
-        btn.innerHTML = curr_obj.name;
-        btn_container.appendChild(btn);
+        buttonContainer.className = 'pk_menu_el';
+        const button = document.createElement('button');
+        button.className = 'pk_opt ' + (currentOption.className ? currentOption.className : '');
+        button.setAttribute('tab-index', '-1');
+        button.setAttribute('data-index', i);
+        button.innerHTML = currentOption.name;
+        buttonContainer.appendChild(button);
 
-        if (curr_obj.action) {
-          (function (btn, action) {
-            btn.onclick = function (obj) {
+        if (currentOption.action) {
+          (function (button, action) {
+            button.onclick = function (obj) {
               if (this.classList.contains('pk_inact')) return;
 
               menu.closeMenu();
               action(obj);
             };
-          })(btn, curr_obj.action);
+          })(button, currentOption.action);
         }
-        if (curr_obj.setup) {
-          curr_obj.setup(btn);
+        if (currentOption.setup) {
+          currentOption.setup(button);
         }
       }
-      parent_el.appendChild(btn_container);
+      parentElementNode.appendChild(buttonContainer);
 
-      if (level === 0) top_els[i] = btn_container.childNodes[0];
+      if (level === 0) topElements[i] = buttonContainer.childNodes[0];
 
-      if (curr_obj.children) {
-        const ch = curr_obj.children;
+      if (currentOption.children) {
+        const ch = currentOption.children;
         const list = document.createElement('div');
         list.className = 'pk_menu';
 
-        build_menus(list, curr_obj.children, level + 1);
-        btn_container.appendChild(list);
+        buildMenus(list, currentOption.children, level + 1);
+        buttonContainer.appendChild(list);
       }
       // ---
     }
   }
-  build_menus(header, menu_tree, 0);
+  buildMenus(header, menuTree, 0);
 
   this.getOpenElement = function () {
-    return target_el;
+    return targetElement;
   };
   this.closeMenu = function () {
-    if (!target_el) return;
+    if (!targetElement) return;
 
-    target_el.parentNode.className = _default_class;
-    target_el = target_el_old = null;
+    targetElement.parentNode.className = _default_class;
+    targetElement = previousTargetElement = null;
 
-    if (target_option) {
-      target_option.classList.remove('pk_act');
-      target_option = null;
+    if (targetOption) {
+      targetOption.classList.remove('pk_act');
+      targetOption = null;
     }
 
     UI.InteractionHandler.on = false;
@@ -1419,19 +1426,19 @@ function _makeUITopHeader(menu_tree, UI) {
     UI.KeyHandler.removeCallback(_name + 6);
   };
 
-  this.openMenu = function (index, is_mouse) {
-    if (target_el) {
-      target_el.parentNode.className = _default_class;
+  this.openMenu = function (index, isMouse) {
+    if (targetElement) {
+      targetElement.parentNode.className = _default_class;
     }
 
     if (index === -1) {
-      index = target_index === -1 ? 0 : target_index;
+      index = targetIndex === -1 ? 0 : targetIndex;
     }
 
-    const curr_target = top_els[index];
-    target_el = curr_target;
+    const currentTarget = topElements[index];
+    targetElement = currentTarget;
 
-    const parent = curr_target.parentNode;
+    const parent = currentTarget.parentNode;
     const left = parent.getBoundingClientRect().left;
     const max = window.innerWidth;
     let offset = 0;
@@ -1444,33 +1451,33 @@ function _makeUITopHeader(menu_tree, UI) {
 
     parent.className += ' pk_vis';
     setTimeout(function () {
-      if (target_el === curr_target) parent.className += ' pk_act';
+      if (targetElement === currentTarget) parent.className += ' pk_act';
     }, 0);
 
-    target_index = index;
+    targetIndex = index;
 
     UI.InteractionHandler.checkAndSet(_name);
 
-    if (!is_mouse) document.addEventListener('mouseup', mouseup, false);
+    if (!isMouse) document.addEventListener('mouseup', mouseup, false);
 
     // register keystrokes
     UI.KeyHandler.addCallback(
       _name + 1,
       function (key) {
-        if (target_index === 0) target_index = top_els.length;
+        if (targetIndex === 0) targetIndex = topElements.length;
 
         menu.closeMenu();
-        menu.openMenu(target_index - 1);
+        menu.openMenu(targetIndex - 1);
       },
       [37]
     );
     UI.KeyHandler.addCallback(
       _name + 2,
       function (key) {
-        if (target_index === top_els.length - 1) target_index = -1;
+        if (targetIndex === topElements.length - 1) targetIndex = -1;
 
         menu.closeMenu();
-        menu.openMenu(target_index + 1);
+        menu.openMenu(targetIndex + 1);
       },
       [39]
     );
@@ -1484,23 +1491,23 @@ function _makeUITopHeader(menu_tree, UI) {
     UI.KeyHandler.addCallback(
       _name + 4,
       function (key, m, e) {
-        if (!target_option) {
-          const els = target_el.parentNode.getElementsByClassName('pk_opt');
-          if (els[0]) {
-            target_option = els[0];
-            target_option.classList.add('pk_act');
+        if (!targetOption) {
+          const elements = targetElement.parentNode.getElementsByClassName('pk_opt');
+          if (elements[0]) {
+            targetOption = elements[0];
+            targetOption.classList.add('pk_act');
           }
         } else {
-          const ind = target_option.getAttribute('data-index') / 1;
-          target_option.classList.remove('pk_act');
+          const ind = targetOption.getAttribute('data-index') / 1;
+          targetOption.classList.remove('pk_act');
 
-          target_option = target_el.parentNode.getElementsByClassName('pk_opt');
+          targetOption = targetElement.parentNode.getElementsByClassName('pk_opt');
           if (ind - 1 < 0) {
-            target_option = target_option[target_option.length - 1];
+            targetOption = targetOption[targetOption.length - 1];
           } else {
-            target_option = target_option[ind - 1];
+            targetOption = targetOption[ind - 1];
           }
-          target_option.classList.add('pk_act');
+          targetOption.classList.add('pk_act');
         }
       },
       [38]
@@ -1508,23 +1515,23 @@ function _makeUITopHeader(menu_tree, UI) {
     UI.KeyHandler.addCallback(
       _name + 5,
       function (key, m, e) {
-        if (!target_option) {
-          const els = target_el.parentNode.getElementsByClassName('pk_opt');
-          if (els[0]) {
-            target_option = els[0];
-            target_option.classList.add('pk_act');
+        if (!targetOption) {
+          const elements = targetElement.parentNode.getElementsByClassName('pk_opt');
+          if (elements[0]) {
+            targetOption = elements[0];
+            targetOption.classList.add('pk_act');
           }
         } else {
-          const ind = target_option.getAttribute('data-index') / 1;
-          target_option.classList.remove('pk_act');
+          const ind = targetOption.getAttribute('data-index') / 1;
+          targetOption.classList.remove('pk_act');
 
-          target_option = target_el.parentNode.getElementsByClassName('pk_opt');
-          if (target_option.length <= ind + 1) {
-            target_option = target_option[0];
+          targetOption = targetElement.parentNode.getElementsByClassName('pk_opt');
+          if (targetOption.length <= ind + 1) {
+            targetOption = targetOption[0];
           } else {
-            target_option = target_option[ind + 1];
+            targetOption = targetOption[ind + 1];
           }
-          target_option.classList.add('pk_act');
+          targetOption.classList.add('pk_act');
         }
       },
       [40]
@@ -1532,7 +1539,7 @@ function _makeUITopHeader(menu_tree, UI) {
     UI.KeyHandler.addCallback(
       _name + 6,
       function (key) {
-        if (target_option) target_option.click();
+        if (targetOption) targetOption.click();
         else menu.closeMenu();
       },
       [13]
@@ -1547,19 +1554,19 @@ function _makeUITopHeader(menu_tree, UI) {
 
   // register hot keys for opening the menu
   function _checkForAct(x) {
-    if (target_el == x || !x) return false;
+    if (targetElement == x || !x) return false;
 
     let par = x.parentNode;
-    while (par && target_el) {
-      if (target_el.parentNode == par) {
+    while (par && targetElement) {
+      if (targetElement.parentNode == par) {
         return false;
       }
       par = par.parentNode;
     }
 
-    let l = top_els.length;
+    let l = topElements.length;
     while (l-- > 0) {
-      if (top_els[l] === x) {
+      if (topElements[l] === x) {
         return menu.openMenu(l, true);
       }
     }
@@ -1572,17 +1579,17 @@ function _makeUITopHeader(menu_tree, UI) {
       return false;
     }
 
-    if (target_el || (UI.InteractionHandler.on && UI.InteractionHandler.by === _name)) {
+    if (targetElement || (UI.InteractionHandler.on && UI.InteractionHandler.by === _name)) {
       const x = e.target || e.srcElement;
 
       if (x.className.indexOf('pk_opt') >= 0) {
-        if (target_option) target_option.classList.remove('pk_act');
+        if (targetOption) targetOption.classList.remove('pk_act');
 
-        target_option = x;
-        target_option.classList.add('pk_act');
+        targetOption = x;
+        targetOption.classList.add('pk_act');
       } else {
-        if (target_option) target_option.classList.remove('pk_act');
-        target_option = null;
+        if (targetOption) targetOption.classList.remove('pk_act');
+        targetOption = null;
       }
 
       return _checkForAct(x);
@@ -1593,19 +1600,19 @@ function _makeUITopHeader(menu_tree, UI) {
   const mouseup = function (e) {
     const x = e.target || e.srcElement;
 
-    if (target_el) {
+    if (targetElement) {
       // todo check for inner menu?
       let par = x;
       let found = false;
-      while (par && target_el) {
-        if (target_el.parentNode == par) {
+      while (par && targetElement) {
+        if (targetElement.parentNode == par) {
           found = true;
           break;
         }
         par = par.parentNode;
       }
 
-      if (!found || target_el_old === x) {
+      if (!found || previousTargetElement === x) {
         menu.closeMenu();
       }
     } else {
@@ -1613,7 +1620,7 @@ function _makeUITopHeader(menu_tree, UI) {
       document.removeEventListener('mouseup', mouseup);
     }
 
-    target_el_old = null;
+    previousTargetElement = null;
   };
 
   header.addEventListener('mousemove', mousemove, false);
@@ -1626,13 +1633,13 @@ function _makeUITopHeader(menu_tree, UI) {
 
       document.removeEventListener('mouseup', mouseup);
 
-      if (target_el) {
-        if (!_checkForAct(e.target || e.srcElement)) target_el_old = target_el;
-        else target_el_old = null;
+      if (targetElement) {
+        if (!_checkForAct(e.target || e.srcElement)) previousTargetElement = targetElement;
+        else previousTargetElement = null;
 
         document.addEventListener('mouseup', mouseup, false);
       } else {
-        target_el_old = null;
+        previousTargetElement = null;
         document.addEventListener('mouseup', mouseup, false);
         _checkForAct(e.target || e.srcElement);
       }
@@ -1641,7 +1648,7 @@ function _makeUITopHeader(menu_tree, UI) {
     false
   );
 
-  UI.el.appendChild(header);
+  UI.element.appendChild(header);
   // -
 }
 
@@ -1649,23 +1656,23 @@ function _makeUITopHeader(menu_tree, UI) {
 function _makeUIBarBottom(UI, app) {
   const bar = this;
 
-  const bar_bottom_el = document.createElement('div');
-  bar_bottom_el.className = 'pk_dck';
-  UI.el.appendChild(bar_bottom_el);
+  const barBottomElement = document.createElement('div');
+  barBottomElement.className = 'pk_dck';
+  UI.element.appendChild(barBottomElement);
 
-  bar.el = bar_bottom_el;
+  bar.element = barBottomElement;
   bar.on = false;
   bar.height = 130;
 
   bar.Show = function () {
     bar.on = true;
-    bar_bottom_el.style.display = 'block';
+    barBottomElement.style.display = 'block';
 
     app.fireEvent('RequestResize');
   };
   bar.Hide = function () {
     bar.on = false;
-    bar_bottom_el.style.display = 'none';
+    barBottomElement.style.display = 'none';
 
     app.fireEvent('RequestResize');
   };
@@ -1674,99 +1681,99 @@ function _makeUIBarBottom(UI, app) {
 function _makeUIMainView(UI, app) {
   const view = this;
 
-  const audio_container = document.createElement('div');
-  audio_container.className = 'pk_av_cont';
-  UI.el.appendChild(audio_container);
+  const audioContainer = document.createElement('div');
+  audioContainer.className = 'pk_av_cont';
+  UI.element.appendChild(audioContainer);
 
-  const main_audio_view = document.createElement('div');
-  main_audio_view.className = 'pk_av pk_noselect';
-  main_audio_view.id = 'pk_av_' + app.id;
-  audio_container.appendChild(main_audio_view);
+  const mainAudioView = document.createElement('div');
+  mainAudioView.className = 'pk_av pk_noselect';
+  mainAudioView.id = 'pk_av_' + app.id;
+  audioContainer.appendChild(mainAudioView);
 
   const footer = document.createElement('div');
   footer.className = 'pk_ftr pk_noselect';
-  UI.el.appendChild(footer);
+  UI.element.appendChild(footer);
 
   // make panner buttons
-  const btn_panner_cnt = document.createElement('div');
-  btn_panner_cnt.className = 'pk_panner pk_noselect';
+  const buttonPannerContainer = document.createElement('div');
+  buttonPannerContainer.className = 'pk_panner pk_noselect';
 
-  const panner_col_left = document.createElement('div');
-  panner_col_left.className = 'pk_pan_left';
-  const panner_col_right = document.createElement('div');
-  panner_col_right.className = 'pk_pan_right';
+  const pannerColorLeft = document.createElement('div');
+  pannerColorLeft.className = 'pk_pan_left';
+  const pannerColorRight = document.createElement('div');
+  pannerColorRight.className = 'pk_pan_right';
 
-  const btn_panner_left = document.createElement('button');
-  const btn_panner_right = document.createElement('button');
-  btn_panner_left.setAttribute('tabIndex', -1);
-  btn_panner_right.setAttribute('tabIndex', -1);
-  btn_panner_left.className = 'pk_pan_btn';
-  btn_panner_right.className = 'pk_pan_btn';
+  const buttonPannerLeft = document.createElement('button');
+  const buttonPannerRight = document.createElement('button');
+  buttonPannerLeft.setAttribute('tabIndex', -1);
+  buttonPannerRight.setAttribute('tabIndex', -1);
+  buttonPannerLeft.className = 'pk_pan_btn';
+  buttonPannerRight.className = 'pk_pan_btn';
 
-  btn_panner_left.innerHTML = '<strong>L</strong> ON';
-  btn_panner_right.innerHTML = '<strong>R</strong> ON';
+  buttonPannerLeft.innerHTML = '<strong>L</strong> ON';
+  buttonPannerRight.innerHTML = '<strong>R</strong> ON';
 
-  panner_col_left.appendChild(btn_panner_left);
-  panner_col_right.appendChild(btn_panner_right);
-  btn_panner_cnt.appendChild(panner_col_left);
-  btn_panner_cnt.appendChild(panner_col_right);
-  audio_container.appendChild(btn_panner_cnt);
+  pannerColorLeft.appendChild(buttonPannerLeft);
+  pannerColorRight.appendChild(buttonPannerRight);
+  buttonPannerContainer.appendChild(pannerColorLeft);
+  buttonPannerContainer.appendChild(pannerColorRight);
+  audioContainer.appendChild(buttonPannerContainer);
 
-  btn_panner_left.onclick = function () {
+  buttonPannerLeft.onclick = function () {
     app.fireEvent('RequestChanToggle', 0);
     this.blur();
   };
-  btn_panner_right.onclick = function () {
+  buttonPannerRight.onclick = function () {
     app.fireEvent('RequestChanToggle', 1);
     this.blur();
   };
-  app.listenFor('DidChanToggle', function (chan, val) {
+  app.listenFor('DidChanToggle', function (chan, value) {
     if (chan === 0) {
-      if (val) {
-        btn_panner_left.classList.remove('pk_inact');
-        btn_panner_left.innerHTML = '<strong>L</strong> ON';
+      if (value) {
+        buttonPannerLeft.classList.remove('pk_inact');
+        buttonPannerLeft.innerHTML = '<strong>L</strong> ON';
       } else {
-        btn_panner_left.classList.add('pk_inact');
-        btn_panner_left.innerHTML = '<strong>L</strong> OFF';
+        buttonPannerLeft.classList.add('pk_inact');
+        buttonPannerLeft.innerHTML = '<strong>L</strong> OFF';
       }
     } else {
-      if (val) {
-        btn_panner_right.classList.remove('pk_inact');
-        btn_panner_right.innerHTML = '<strong>R</strong> ON';
+      if (value) {
+        buttonPannerRight.classList.remove('pk_inact');
+        buttonPannerRight.innerHTML = '<strong>R</strong> ON';
       } else {
-        btn_panner_right.classList.add('pk_inact');
-        btn_panner_right.innerHTML = '<strong>R</strong> OFF';
+        buttonPannerRight.classList.add('pk_inact');
+        buttonPannerRight.innerHTML = '<strong>R</strong> OFF';
       }
     }
   });
 
   // zoom btns
-  const btn_zoom_cnt = document.createElement('div');
-  btn_zoom_cnt.className = 'pk_zoombtn';
+  const buttonZoomContainer = document.createElement('div');
+  buttonZoomContainer.className = 'pk_zoombtn';
 
-  const btn_zoom_in_h = document.createElement('button');
-  btn_zoom_in_h.className = 'pk_btn pk_zoom_in_h';
-  btn_zoom_in_h.innerHTML = '+<span>Zoom In Horiz (+)</span>';
-  btn_zoom_in_h.setAttribute('tabIndex', -1);
-  btn_zoom_in_h.onclick = function () {
+  const buttonZoomInHorizontal = document.createElement('button');
+  buttonZoomInHorizontal.className = 'pk_btn pk_zoom_in_h';
+  buttonZoomInHorizontal.innerHTML = '+<span>Zoom In Horiz (+)</span>';
+  buttonZoomInHorizontal.setAttribute('tabIndex', -1);
+  buttonZoomInHorizontal.onclick = function () {
     app.fireEvent('RequestZoomUI', 'h', -1);
     this.blur();
   };
 
-  const btn_zoom_out_h = document.createElement('button');
-  btn_zoom_out_h.className = 'pk_btn pk_zoom_out_h pk_inact';
-  btn_zoom_out_h.innerHTML = '&ndash;<span>Zoom Out Horiz (-)</span>';
-  btn_zoom_out_h.setAttribute('tabIndex', -1);
-  btn_zoom_out_h.onclick = function () {
+  const buttonZoomOutHorizontal = document.createElement('button');
+  buttonZoomOutHorizontal.className = 'pk_btn pk_zoom_out_h pk_inact';
+  buttonZoomOutHorizontal.innerHTML = '&ndash;<span>Zoom Out Horiz (-)</span>';
+  buttonZoomOutHorizontal.setAttribute('tabIndex', -1);
+  buttonZoomOutHorizontal.onclick = function () {
     app.fireEvent('RequestZoomUI', 'h', 1);
     this.blur();
   };
 
-  const btn_zoom_reset = document.createElement('button');
-  btn_zoom_reset.className = 'pk_btn pk_zoom_reset pk_inact';
-  btn_zoom_reset.innerHTML = '[R] <span>Reset Zoom (0)</span>';
-  btn_zoom_reset.setAttribute('tabIndex', -1);
-  btn_zoom_reset.onclick = function () {
+  const buttonZoomReset = document.createElement('button');
+  buttonZoomReset.className = 'pk_btn pk_zoom_reset pk_inact';
+  buttonZoomReset.innerHTML = '[R] <span>Reset Zoom (0)</span>';
+  buttonZoomReset.setAttribute('tabIndex', -1);
+  buttonZoomReset.onclick = function () {
     app.fireEvent('RequestZoomUI', 0);
     this.blur();
   };
@@ -1796,57 +1803,57 @@ function _makeUIMainView(UI, app) {
     [187]
   );
 
-  const btn_zoom_in_v = document.createElement('button');
-  btn_zoom_in_v.className = 'pk_btn pk_zoom_in_v';
-  btn_zoom_in_v.innerHTML = '&#x2195; +<span>Zoom In Vertically</span>';
-  btn_zoom_in_v.setAttribute('tabIndex', -1);
-  btn_zoom_in_v.onclick = function () {
+  const buttonZoomInVertical = document.createElement('button');
+  buttonZoomInVertical.className = 'pk_btn pk_zoom_in_v';
+  buttonZoomInVertical.innerHTML = '&#x2195; +<span>Zoom In Vertically</span>';
+  buttonZoomInVertical.setAttribute('tabIndex', -1);
+  buttonZoomInVertical.onclick = function () {
     app.fireEvent('RequestZoomUI', 'v', -1);
     this.blur();
   };
 
-  const btn_zoom_out_v = document.createElement('button');
-  btn_zoom_out_v.className = 'pk_btn pk_zoom_out_v';
-  btn_zoom_out_v.innerHTML = '&#x2195; &ndash;<span>Zoom Out Vertically</span>';
-  btn_zoom_out_v.setAttribute('tabIndex', -1);
-  btn_zoom_out_v.onclick = function () {
+  const buttonZoomOutVertical = document.createElement('button');
+  buttonZoomOutVertical.className = 'pk_btn pk_zoom_out_v';
+  buttonZoomOutVertical.innerHTML = '&#x2195; &ndash;<span>Zoom Out Vertically</span>';
+  buttonZoomOutVertical.setAttribute('tabIndex', -1);
+  buttonZoomOutVertical.onclick = function () {
     app.fireEvent('RequestZoomUI', 'v', 1);
     this.blur();
   };
 
-  btn_zoom_cnt.appendChild(btn_zoom_in_h);
-  btn_zoom_cnt.appendChild(btn_zoom_out_h);
-  btn_zoom_cnt.appendChild(btn_zoom_reset);
-  btn_zoom_cnt.appendChild(btn_zoom_in_v);
-  btn_zoom_cnt.appendChild(btn_zoom_out_v);
+  buttonZoomContainer.appendChild(buttonZoomInHorizontal);
+  buttonZoomContainer.appendChild(buttonZoomOutHorizontal);
+  buttonZoomContainer.appendChild(buttonZoomReset);
+  buttonZoomContainer.appendChild(buttonZoomInVertical);
+  buttonZoomContainer.appendChild(buttonZoomOutVertical);
 
-  footer.appendChild(btn_zoom_cnt);
+  footer.appendChild(buttonZoomContainer);
   // end of zoom btns
 
   const wavezoom = document.createElement('div');
   wavezoom.className = 'pk_wavescroll';
 
-  let wavepoint_visible = false;
+  let wavePointVisible = false;
   const wavepoint = document.createElement('div');
   wavepoint.className = 'pk_wavepoint';
 
   const wavedrag = document.createElement('div');
-  const wavedrag_style = wavedrag.style;
+  const waveDragStyle = wavedrag.style;
   wavedrag.className = 'pk_wavedrag pk_inact';
 
-  const wavedrag_left = document.createElement('div');
-  wavedrag_left.className = 'pk_wavedrag_l';
-  const wavedrag_right = document.createElement('div');
-  wavedrag_right.className = 'pk_wavedrag_r';
+  const waveDragLeft = document.createElement('div');
+  waveDragLeft.className = 'pk_wavedrag_l';
+  const waveDragRight = document.createElement('div');
+  waveDragRight.className = 'pk_wavedrag_r';
 
   wavezoom.appendChild(wavepoint);
-  wavedrag.appendChild(wavedrag_left);
-  wavedrag.appendChild(wavedrag_right);
+  wavedrag.appendChild(waveDragLeft);
+  wavedrag.appendChild(waveDragRight);
   wavezoom.appendChild(wavedrag);
   footer.appendChild(wavezoom);
 
   let temp = 0;
-  let wavedrag_width = 100;
+  let waveDragWidth = 100;
   wavezoom.onclick = function (e) {
     if (window.performance.now() - temp < 20) {
       return;
@@ -1863,55 +1870,55 @@ function _makeUIMainView(UI, app) {
     const o = v[1];
 
     if (e === 1) {
-      btn_zoom_out_h.classList.add('pk_inact');
-      btn_zoom_reset.classList.add('pk_inact');
+      buttonZoomOutHorizontal.classList.add('pk_inact');
+      buttonZoomReset.classList.add('pk_inact');
     } else {
-      btn_zoom_out_h.classList.remove('pk_inact');
-      btn_zoom_reset.classList.remove('pk_inact');
+      buttonZoomOutHorizontal.classList.remove('pk_inact');
+      buttonZoomReset.classList.remove('pk_inact');
     }
 
     if (v[2] != 1) {
-      btn_zoom_reset.classList.remove('pk_inact');
+      buttonZoomReset.classList.remove('pk_inact');
     }
 
     if (e === 1) {
-      if (wavepoint_visible) {
+      if (wavePointVisible) {
         wavepoint.style.display = 'none';
-        wavepoint_visible = false;
+        wavePointVisible = false;
       }
     } else {
-      if (!wavepoint_visible) {
+      if (!wavePointVisible) {
         wavepoint.style.display = 'block';
         const perc = app.engine.wavesurfer.getCurrentTime() / app.engine.wavesurfer.getDuration();
         // wavepoint.style.left = ((perc * 100).toFixed(2)/1) + '%';
         wavepoint.style.left = ((perc * 10000) >> 0) / 100 + '%';
-        wavepoint_visible = true;
+        wavePointVisible = true;
       }
     }
 
     // get zoom value and left...
     if (100 / e > 99) {
-      wavedrag_width = 100;
-      wavedrag_style.width = '100%';
-      wavedrag_style.left = '0%';
-      //wavedrag_style.transform = 'translate(0,0)';
+      waveDragWidth = 100;
+      waveDragStyle.width = '100%';
+      waveDragStyle.left = '0%';
+      //waveDragStyle.transform = 'translate(0,0)';
       wavedrag.classList.add('pk_inact');
     } else {
-      wavedrag_width = 100 / e;
-      wavedrag_style.width = wavedrag_width + '%';
-      wavedrag_style.left = o + '%';
-      //wavedrag_style.transform = 'translate(' +  (e * o) + '%,0)';
+      waveDragWidth = 100 / e;
+      waveDragStyle.width = waveDragWidth + '%';
+      waveDragStyle.left = o + '%';
+      //waveDragStyle.transform = 'translate(' +  (e * o) + '%,0)';
       wavedrag.classList.remove('pk_inact');
     }
   });
-  UI.listenFor('DidCursorCenter', function (val, zoom) {
+  UI.listenFor('DidCursorCenter', function (value, zoom) {
     requestAnimationFrame(function () {
-      wavedrag_style.left = val * 100 + '%';
-      //wavedrag_style.transform = 'translate(' + (val * zoom * 100) + '%,0)';
+      waveDragStyle.left = value * 100 + '%';
+      //waveDragStyle.transform = 'translate(' + (value * zoom * 100) + '%,0)';
     });
   });
 
-  let drag_mode = 0;
+  let dragMode = 0;
   let startingX = 0;
   const waveScrollMouseMove = function (e) {
       e.stopPropagation();
@@ -1926,10 +1933,10 @@ function _makeUIMainView(UI, app) {
       }
 
       const diff = -startingX + clx;
-      if (drag_mode === 0) UI.fireEvent('RequestPan', diff, 1);
-      else if (drag_mode === -1) {
+      if (dragMode === 0) UI.fireEvent('RequestPan', diff, 1);
+      else if (dragMode === -1) {
         UI.fireEvent('RequestZoom', diff, -1);
-      } else if (drag_mode === 1) {
+      } else if (dragMode === 1) {
         UI.fireEvent('RequestZoom', diff, 1);
       }
 
@@ -1941,7 +1948,7 @@ function _makeUIMainView(UI, app) {
       UI.app.engine.wavesurfer.Interacting &= ~(1 << 1);
       e.stopPropagation();
       e.preventDefault();
-      drag_mode = 0;
+      dragMode = 0;
       temp = window.performance.now();
 
       wavedrag.classList.remove('pk_drag');
@@ -1954,14 +1961,14 @@ function _makeUIMainView(UI, app) {
     };
 
   const mdown = function (e) {
-    if (!UI.app.engine.is_ready) return;
+    if (!UI.app.engine.isReady) return;
 
     if (e.target === wavedrag) {
-      drag_mode = 0;
-    } else if (e.target === wavedrag_left) {
-      drag_mode = -1;
-    } else if (e.target === wavedrag_right) {
-      drag_mode = 1;
+      dragMode = 0;
+    } else if (e.target === waveDragLeft) {
+      dragMode = -1;
+    } else if (e.target === waveDragRight) {
+      dragMode = 1;
     }
 
     wavedrag.className += ' pk_drag';
@@ -1969,7 +1976,7 @@ function _makeUIMainView(UI, app) {
     startingX = e.clientX;
     UI.app.engine.wavesurfer.Interacting |= 1 << 1;
 
-    if (e.is_touch) {
+    if (e.isTouch) {
       document.addEventListener('touchmove', waveScrollMouseMove, { passive: false });
       document.addEventListener('touchend', waveScrollMouseUp, false);
     } else {
@@ -1992,7 +1999,7 @@ function _makeUIMainView(UI, app) {
         }
 
         const ev = {
-          is_touch: true,
+          isTouch: true,
           target: wavedrag,
           clientX: e.touches[0].clientX,
         };
@@ -2010,7 +2017,7 @@ function _makeUIMainView(UI, app) {
   this.volumeGaugePeaker = document.createElement('div');
   this.volumeGaugePeaker2 = document.createElement('div');
 
-  const volume_parent = document.createElement('div');
+  const volumeParent = document.createElement('div');
 
   this.volumeGauge.className = 'pk_volpar';
   this.volumeGauge2.className = 'pk_volpar';
@@ -2034,16 +2041,16 @@ function _makeUIMainView(UI, app) {
   }
   markers.innerHTML = str;
 
-  volume_parent.appendChild(this.volumeGauge);
-  volume_parent.appendChild(this.volumeGauge2);
-  volume_parent.appendChild(markers);
+  volumeParent.appendChild(this.volumeGauge);
+  volumeParent.appendChild(this.volumeGauge2);
+  volumeParent.appendChild(markers);
 
-  volume_parent.onclick = function () {
+  volumeParent.onclick = function () {
     view.volumeGaugePeaker.className = 'pk_peaker';
     view.volumeGaugePeaker2.className = 'pk_peaker';
   };
 
-  footer.appendChild(volume_parent);
+  footer.appendChild(volumeParent);
 
   // change temp message, it's pretty ugly #### TODO
   const ttmp = document.createElement('div');
@@ -2054,7 +2061,7 @@ function _makeUIMainView(UI, app) {
     // Inline handler: evaluated at global scope, so it must use the
     // window.PKAudioEditor bridge rather than module imports.
     'onclick="PKAudioEditor.engine.LoadSample()">here to use a sample</a>';
-  main_audio_view.appendChild(ttmp);
+  mainAudioView.appendChild(ttmp);
 
   const ttmp2 = document.createElement('div');
   ttmp2.className = 'pk_tmpMsg2';
@@ -2074,9 +2081,9 @@ function _makeUIMainView(UI, app) {
   UI.listenFor('DidDownloadFile', function () {
     UI.loaderEl.classList.remove('pk_act');
   });
-  UI.listenFor('DidProgressModal', function (val) {
+  UI.listenFor('DidProgressModal', function (value) {
     UI.loaderEl.getElementsByTagName('span')[1].style.display = 'block';
-    UI.loaderEl.getElementsByTagName('span')[1].textContent = val + '%';
+    UI.loaderEl.getElementsByTagName('span')[1].textContent = value + '%';
   });
 }
 
@@ -2087,124 +2094,124 @@ function _makeUIToolbar(UI) {
   const toolbar = document.createElement('div');
   toolbar.className = 'pk_tb pk_noselect';
 
-  const btn_groups = document.createElement('div');
-  btn_groups.className = 'pk_btngroup';
+  const buttonGroups = document.createElement('div');
+  buttonGroups.className = 'pk_btngroup';
 
   const transport = document.createElement('div');
   transport.className = 'pk_transport';
 
   // play button
-  const btn_stop = document.createElement('button');
-  btn_stop.setAttribute('tabIndex', -1);
-  btn_stop.innerHTML = '<span>Stop Playback (Space)</span>';
-  btn_stop.className = 'pk_btn pk_stop icon-stop2';
-  btn_stop.onclick = function () {
+  const buttonStop = document.createElement('button');
+  buttonStop.setAttribute('tabIndex', -1);
+  buttonStop.innerHTML = '<span>Stop Playback (Space)</span>';
+  buttonStop.className = 'pk_btn pk_stop icon-stop2';
+  buttonStop.onclick = function () {
     UI.fireEvent('RequestStop');
   };
-  transport.appendChild(btn_stop);
+  transport.appendChild(buttonStop);
 
-  const btn_play = document.createElement('button');
-  btn_play.setAttribute('tabIndex', -1);
-  btn_play.className = 'pk_btn pk_play icon-play3';
-  btn_play.innerHTML = '<span>Play (Space)</span>';
-  transport.appendChild(btn_play);
-  btn_play.onclick = function () {
+  const buttonPlay = document.createElement('button');
+  buttonPlay.setAttribute('tabIndex', -1);
+  buttonPlay.className = 'pk_btn pk_play icon-play3';
+  buttonPlay.innerHTML = '<span>Play (Space)</span>';
+  transport.appendChild(buttonPlay);
+  buttonPlay.onclick = function () {
     UI.fireEvent('RequestPlay');
     this.blur();
   };
   UI.listenFor('DidStopPlay', function () {
-    btn_play.classList.remove('pk_act');
+    buttonPlay.classList.remove('pk_act');
   });
   UI.listenFor('DidPlay', function () {
-    btn_play.classList.add('pk_act');
+    buttonPlay.classList.add('pk_act');
   });
 
-  const btn_pause = document.createElement('button');
-  btn_pause.setAttribute('tabIndex', -1);
-  btn_pause.className = 'pk_btn pk_pause icon-pause2';
-  btn_pause.innerHTML = '<span>Pause (Shift+Space)</span>';
-  transport.appendChild(btn_pause);
-  btn_pause.onclick = function () {
+  const buttonPause = document.createElement('button');
+  buttonPause.setAttribute('tabIndex', -1);
+  buttonPause.className = 'pk_btn pk_pause icon-pause2';
+  buttonPause.innerHTML = '<span>Pause (Shift+Space)</span>';
+  transport.appendChild(buttonPause);
+  buttonPause.onclick = function () {
     UI.fireEvent('RequestPause');
     this.blur();
   };
 
-  const btn_loop = document.createElement('button');
-  btn_loop.setAttribute('tabIndex', -1);
-  btn_loop.className = 'pk_btn pk_loop icon-loop';
-  btn_loop.innerHTML = '<span>Toggle Loop (L)</span>';
-  transport.appendChild(btn_loop);
-  btn_loop.onclick = function () {
+  const buttonLoop = document.createElement('button');
+  buttonLoop.setAttribute('tabIndex', -1);
+  buttonLoop.className = 'pk_btn pk_loop icon-loop';
+  buttonLoop.innerHTML = '<span>Toggle Loop (L)</span>';
+  transport.appendChild(buttonLoop);
+  buttonLoop.onclick = function () {
     UI.fireEvent('RequestSetLoop');
     this.blur();
   };
-  UI.listenFor('DidSetLoop', function (val) {
-    val ? btn_loop.classList.add('pk_act') : btn_loop.classList.remove('pk_act');
+  UI.listenFor('DidSetLoop', function (value) {
+    value ? buttonLoop.classList.add('pk_act') : buttonLoop.classList.remove('pk_act');
   });
 
-  const btn_back_jump = document.createElement('button');
-  btn_back_jump.setAttribute('tabIndex', -1);
-  btn_back_jump.className = 'pk_btn pk_back_jump icon-backward2';
-  btn_back_jump.innerHTML = '<span>Seek (left arrow)</span>';
-  transport.appendChild(btn_back_jump);
+  const buttonBackJump = document.createElement('button');
+  buttonBackJump.setAttribute('tabIndex', -1);
+  buttonBackJump.className = 'pk_btn pk_back_jump icon-backward2';
+  buttonBackJump.innerHTML = '<span>Seek (left arrow)</span>';
+  transport.appendChild(buttonBackJump);
 
   ///////////////////////////////////////////////////////////
   // REWING / BACK BTN
-  let btn_back_focus = false;
-  let btn_back_tm = null;
-  btn_back_jump.onclick = function () {
-    if (!btn_back_focus) {
-      if (btn_back_tm) {
-        clearTimeout(btn_back_tm);
-        btn_back_tm = null;
+  let buttonBackFocus = false;
+  let buttonBackTimer = null;
+  buttonBackJump.onclick = function () {
+    if (!buttonBackFocus) {
+      if (buttonBackTimer) {
+        clearTimeout(buttonBackTimer);
+        buttonBackTimer = null;
       }
 
-      let big_step = UI.app.engine.wavesurfer.getDuration() / 20;
+      let bigStep = UI.app.engine.wavesurfer.getDuration() / 20;
       const zoom = UI.app.engine.wavesurfer.ZoomFactor;
-      big_step /= zoom / 2 + 0.5;
-      if (big_step > 1) big_step = big_step << 0;
+      bigStep /= zoom / 2 + 0.5;
+      if (bigStep > 1) bigStep = bigStep << 0;
 
-      UI.fireEvent('RequestSkipBack', big_step);
+      UI.fireEvent('RequestSkipBack', bigStep);
     }
 
     this.blur();
-    btn_back_focus = false;
+    buttonBackFocus = false;
   };
 
-  btn_back_jump.onmouseleave = function () {
-    if (btn_back_tm) {
-      clearTimeout(btn_back_tm);
-      btn_back_tm = null;
+  buttonBackJump.onmouseleave = function () {
+    if (buttonBackTimer) {
+      clearTimeout(buttonBackTimer);
+      buttonBackTimer = null;
     }
     this.blur();
   };
 
-  btn_back_jump.onfocus = function () {
-    const btn = this;
-    btn_back_focus = false;
+  buttonBackJump.onfocus = function () {
+    const button = this;
+    buttonBackFocus = false;
 
-    const step = function (num, count) {
-      if (document.activeElement === btn) {
-        btn_back_focus = true;
+    const step = function (number, count) {
+      if (document.activeElement === button) {
+        buttonBackFocus = true;
 
-        UI.fireEvent('RequestSkipBack', num);
+        UI.fireEvent('RequestSkipBack', number);
 
         const block = 4450;
 
-        let middle_step = UI.app.engine.wavesurfer.getDuration() / block;
+        let middleStep = UI.app.engine.wavesurfer.getDuration() / block;
         const zoom = UI.app.engine.wavesurfer.ZoomFactor;
-        middle_step /= zoom;
+        middleStep /= zoom;
 
         if (count < 12) {
-          middle_step = 0;
+          middleStep = 0;
         }
 
         setTimeout(function () {
-          step(num + middle_step, ++count);
+          step(number + middleStep, ++count);
         }, 40);
       }
     };
-    btn_back_tm = setTimeout(function () {
+    buttonBackTimer = setTimeout(function () {
       let small = UI.app.engine.wavesurfer.getDuration() / 2000;
       const zoom = UI.app.engine.wavesurfer.ZoomFactor;
       small /= zoom;
@@ -2218,65 +2225,65 @@ function _makeUIToolbar(UI) {
   };
   ////////////////////////
 
-  const btn_front_jump = document.createElement('button');
-  btn_front_jump.setAttribute('tabIndex', -1);
-  btn_front_jump.className = 'pk_btn pk_front_jump icon-forward3';
-  btn_front_jump.innerHTML = '<span>Seek (right arrow)</span>';
-  transport.appendChild(btn_front_jump);
+  const buttonFrontJump = document.createElement('button');
+  buttonFrontJump.setAttribute('tabIndex', -1);
+  buttonFrontJump.className = 'pk_btn pk_front_jump icon-forward3';
+  buttonFrontJump.innerHTML = '<span>Seek (right arrow)</span>';
+  transport.appendChild(buttonFrontJump);
 
-  let btn_frnt_focus = false;
-  let btn_frnt_tm = null;
-  btn_front_jump.onclick = function () {
-    if (!btn_frnt_focus) {
-      if (btn_frnt_tm) {
-        clearTimeout(btn_frnt_tm);
-        btn_frnt_tm = null;
+  let buttonFrontFocus = false;
+  let buttonFrontTimer = null;
+  buttonFrontJump.onclick = function () {
+    if (!buttonFrontFocus) {
+      if (buttonFrontTimer) {
+        clearTimeout(buttonFrontTimer);
+        buttonFrontTimer = null;
       }
 
-      let big_step = UI.app.engine.wavesurfer.getDuration() / 20;
+      let bigStep = UI.app.engine.wavesurfer.getDuration() / 20;
       const zoom = UI.app.engine.wavesurfer.ZoomFactor;
-      big_step /= zoom / 2 + 0.5;
-      if (big_step > 1) big_step = big_step << 0;
+      bigStep /= zoom / 2 + 0.5;
+      if (bigStep > 1) bigStep = bigStep << 0;
 
-      UI.fireEvent('RequestSkipFront', big_step);
+      UI.fireEvent('RequestSkipFront', bigStep);
     }
 
     this.blur();
-    btn_frnt_focus = false;
+    buttonFrontFocus = false;
   };
-  btn_front_jump.onmouseleave = function () {
-    if (btn_frnt_tm) {
-      clearTimeout(btn_frnt_tm);
-      btn_frnt_tm = null;
+  buttonFrontJump.onmouseleave = function () {
+    if (buttonFrontTimer) {
+      clearTimeout(buttonFrontTimer);
+      buttonFrontTimer = null;
     }
     this.blur();
   };
-  btn_front_jump.onfocus = function () {
-    const btn = this;
-    btn_frnt_focus = false;
+  buttonFrontJump.onfocus = function () {
+    const button = this;
+    buttonFrontFocus = false;
 
-    const step = function (num, count) {
-      if (document.activeElement === btn) {
-        btn_frnt_focus = true;
+    const step = function (number, count) {
+      if (document.activeElement === button) {
+        buttonFrontFocus = true;
 
-        UI.fireEvent('RequestSkipFront', num);
+        UI.fireEvent('RequestSkipFront', number);
 
         const block = 4450;
 
-        let middle_step = UI.app.engine.wavesurfer.getDuration() / block;
+        let middleStep = UI.app.engine.wavesurfer.getDuration() / block;
         const zoom = UI.app.engine.wavesurfer.ZoomFactor;
-        middle_step /= zoom;
+        middleStep /= zoom;
 
         if (count < 12) {
-          middle_step = 0;
+          middleStep = 0;
         }
 
         setTimeout(function () {
-          step(num + middle_step, ++count);
+          step(number + middleStep, ++count);
         }, 40);
       }
     };
-    btn_frnt_tm = setTimeout(function () {
+    buttonFrontTimer = setTimeout(function () {
       let small = UI.app.engine.wavesurfer.getDuration() / 2000;
       const zoom = UI.app.engine.wavesurfer.ZoomFactor;
       small /= zoom;
@@ -2290,68 +2297,70 @@ function _makeUIToolbar(UI) {
   };
   ////////////////////////
 
-  let k_arr_bck_time = 0;
-  let k_arr_bck_mult = 1;
-  let k_arr_bck_skip_frames = 4;
+  let keyArrayBackTime = 0;
+  let keyArrayBackMultiplier = 1;
+  let keyArrayBackSkipFrames = 4;
   UI.KeyHandler.addCallback(
     'KeyArrowBack',
     function (key, c, ev) {
-      if (UI.InteractionHandler.on || !UI.app.engine.is_ready) return;
+      if (UI.InteractionHandler.on || !UI.app.engine.isReady) return;
 
       const time = ev.timeStamp;
-      const diff = time - k_arr_bck_time;
+      const diff = time - keyArrayBackTime;
 
       if (diff > 158) {
-        k_arr_bck_mult = 1;
-        k_arr_bck_skip_frames = 4;
+        keyArrayBackMultiplier = 1;
+        keyArrayBackSkipFrames = 4;
       } else {
-        if (--k_arr_bck_skip_frames < 0 && k_arr_bck_mult < 6.0) k_arr_bck_mult += 0.05;
+        if (--keyArrayBackSkipFrames < 0 && keyArrayBackMultiplier < 6.0)
+          keyArrayBackMultiplier += 0.05;
       }
 
-      k_arr_bck_time = time;
+      keyArrayBackTime = time;
 
       // get zoom factor
       let jump = 0.5;
       const zoom = UI.app.engine.wavesurfer.ZoomFactor;
-      const total_dur = UI.app.engine.wavesurfer.getDuration();
+      const totalDuration = UI.app.engine.wavesurfer.getDuration();
 
-      jump = Math.max(total_dur / 200, 0.05);
+      jump = Math.max(totalDuration / 200, 0.05);
       jump /= zoom;
-      jump *= k_arr_bck_mult;
+      jump *= keyArrayBackMultiplier;
 
       UI.fireEvent('RequestSkipBack', jump);
     },
     [37]
   );
 
-  let k_arr_frnt_time = 0;
-  let k_arr_frnt_mult = 1;
-  let k_arr_frnt_skip_frames = 4;
+  let keyArrayFrontTime = 0;
+  let keyArrayFrontMultiplier = 1;
+  let keyArrayFrontSkipFrames = 4;
   UI.KeyHandler.addCallback(
     'KeyArrowFront',
     function (key, c, ev) {
-      if (UI.InteractionHandler.on || !UI.app.engine.is_ready) return;
+      if (UI.InteractionHandler.on || !UI.app.engine.isReady) return;
 
       const time = ev.timeStamp;
-      const diff = time - k_arr_frnt_time;
+      const diff = time - keyArrayFrontTime;
 
       if (diff > 158) {
-        k_arr_frnt_mult = 1;
-        k_arr_frnt_skip_frames = 4;
+        keyArrayFrontMultiplier = 1;
+        keyArrayFrontSkipFrames = 4;
       } else {
-        if (--k_arr_frnt_skip_frames < 0 && k_arr_frnt_mult < 6.0) k_arr_frnt_mult += 0.05;
+        if (--keyArrayFrontSkipFrames < 0 && keyArrayFrontMultiplier < 6.0)
+          keyArrayFrontMultiplier += 0.05;
       }
 
-      k_arr_frnt_time = time;
+      keyArrayFrontTime = time;
 
       let jump = 0.5;
       const zoom = UI.app.engine.wavesurfer.ZoomFactor;
-      const total_dur = UI.app.engine.wavesurfer.getDuration();
+      const totalDuration = UI.app.engine.wavesurfer.getDuration();
 
-      jump = Math.max(total_dur / 200, 0.05);
+      jump = Math.max(totalDuration / 200, 0.05);
 
       jump /= zoom;
-      jump *= k_arr_frnt_mult;
+      jump *= keyArrayFrontMultiplier;
 
       UI.fireEvent('RequestSkipFront', jump);
     },
@@ -2360,23 +2369,23 @@ function _makeUIToolbar(UI) {
   UI.KeyHandler.addCallback(
     'KeyShiftArrowBack',
     function (key) {
-      if (UI.InteractionHandler.on || !UI.app.engine.is_ready) return;
+      if (UI.InteractionHandler.on || !UI.app.engine.isReady) return;
 
       const region = UI.app.engine.wavesurfer.regions.list[0];
       if (region) {
-        const pos = UI.app.engine.wavesurfer.ActiveMarker;
-        const total_dur = UI.app.engine.wavesurfer.getDuration();
+        const position = UI.app.engine.wavesurfer.ActiveMarker;
+        const totalDuration = UI.app.engine.wavesurfer.getDuration();
 
-        let durr = region.end / total_dur;
+        let durr = region.end / totalDuration;
 
-        if (pos > durr + 0.004) {
+        if (position > durr + 0.004) {
           UI.fireEvent('RequestSeekTo', durr - 0.0001);
           return;
         }
 
-        durr = region.start / total_dur;
+        durr = region.start / totalDuration;
 
-        if (pos > durr + 0.004) {
+        if (position > durr + 0.004) {
           UI.fireEvent('RequestSeekTo', durr);
           return;
         }
@@ -2389,24 +2398,24 @@ function _makeUIToolbar(UI) {
   UI.KeyHandler.addCallback(
     'KeyShiftArrowFront',
     function (key) {
-      if (UI.InteractionHandler.on || !UI.app.engine.is_ready) return;
+      if (UI.InteractionHandler.on || !UI.app.engine.isReady) return;
 
       // if region skip to the region
       const region = UI.app.engine.wavesurfer.regions.list[0];
       if (region) {
-        const pos = UI.app.engine.wavesurfer.ActiveMarker;
-        const total_dur = UI.app.engine.wavesurfer.getDuration();
+        const position = UI.app.engine.wavesurfer.ActiveMarker;
+        const totalDuration = UI.app.engine.wavesurfer.getDuration();
 
-        let durr = region.start / total_dur;
+        let durr = region.start / totalDuration;
 
-        if (pos < durr - 0.004) {
+        if (position < durr - 0.004) {
           UI.fireEvent('RequestSeekTo', durr);
           return;
         }
 
-        durr = region.end / total_dur;
+        durr = region.end / totalDuration;
 
-        if (pos < durr - 0.004) {
+        if (position < durr - 0.004) {
           UI.fireEvent('RequestSeekTo', durr - 0.0001);
           return;
         }
@@ -2425,33 +2434,33 @@ function _makeUIToolbar(UI) {
     [27]
   );
 
-  const btn_back_total = document.createElement('button');
-  btn_back_total.setAttribute('tabIndex', -1);
-  btn_back_total.className = 'pk_btn icon-previous2';
-  btn_back_total.innerHTML = '<span>Seek Start (Shift + left arrow)</span>';
-  transport.appendChild(btn_back_total);
-  btn_back_total.onclick = function () {
+  const buttonBackTotal = document.createElement('button');
+  buttonBackTotal.setAttribute('tabIndex', -1);
+  buttonBackTotal.className = 'pk_btn icon-previous2';
+  buttonBackTotal.innerHTML = '<span>Seek Start (Shift + left arrow)</span>';
+  transport.appendChild(buttonBackTotal);
+  buttonBackTotal.onclick = function () {
     UI.fireEvent('RequestRegionClear');
     UI.fireEvent('RequestSeekTo', 0);
     this.blur();
   };
 
-  const btn_front_total = document.createElement('button');
-  btn_front_total.setAttribute('tabIndex', -1);
-  btn_front_total.className = 'pk_btn icon-next2';
-  btn_front_total.innerHTML = '<span>Seek End (Shift + right arrow)</span>';
-  btn_front_total.onclick = function () {
+  const buttonFrontTotal = document.createElement('button');
+  buttonFrontTotal.setAttribute('tabIndex', -1);
+  buttonFrontTotal.className = 'pk_btn icon-next2';
+  buttonFrontTotal.innerHTML = '<span>Seek End (Shift + right arrow)</span>';
+  buttonFrontTotal.onclick = function () {
     UI.fireEvent('RequestRegionClear');
     UI.fireEvent('RequestSeekTo', 0.996);
     this.blur();
   };
-  transport.appendChild(btn_front_total);
+  transport.appendChild(buttonFrontTotal);
 
-  const btn_rec = document.createElement('button');
-  btn_rec.setAttribute('tabIndex', -1);
-  btn_rec.className = 'pk_btn icon-rec';
-  btn_rec.innerHTML = '<span>Record (R)</span>';
-  btn_rec.onclick = function () {
+  const buttonRecord = document.createElement('button');
+  buttonRecord.setAttribute('tabIndex', -1);
+  buttonRecord.className = 'pk_btn icon-rec';
+  buttonRecord.innerHTML = '<span>Record (R)</span>';
+  buttonRecord.onclick = function () {
     if (this.getAttribute('disabled') === 'disabled') {
       this.blur();
       return;
@@ -2462,44 +2471,44 @@ function _makeUIToolbar(UI) {
   };
 
   UI.listenFor('ErrorRec', function () {
-    btn_rec.style.opacity = 0.6;
-    btn_rec.setAttribute('disabled', 'disabled');
+    buttonRecord.style.opacity = 0.6;
+    buttonRecord.setAttribute('disabled', 'disabled');
   });
 
-  transport.appendChild(btn_rec);
+  transport.appendChild(buttonRecord);
   UI.KeyHandler.addCallback(
     'KeyRecR',
     function (k) {
       if (UI.InteractionHandler.on) return;
-      btn_rec.click();
+      buttonRecord.click();
     },
     [82]
   );
 
   UI.listenFor('DidActionRecordStart', function () {
-    btn_rec.classList.add('pk_act');
+    buttonRecord.classList.add('pk_act');
   });
   UI.listenFor('DidActionRecordStop', function () {
-    btn_rec.classList.remove('pk_act');
+    buttonRecord.classList.remove('pk_act');
   });
 
   UI.KeyHandler.addCallback(
     'KeyTab',
     function (key) {
-      if (UI.InteractionHandler.on || !UI.app.engine.is_ready) return;
+      if (UI.InteractionHandler.on || !UI.app.engine.isReady) return;
 
       UI.fireEvent('RequestViewCenterToCursor');
     },
     [9]
   );
 
-  const is_chrome = !!window.chrome;
+  const isChrome = !!window.chrome;
   const timing = document.createElement('div');
   timing.className = 'pk_timecontainer';
 
   const timingspan = document.createElement('span');
 
-  if (!is_chrome) {
+  if (!isChrome) {
     timingspan.textContent = '00:00:000';
     timingspan.className = 'pk_timing';
     timing.appendChild(timingspan);
@@ -2512,67 +2521,67 @@ function _makeUIToolbar(UI) {
   pk_timingcnv.height = 40;
   let pk_timingnum = '00:00:000';
   const pk_timingctx = pk_timingcnv.getContext('2d', { alpha: false });
-  const timing_caches = {};
+  const timingCaches = {};
 
-  if (is_chrome) {
+  if (isChrome) {
     timing.appendChild(pk_timingcnv);
     pk_timingctx.fillStyle = '#000';
     pk_timingctx.fillRect(0, 0, 150, 40);
 
     for (let ii = 0; ii < 11; ++ii) {
-      const curr_cache = document.createElement('canvas');
-      curr_cache.width = 18;
-      curr_cache.height = 26;
-      const curr_ctx = curr_cache.getContext('2d', { alpha: false });
-      curr_ctx.font = '29px Helvetica, Arial, sans-serif';
-      curr_ctx.textAlign = 'center';
-      curr_ctx.fillStyle = '#000';
-      curr_ctx.fillRect(0, 0, 18, 26);
-      curr_ctx.fillStyle = '#fff';
-      curr_ctx.textBaseline = 'middle';
+      const currentCache = document.createElement('canvas');
+      currentCache.width = 18;
+      currentCache.height = 26;
+      const currentContext = currentCache.getContext('2d', { alpha: false });
+      currentContext.font = '29px Helvetica, Arial, sans-serif';
+      currentContext.textAlign = 'center';
+      currentContext.fillStyle = '#000';
+      currentContext.fillRect(0, 0, 18, 26);
+      currentContext.fillStyle = '#fff';
+      currentContext.textBaseline = 'middle';
 
       if (ii === 10) {
-        curr_ctx.fillText(':', 8, 14);
-        timing_caches[':'] = curr_cache;
+        currentContext.fillText(':', 8, 14);
+        timingCaches[':'] = currentCache;
       } else {
-        curr_ctx.fillText(ii + '', 9, 14);
-        timing_caches[ii + ''] = curr_cache;
+        currentContext.fillText(ii + '', 9, 14);
+        timingCaches[ii + ''] = currentCache;
       }
-      // timing_caches.push (curr_cache);
-      // document.body.appendChild( curr_cache );
+      // timingCaches.push (currentCache);
+      // document.body.appendChild( currentCache );
     }
 
-    (function (pk_timingctx, timing_caches) {
+    (function (pk_timingctx, timingCaches) {
       const ttm = '00:00:000';
       for (let jk = 0; jk < ttm.length; ++jk) {
-        pk_timingctx.drawImage(timing_caches[ttm[jk]], jk * 16, 10);
+        pk_timingctx.drawImage(timingCaches[ttm[jk]], jk * 16, 10);
       }
-    })(pk_timingctx, timing_caches);
+    })(pk_timingctx, timingCaches);
   }
   /////
 
-  const total_duration = document.createElement('span');
-  total_duration.textContent = '00:00:000';
-  total_duration.className = 'pk_total_dur';
-  timing.appendChild(total_duration);
+  const totalDuration = document.createElement('span');
+  totalDuration.textContent = '00:00:000';
+  totalDuration.className = 'pk_total_dur';
+  timing.appendChild(totalDuration);
 
-  const hover_duration = document.createElement('span');
-  hover_duration.textContent = '00:00:000';
-  hover_duration.className = 'pk_hover_dur';
-  timing.appendChild(hover_duration);
+  const hoverDuration = document.createElement('span');
+  hoverDuration.textContent = '00:00:000';
+  hoverDuration.className = 'pk_hover_dur';
+  timing.appendChild(hoverDuration);
 
   setTimeout(function () {
     UI.listenFor('DidZoom', function (v, f) {
       // do something smarter for f (event) ####
       if (f)
-        hover_duration.textContent = formatTime(
+        hoverDuration.textContent = formatTime(
           UI.app.engine.wavesurfer.drawer.handleEvent(f) *
             UI.app.engine.wavesurfer.VisibleDuration +
             UI.app.engine.wavesurfer.LeftProgress
         );
     });
 
-    let old_refresh = 0;
+    let oldRefresh = 0;
 
     const avv = document.getElementsByClassName('pk_av')[0];
     avv.addEventListener(
@@ -2581,15 +2590,15 @@ function _makeUIToolbar(UI) {
         // re-run the mousemove fam on zoom based on the pointer position)
 
         // throttle this as well ####  violation
-        const new_refresh = e.timeStamp;
+        const newRefresh = e.timeStamp;
 
-        if (new_refresh - old_refresh < 58) {
+        if (newRefresh - oldRefresh < 58) {
           return;
         }
 
-        old_refresh = new_refresh;
+        oldRefresh = newRefresh;
 
-        hover_duration.textContent = formatTime(
+        hoverDuration.textContent = formatTime(
           UI.app.engine.wavesurfer.drawer.handleEvent(e) *
             UI.app.engine.wavesurfer.VisibleDuration +
             UI.app.engine.wavesurfer.LeftProgress
@@ -2598,9 +2607,9 @@ function _makeUIToolbar(UI) {
       false
     );
 
-    const main_context = new ContextMenu(avv);
+    const mainContext = new ContextMenu(avv);
 
-    main_context.addOption(
+    mainContext.addOption(
       'Select Visible View',
       function (e, x, i) {
         UI.fireEvent('RequestRegionSet');
@@ -2608,7 +2617,7 @@ function _makeUIToolbar(UI) {
       false
     );
 
-    main_context.addOption(
+    mainContext.addOption(
       'Reset Zoom',
       function (e) {
         UI.fireEvent('RequestZoomUI', 0);
@@ -2616,7 +2625,7 @@ function _makeUIToolbar(UI) {
       false
     );
 
-    main_context.addOption(
+    mainContext.addOption(
       'Set Volume/Gain',
       function (e) {
         UI.fireEvent('RequestFXUI_Gain');
@@ -2624,7 +2633,7 @@ function _makeUIToolbar(UI) {
       false
     );
 
-    main_context.addOption(
+    mainContext.addOption(
       'Copy',
       function (e) {
         const region = UI.app.engine.wavesurfer.regions.list[0];
@@ -2634,7 +2643,7 @@ function _makeUIToolbar(UI) {
       },
       false
     );
-    main_context.addOption(
+    mainContext.addOption(
       'Paste',
       function (e) {
         if (!copable) return;
@@ -2642,7 +2651,7 @@ function _makeUIToolbar(UI) {
       },
       false
     );
-    main_context.addOption(
+    mainContext.addOption(
       'Cut',
       function (e) {
         const region = UI.app.engine.wavesurfer.regions.list[0];
@@ -2652,7 +2661,7 @@ function _makeUIToolbar(UI) {
       },
       false
     );
-    main_context.addOption(
+    mainContext.addOption(
       'Insert Silence',
       function (e) {
         UI.fireEvent('RequestFXUI_Silence', 0); // #### call effect
@@ -2662,12 +2671,12 @@ function _makeUIToolbar(UI) {
     // ---
 
     let copable = false;
-    UI.listenFor('DidSetClipboard', function (val) {
-      if (val) copable = true;
+    UI.listenFor('DidSetClipboard', function (value) {
+      if (value) copable = true;
       else copable = false;
     });
 
-    main_context.onOpen = function (menu, div) {
+    mainContext.onOpen = function (menu, div) {
       const divs = div.childNodes;
       if (!copable) divs[4].className += ' pk_inact';
 
@@ -2681,52 +2690,52 @@ function _makeUIToolbar(UI) {
     };
   }, 1000);
 
-  UI.listenFor('DidUpdateLen', function (val) {
-    total_duration.textContent = formatTime(val);
+  UI.listenFor('DidUpdateLen', function (value) {
+    totalDuration.textContent = formatTime(value);
   });
 
   function formatTime(time) {
-    let time_s = time >> 0;
-    const miliseconds = time - time_s;
+    let timeSeconds = time >> 0;
+    const miliseconds = time - timeSeconds;
 
-    if (time_s < 10) {
+    if (timeSeconds < 10) {
       if (time === 0) return '00:00:000';
-      time_s = '00:0' + time_s;
-    } else if (time_s < 60) {
-      time_s = '00:' + time_s;
+      timeSeconds = '00:0' + timeSeconds;
+    } else if (timeSeconds < 60) {
+      timeSeconds = '00:' + timeSeconds;
     } else {
-      const m = (time_s / 60) >> 0;
-      const s = time_s % 60;
-      time_s = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' + s : s);
+      const m = (timeSeconds / 60) >> 0;
+      const s = timeSeconds % 60;
+      timeSeconds = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' + s : s);
     }
 
     if (miliseconds < 0.1) {
-      return time_s + ':0' + (miliseconds < 0.01 ? '0' : '') + ((miliseconds * 1000) >> 0);
+      return timeSeconds + ':0' + (miliseconds < 0.01 ? '0' : '') + ((miliseconds * 1000) >> 0);
     }
 
-    return time_s + ':' + ((miliseconds * 1000) >> 0); // (miliseconds+'').substr(2, 3);
+    return timeSeconds + ':' + ((miliseconds * 1000) >> 0); // (miliseconds+'').substr(2, 3);
   }
   UI.formatTime = formatTime;
 
   let volume1 = 0;
   let volume2 = 0;
-  let old_refresh = 0;
+  let oldRefresh = 0;
   let wvpnt = document.querySelector('.pk_wavepoint');
 
-  UI.listenFor('DidAudioProcess', function (val) {
-    const time = val[0];
-    const loudness = val[1];
+  UI.listenFor('DidAudioProcess', function (value) {
+    const time = value[0];
+    const loudness = value[1];
 
-    const new_refresh = val[2] || window.performance.now();
+    const newRefresh = value[2] || window.performance.now();
 
-    if (new_refresh - old_refresh < 50) {
+    if (newRefresh - oldRefresh < 50) {
       return;
     }
 
-    old_refresh = new_refresh;
+    oldRefresh = newRefresh;
 
     if (time > -1) {
-      if (!is_chrome) {
+      if (!isChrome) {
         timingspan.textContent = formatTime(time);
       } else {
         const ttm = formatTime(time);
@@ -2742,7 +2751,7 @@ function _makeUIToolbar(UI) {
             }
           }
 
-          pk_timingctx.drawImage(timing_caches[ttm[jk]], jk * 16, 10);
+          pk_timingctx.drawImage(timingCaches[ttm[jk]], jk * 16, 10);
         }
         pk_timingnum = ttm;
       }
@@ -2825,61 +2834,61 @@ function _makeUIToolbar(UI) {
   const actions = document.createElement('div');
   actions.className = 'pk_ctns';
 
-  const copy_btn = document.createElement('button');
-  copy_btn.setAttribute('tabIndex', -1);
-  copy_btn.className = 'pk_btn icon-files-empty pk_inact';
-  copy_btn.innerHTML = '<span>Copy Selection (Shift + C)</span>';
-  actions.appendChild(copy_btn);
+  const copyButton = document.createElement('button');
+  copyButton.setAttribute('tabIndex', -1);
+  copyButton.className = 'pk_btn icon-files-empty pk_inact';
+  copyButton.innerHTML = '<span>Copy Selection (Shift + C)</span>';
+  actions.appendChild(copyButton);
 
-  copy_btn.onclick = function () {
+  copyButton.onclick = function () {
     UI.fireEvent('RequestActionCopy');
     this.blur();
   };
 
-  UI.listenFor('DidSetClipboard', function (val) {
-    if (val) paste_btn.classList.remove('pk_inact');
-    else paste_btn.classList.add('pk_inact');
+  UI.listenFor('DidSetClipboard', function (value) {
+    if (value) pasteButton.classList.remove('pk_inact');
+    else pasteButton.classList.add('pk_inact');
   });
 
-  const paste_btn = document.createElement('button');
-  paste_btn.setAttribute('focusable', 'false');
-  paste_btn.className = 'pk_btn icon-file-text2 pk_inact';
-  paste_btn.innerHTML = '<span>Paste Selection (Shift + V)</span>';
-  actions.appendChild(paste_btn);
+  const pasteButton = document.createElement('button');
+  pasteButton.setAttribute('focusable', 'false');
+  pasteButton.className = 'pk_btn icon-file-text2 pk_inact';
+  pasteButton.innerHTML = '<span>Paste Selection (Shift + V)</span>';
+  actions.appendChild(pasteButton);
 
-  paste_btn.onclick = function () {
+  pasteButton.onclick = function () {
     UI.fireEvent('RequestActionPaste');
     this.blur();
   };
 
-  const cut_btn = document.createElement('button');
-  cut_btn.setAttribute('tabIndex', -1);
-  cut_btn.className = 'pk_btn icon-scissors pk_inact';
-  cut_btn.innerHTML = '<span>Cut Selection (Shift + X)</span>';
-  actions.appendChild(cut_btn);
+  const cutButton = document.createElement('button');
+  cutButton.setAttribute('tabIndex', -1);
+  cutButton.className = 'pk_btn icon-scissors pk_inact';
+  cutButton.innerHTML = '<span>Cut Selection (Shift + X)</span>';
+  actions.appendChild(cutButton);
 
-  cut_btn.onclick = function () {
+  cutButton.onclick = function () {
     UI.fireEvent('RequestActionCut', 1);
     this.blur();
   };
 
-  const silence_btn = document.createElement('button');
-  silence_btn.setAttribute('tabIndex', -1);
-  silence_btn.className = 'pk_btn icon-silence';
-  silence_btn.innerHTML = '<span>Insert Silence (Shift + N)</span>';
-  actions.appendChild(silence_btn);
+  const silenceButton = document.createElement('button');
+  silenceButton.setAttribute('tabIndex', -1);
+  silenceButton.className = 'pk_btn icon-silence';
+  silenceButton.innerHTML = '<span>Insert Silence (Shift + N)</span>';
+  actions.appendChild(silenceButton);
 
   UI.KeyHandler.addCallback(
     'KeyShiftN',
     function (k) {
       if (UI.InteractionHandler.on) return;
 
-      silence_btn.click();
+      silenceButton.click();
     },
     [16, 78]
   );
 
-  silence_btn.onclick = function () {
+  silenceButton.onclick = function () {
     UI.fireEvent('RequestFXUI_Silence');
     this.blur();
   };
@@ -2894,48 +2903,48 @@ function _makeUIToolbar(UI) {
     '<div><span  class="title">Duration:</span><span class="s_d pk_dat">-</span></div>' +
     '</div>';
 
-  const btn_clear_selection = document.createElement('button');
-  btn_clear_selection.setAttribute('tabIndex', -1);
-  btn_clear_selection.className = 'pk_btn icon-clearsel pk_inact';
-  btn_clear_selection.innerHTML = '<span>Clear Selection (Q key)</span>';
+  const buttonClearSelection = document.createElement('button');
+  buttonClearSelection.setAttribute('tabIndex', -1);
+  buttonClearSelection.className = 'pk_btn icon-clearsel pk_inact';
+  buttonClearSelection.innerHTML = '<span>Clear Selection (Q key)</span>';
 
-  let sel_spans = selection.getElementsByClassName('pk_dat');
+  let selectedSpans = selection.getElementsByClassName('pk_dat');
   UI.listenFor('DidCreateRegion', function (region) {
-    copy_btn.classList.remove('pk_inact');
-    cut_btn.classList.remove('pk_inact');
-    btn_clear_selection.classList.remove('pk_inact');
+    copyButton.classList.remove('pk_inact');
+    cutButton.classList.remove('pk_inact');
+    buttonClearSelection.classList.remove('pk_inact');
 
     if (region) {
-      if (!sel_spans[0]) sel_spans = document.querySelectorAll('.pk_sellist .pk_dat');
-      sel_spans[0].textContent = region.start.toFixed(3);
-      sel_spans[1].textContent = region.end.toFixed(3);
-      sel_spans[2].textContent = (region.end - region.start).toFixed(3);
+      if (!selectedSpans[0]) selectedSpans = document.querySelectorAll('.pk_sellist .pk_dat');
+      selectedSpans[0].textContent = region.start.toFixed(3);
+      selectedSpans[1].textContent = region.end.toFixed(3);
+      selectedSpans[2].textContent = (region.end - region.start).toFixed(3);
     }
   });
   UI.listenFor('DidDestroyRegion', function () {
-    copy_btn.classList.add('pk_inact');
-    cut_btn.classList.add('pk_inact');
-    btn_clear_selection.classList.add('pk_inact');
+    copyButton.classList.add('pk_inact');
+    cutButton.classList.add('pk_inact');
+    buttonClearSelection.classList.add('pk_inact');
 
-    if (!sel_spans[0]) sel_spans = document.querySelectorAll('.pk_sellist .pk_dat');
-    sel_spans[0].textContent = '-';
-    sel_spans[1].textContent = '-';
-    sel_spans[2].textContent = '-';
+    if (!selectedSpans[0]) selectedSpans = document.querySelectorAll('.pk_sellist .pk_dat');
+    selectedSpans[0].textContent = '-';
+    selectedSpans[1].textContent = '-';
+    selectedSpans[2].textContent = '-';
   });
 
-  btn_clear_selection.onclick = function () {
+  buttonClearSelection.onclick = function () {
     UI.fireEvent('RequestRegionClear');
     this.blur();
   };
-  selection.appendChild(btn_clear_selection);
+  selection.appendChild(buttonClearSelection);
 
   toolbar.appendChild(timing);
 
-  UI.listenFor('DidChanToggle', function (chan, val) {
+  UI.listenFor('DidChanToggle', function (chan, value) {
     const region = UI.app.engine.wavesurfer.regions.list[0];
     if (!region) return;
 
-    if (val === 1) {
+    if (value === 1) {
       region.element.style.top = '0';
       region.element.style.height = '100%';
       return;
@@ -2955,14 +2964,14 @@ function _makeUIToolbar(UI) {
   });
 
   // end
-  toolbar.appendChild(btn_groups);
-  btn_groups.appendChild(transport);
-  btn_groups.appendChild(actions);
+  toolbar.appendChild(buttonGroups);
+  buttonGroups.appendChild(transport);
+  buttonGroups.appendChild(actions);
   toolbar.appendChild(selection);
 
   container.appendChild(toolbar);
 
-  UI.el.appendChild(container);
+  UI.element.appendChild(container);
 
   enableFileDrop(
     document.getElementById('app'),
@@ -2978,23 +2987,23 @@ function _makeUIToolbar(UI) {
 
 function _makeMobileScroll(UI) {
   const getFactor = function () {
-    const screen_h = window.screen.height;
-    const screen_w = window.screen.width;
+    const screenHeight = window.screen.height;
+    const screenWidth = window.screen.width;
 
     const iw = window.innerWidth;
     const ih = window.innerHeight;
 
-    let bars_visible = false;
+    let barsVisible = false;
     let ratio = 0;
 
     if (window.orientation === 0) {
-      ratio = ih / screen_h;
+      ratio = ih / screenHeight;
     } else if (window.orientation === 90 || window.orientation === -90) {
-      ratio = ih / screen_w;
+      ratio = ih / screenWidth;
     }
-    if (ratio < 0.8) bars_visible = true;
+    if (ratio < 0.8) barsVisible = true;
 
-    return bars_visible;
+    return barsVisible;
   };
 
   let ex = -1;
@@ -3056,9 +3065,9 @@ function _makeMobileScroll(UI) {
           const scrolled = xx.scrollTop;
 
           if (direction > 0) {
-            const modal_h = document.getElementsByClassName('pk_modal')[0].clientHeight;
+            const modalHeight = document.getElementsByClassName('pk_modal')[0].clientHeight;
 
-            if (modal_h - scrolled < window.innerHeight - 80) {
+            if (modalHeight - scrolled < window.innerHeight - 80) {
               e.preventDefault();
             }
           } else {

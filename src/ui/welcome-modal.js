@@ -53,7 +53,7 @@ export function showWelcomeModal(app) {
       );
 
       // Let the tips body scroll on touch devices without moving the waveform.
-      const scrollArea = modalInstance.el_body.getElementsByTagName('div')[0];
+      const scrollArea = modalInstance.bodyElement.getElementsByTagName('div')[0];
       scrollArea.addEventListener('touchstart', (event) => event.stopPropagation(), false);
       scrollArea.addEventListener('touchmove', (event) => event.stopPropagation(), false);
     },

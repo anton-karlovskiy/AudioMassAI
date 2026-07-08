@@ -52,7 +52,7 @@ function openMenuAt(menu, x, y) {
   container.className = 'pk_contextMenu ' + menu.menuClass;
   container.id = menu.token;
 
-  for (let i = 0, len = options.length; i < len; ++i) {
+  for (let i = 0, optionCount = options.length; i < optionCount; ++i) {
     let item;
     if (options[i].isHTML) {
       item = document.createElement('div');
@@ -106,7 +106,7 @@ function handleOpenEvent(event) {
 
   if (!menu) return false;
 
-  menu.curr_target = event.target || event.srcElement;
+  menu.currentTarget = event.target || event.srcElement;
 
   openMenuAt(menu, pageX, pageY);
 }
@@ -115,10 +115,10 @@ export class ContextMenu {
   constructor(element, options) {
     if (!options) options = {};
 
-    this.elem = element;
+    this.element = element;
     this.options = [];
     this.menuClass = options.className || 'pk_open';
-    this.curr_target = null;
+    this.currentTarget = null;
 
     // Opened via a custom event so the editor can gate when menus appear
     // (double click without movement) instead of every native contextmenu.
@@ -131,7 +131,7 @@ export class ContextMenu {
   }
 
   open(event) {
-    handleOpenEvent.call(this.elem, event);
+    handleOpenEvent.call(this.element, event);
   }
 
   close() {
@@ -143,7 +143,7 @@ export class ContextMenu {
   }
 
   destroy() {
-    this.elem.removeEventListener('pk_ctxmn', handleOpenEvent);
+    this.element.removeEventListener('pk_ctxmn', handleOpenEvent);
 
     closeAllMenus();
     menuRegistry[this.token] = null;

@@ -364,16 +364,16 @@ const readSynchsafeInteger32At = function (offset, data) {
 const readFrameFlags = function (data, offset) {
   const flags = {
     message: {
-      tag_alter_preservation: isBitSetAt(data, offset, 6),
-      file_alter_preservation: isBitSetAt(data, offset, 5),
-      read_only: isBitSetAt(data, offset, 4),
+      tagAlterPreservation: isBitSetAt(data, offset, 6),
+      fileAlterPreservation: isBitSetAt(data, offset, 5),
+      readOnly: isBitSetAt(data, offset, 4),
     },
     format: {
-      grouping_identity: isBitSetAt(data, offset + 1, 7),
+      groupingIdentity: isBitSetAt(data, offset + 1, 7),
       compression: isBitSetAt(data, offset + 1, 3),
       encription: isBitSetAt(data, offset + 1, 2),
       unsynchronisation: isBitSetAt(data, offset + 1, 1),
-      data_length_indicator: isBitSetAt(data, offset + 1, 0),
+      dataLengthIndicator: isBitSetAt(data, offset + 1, 0),
     },
   };
 
@@ -466,7 +466,7 @@ const readFrames = function (offset, end, data, id3header, tags) {
 
     // the first 4 bytes are the real data size
     // (after unsynchronisation && encryption)
-    if (flags && flags.format.data_length_indicator) {
+    if (flags && flags.format.dataLengthIndicator) {
       frameDataSize = readSynchsafeInteger32At(frameDataOffset, frameData);
       frameDataOffset += 4;
       frameSize -= 4;
@@ -597,7 +597,7 @@ ID3v2.readFrameData['COMM'] = function readCommentsFrame(offset, length, data) {
 
   return {
     language: language,
-    short_description: shortdesc.toString(),
+    shortDescription: shortdesc.toString(),
     text: text.toString(),
   };
 };
@@ -682,8 +682,8 @@ ID3v2.ReadTags = function (arraybuffer) {
     revision: revision,
     flags: {
       unsynchronisation: unsynch,
-      extended_header: xheader,
-      experimental_indicator: xindicator,
+      extendedHeader: xheader,
+      experimentalIndicator: xindicator,
     },
     size: size,
   };
@@ -758,7 +758,7 @@ function loadAtom(data, offset, length, callback) {
 
   // Container atoms
   if (['moov', 'udta', 'meta', 'ilst'].indexOf(atomName) > -1) {
-    if (atomName == 'meta') offset += 4; // next_item_id (uint32)
+    if (atomName == 'meta') offset += 4; // nextItemId (uint32)
     // data.loadRange([offset+8, offset+8 + 8], function() {
     loadAtom(data, offset + 8, atomSize - 8, callback);
     // });
@@ -789,7 +789,7 @@ function readAtom(tag, data, offset, length, indent) {
     const atomName = getStringAt(data, seek + 4, 4);
     // Container atoms
     if (atomName === 'meta') {
-      seek += 4; // next_item_id (uint32)
+      seek += 4; // nextItemId (uint32)
       readAtom(tag, data, seek + 8, atomSize - 8, indent);
       return;
     }
@@ -806,7 +806,7 @@ function readAtom(tag, data, offset, length, indent) {
     /*
             if (['moov', 'udta', 'meta', 'ilst'].indexOf(atomName) > -1)
             {
-                if (atomName === 'meta') seek += 4; // next_item_id (uint32)
+                if (atomName === 'meta') seek += 4; // nextItemId (uint32)
                 readAtom(tag, data, seek + 8, atomSize - 8, indent);
                 return;
             }

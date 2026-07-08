@@ -7,54 +7,54 @@
 
 import { AudioEffectModal } from '../ui/modals.js';
 
-const modal_name = 'modalfx';
-const modal_esc_key = modal_name + 'esc';
+const modalName = 'modalfx';
+const modalEscapeKey = modalName + 'esc';
 
 export function openRecordingModal(app) {
-  const filter_id = 'rec_tools';
+  const filterId = 'rec_tools';
 
-  let audio_stream = null;
-  let audio_context = null;
-  let script_processor = null;
-  let media_stream_source = null;
-  let temp_buffers = [];
+  let audioStream = null;
+  let audioContext = null;
+  let scriptProcessor = null;
+  let mediaStreamSource = null;
+  let tempBuffers = [];
   let newbuff = null;
-  let sample_rate = 44100;
-  const buffer_size = 2048; // * 2 ?
-  const channel_num = 1;
-  const channel_num_out = 1;
+  let sampleRate = 44100;
+  const bufferSize = 2048; // * 2 ?
+  const inputChannelCount = 1;
+  const outputChannelCount = 1;
 
-  const stop_audio = function () {
-    if (!audio_stream) return;
+  const stopAudio = function () {
+    if (!audioStream) return;
 
-    audio_stream.getTracks().forEach(function (stream) {
+    audioStream.getTracks().forEach(function (stream) {
       stream.stop();
     });
 
-    if (script_processor) {
-      script_processor.onaudioprocess = null;
+    if (scriptProcessor) {
+      scriptProcessor.onaudioprocess = null;
     }
-    media_stream_source && media_stream_source.disconnect();
-    script_processor && script_processor.disconnect();
-    media_stream_source = null;
-    audio_stream = null;
-    audio_context = null;
+    mediaStreamSource && mediaStreamSource.disconnect();
+    scriptProcessor && scriptProcessor.disconnect();
+    mediaStreamSource = null;
+    audioStream = null;
+    audioContext = null;
   };
 
   const fxModal = AudioEffectModal(
     {
-      id: filter_id,
+      id: filterId,
       title: 'New Recording',
 
       ondestroy: function (q) {
         // destroy audio...
-        stop_audio();
+        stopAudio();
 
-        temp_buffers = [];
+        tempBuffers = [];
         newbuff = null;
 
         app.ui.InteractionHandler.on = false;
-        app.ui.KeyHandler.removeCallback(modal_esc_key);
+        app.ui.KeyHandler.removeCallback(modalEscapeKey);
 
         app.fireEvent('RequestStop');
       },
@@ -85,236 +85,236 @@ export function openRecordingModal(app) {
 
       //			buttons: [{
       //				title:'Apply EQ',
-      //				clss:'pk_modal_a_accpt',
+      //				className:'pk_modal_a_accpt',
       //				callback: function( q ) {
       //					q.Destroy ();
       //				}
       //			}],
 
       setup: function (q) {
-        let is_ready = false;
-        let is_active = false;
-        let is_paused = false;
-        let has_recorded = false;
+        let isReady = false;
+        let isActive = false;
+        let isPaused = false;
+        let hasRecorded = false;
 
-        const mainbtns = q.el_body.getElementsByClassName('pk_tbsa');
-        const btn_start = mainbtns[0];
-        const btn_pause = mainbtns[1];
-        const btn_open = mainbtns[2];
-        const btn_add = mainbtns[3];
-        const time_span = q.el_body.getElementsByTagName('span')[0];
-        const devices_sel = q.el_body.getElementsByTagName('select')[0];
+        const mainbtns = q.bodyElement.getElementsByClassName('pk_tbsa');
+        const buttonStart = mainbtns[0];
+        const buttonPause = mainbtns[1];
+        const buttonOpen = mainbtns[2];
+        const buttonAdd = mainbtns[3];
+        const timeSpan = q.bodyElement.getElementsByTagName('span')[0];
+        const devicesSelect = q.bodyElement.getElementsByTagName('select')[0];
         const devices = [];
-        const volcanvas = q.el_body.getElementsByTagName('canvas')[0];
-        const volctx = volcanvas.getContext('2d', { alpha: false, antialias: false });
+        const volcanvas = q.bodyElement.getElementsByTagName('canvas')[0];
+        const volumeContext = volcanvas.getContext('2d', { alpha: false, antialias: false });
 
-        const freqcanvas = q.el_body.getElementsByTagName('canvas')[1];
-        const freqctx = freqcanvas.getContext('2d', { alpha: false, antialias: false });
+        const freqcanvas = q.bodyElement.getElementsByTagName('canvas')[1];
+        const frequencyContext = freqcanvas.getContext('2d', { alpha: false, antialias: false });
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = 500 * 2;
         tempCanvas.height = 100 * 2;
-        const tempCtx = tempCanvas.getContext('2d', { alpha: false, antialias: false });
+        const tempContext = tempCanvas.getContext('2d', { alpha: false, antialias: false });
 
-        let first_skip = 12;
-        let curr_offset = 0;
-        let temp_buffer_index = -1;
+        let firstSkip = 12;
+        let currentOffset = 0;
+        let tempBufferIndex = -1;
         let volume = 0;
         let currtime = 0;
-        let has_devices = false;
+        let hasDevices = false;
 
-        const old_left_time = -999999;
-        let old_right_time = -999999;
+        const oldLeftTime = -999999;
+        let oldRightTime = -999999;
         let peaks = [];
         const skipp = false;
         let remaining = 0;
         let debounce = false;
 
-        temp_buffers = [];
+        tempBuffers = [];
         newbuff = null;
 
-        const draw_volume = function () {
-          volctx.fillStyle = '#000';
-          volctx.fillRect(0, 0, 200, 40);
+        const drawVolume = function () {
+          volumeContext.fillStyle = '#000';
+          volumeContext.fillRect(0, 0, 200, 40);
 
-          if (!is_active) {
+          if (!isActive) {
             return;
           }
 
-          volctx.fillStyle = 'green';
-          volctx.fillRect(0, 0, volume * 200 * 1.67, 40);
+          volumeContext.fillStyle = 'green';
+          volumeContext.fillRect(0, 0, volume * 200 * 1.67, 40);
 
-          time_span.innerText = ((currtime * 10) >> 0) / 10;
+          timeSpan.innerText = ((currtime * 10) >> 0) / 10;
 
-          window.requestAnimationFrame(draw_volume);
+          window.requestAnimationFrame(drawVolume);
         };
 
         const fetchBufferFunction = function (ev) {
-          if (first_skip > 0) {
-            --first_skip;
+          if (firstSkip > 0) {
+            --firstSkip;
             return;
           }
 
-          if (is_paused) {
+          if (isPaused) {
             return;
           }
 
-          curr_offset += ev.inputBuffer.duration * sample_rate;
-          const float_array = ev.inputBuffer.getChannelData(0).slice(0);
-          temp_buffers[++temp_buffer_index] = float_array;
+          currentOffset += ev.inputBuffer.duration * sampleRate;
+          const floatArray = ev.inputBuffer.getChannelData(0).slice(0);
+          tempBuffers[++tempBufferIndex] = floatArray;
 
           let sum = 0;
           let x;
 
-          for (let i = 0; i < buffer_size; i += 2) {
-            x = float_array[i];
+          for (let i = 0; i < bufferSize; i += 2) {
+            x = floatArray[i];
             sum += x * x;
           }
 
-          const rms = Math.sqrt(sum / (buffer_size / 2));
+          const rms = Math.sqrt(sum / (bufferSize / 2));
           volume = Math.max(rms, volume * 0.9);
 
-          const curr_time = (temp_buffer_index * buffer_size) / sample_rate;
-          currtime = curr_time;
+          const currentTime = (tempBufferIndex * bufferSize) / sampleRate;
+          currtime = currentTime;
           const width = 500;
           const height = 100;
-          const half_height = (height / 2) * 2;
-          let new_width = width;
-          let cached_index = 0;
+          const halfHeight = (height / 2) * 2;
+          let newWidth = width;
+          let cachedIndex = 0;
           let pixels = 0;
-          let raw_pixels = 0;
+          let rawPixels = 0;
           const limit = 3;
 
-          const left_time = curr_time - limit;
-          const right_time = curr_time; // + (limit/2);
-          let quick_render = false;
+          const leftTime = currentTime - limit;
+          const rightTime = currentTime; // + (limit/2);
+          let quickRender = false;
 
-          let start_offset = (left_time * sample_rate) >> 0;
-          let end_offset = ((left_time + limit) * sample_rate) >> 0;
-          let length = end_offset - start_offset;
+          let startOffset = (leftTime * sampleRate) >> 0;
+          let endOffset = ((leftTime + limit) * sampleRate) >> 0;
+          let length = endOffset - startOffset;
           let mod = (length / width) >> 0;
 
-          if (left_time < old_right_time) {
+          if (leftTime < oldRightTime) {
             // find pixels
-            const diff = right_time - old_right_time;
+            const diff = rightTime - oldRightTime;
             // pixels = Math.round ( (diff / limit) * width);
 
-            raw_pixels = (diff / limit) * width;
-            pixels = Math.round(raw_pixels);
+            rawPixels = (diff / limit) * width;
+            pixels = Math.round(rawPixels);
 
-            raw_pixels = ((raw_pixels * 1000) >> 0) / 1000;
+            rawPixels = ((rawPixels * 1000) >> 0) / 1000;
 
             if (pixels >= 0) {
               if (pixels === 0) return;
 
-              new_width = pixels;
+              newWidth = pixels;
 
-              start_offset = (old_right_time * sample_rate) >> 0;
-              end_offset = (right_time * sample_rate) >> 0;
-              length = end_offset - start_offset;
+              startOffset = (oldRightTime * sampleRate) >> 0;
+              endOffset = (rightTime * sampleRate) >> 0;
+              length = endOffset - startOffset;
               mod = (length / pixels) >> 0;
 
               peaks = peaks.slice(pixels * 2);
-              cached_index = width - pixels;
+              cachedIndex = width - pixels;
 
-              quick_render = true;
+              quickRender = true;
             }
           }
 
-          old_right_time = right_time;
+          oldRightTime = rightTime;
 
           let max = 0;
           let min = 0;
 
-          for (let i = 0; i < new_width; ++i) {
-            const new_offset = start_offset + mod * i;
+          for (let i = 0; i < newWidth; ++i) {
+            const newOffset = startOffset + mod * i;
 
             max = 0;
             min = 0;
 
-            if (new_offset >= 0) {
+            if (newOffset >= 0) {
               for (let j = 0; j < mod; j += 3) {
-                const temp = new_offset + j;
+                const temp = newOffset + j;
                 const temp2 = (temp / 2048) >> 0;
                 const temp3 = temp % 2048;
 
-                if (!temp_buffers[temp2]) continue;
+                if (!tempBuffers[temp2]) continue;
 
-                if (temp_buffers[temp2][temp3] > max) {
-                  max = temp_buffers[temp2][temp3];
-                } else if (temp_buffers[temp2][temp3] < min) {
-                  min = temp_buffers[temp2][temp3];
+                if (tempBuffers[temp2][temp3] > max) {
+                  max = tempBuffers[temp2][temp3];
+                } else if (tempBuffers[temp2][temp3] < min) {
+                  min = tempBuffers[temp2][temp3];
                 }
               }
             }
 
-            peaks[2 * (i + cached_index)] = max;
-            peaks[2 * (i + cached_index) + 1] = min;
+            peaks[2 * (i + cachedIndex)] = max;
+            peaks[2 * (i + cachedIndex) + 1] = min;
           }
 
-          if (quick_render) {
-            // var imgdata = ctx.getImageData(0, 0, width, height);
-            // tempCtx.putImageData (imgdata, 0, 0);
-            tempCtx.drawImage(freqcanvas, 0, 0); //, width, height, 0, 0, width, height);
+          if (quickRender) {
+            // var imgdata = canvasContext.getImageData(0, 0, width, height);
+            // tempContext.putImageData (imgdata, 0, 0);
+            tempContext.drawImage(freqcanvas, 0, 0); //, width, height, 0, 0, width, height);
           }
 
-          freqctx.fillStyle = '#000';
-          // freqctx.clearRect( 0, 0, width, height );
-          freqctx.fillRect(0, 0, width * 2, height * 2);
-          freqctx.fillStyle = '#99c2c6';
+          frequencyContext.fillStyle = '#000';
+          // frequencyContext.clearRect( 0, 0, width, height );
+          frequencyContext.fillRect(0, 0, width * 2, height * 2);
+          frequencyContext.fillStyle = '#99c2c6';
 
-          if (quick_render) {
-            let forward = Math.round(raw_pixels * 2);
-            remaining += forward - raw_pixels * 2;
+          if (quickRender) {
+            let forward = Math.round(rawPixels * 2);
+            remaining += forward - rawPixels * 2;
             if (remaining > 1) {
               forward -= 1;
               remaining = 0;
             }
 
-            // freqctx.translate(-1.5, 0);
-            freqctx.translate(-forward, 0);
-            freqctx.drawImage(tempCanvas, 0, 0); //, width, height, 0, 0, width, height);
-            freqctx.setTransform(1, 0, 0, 1, 0, 0);
+            // frequencyContext.translate(-1.5, 0);
+            frequencyContext.translate(-forward, 0);
+            frequencyContext.drawImage(tempCanvas, 0, 0); //, width, height, 0, 0, width, height);
+            frequencyContext.setTransform(1, 0, 0, 1, 0, 0);
 
-            //						freqctx.drawImage (tempCanvas, 0, 0, width, 100, -(raw_pixels.toFixed(1)/1), 0, width, 100);
+            //						frequencyContext.drawImage (tempCanvas, 0, 0, width, 100, -(rawPixels.toFixed(1)/1), 0, width, 100);
 
-            freqctx.beginPath();
+            frequencyContext.beginPath();
 
             let peak = peaks[(width - pixels - 2) * 2];
-            let _h = Math.round(peak * half_height);
-            freqctx.moveTo((width - pixels - 2) * 2, half_height - _h);
+            let _h = Math.round(peak * halfHeight);
+            frequencyContext.moveTo((width - pixels - 2) * 2, halfHeight - _h);
 
             for (let i = width - pixels - 1; i < width; ++i) {
               peak = peaks[i * 2];
-              _h = Math.round(peak * half_height);
-              freqctx.lineTo(i * 2, half_height - _h);
+              _h = Math.round(peak * halfHeight);
+              frequencyContext.lineTo(i * 2, halfHeight - _h);
             }
 
             for (let i = width - 1; i >= width - pixels - 1; --i) {
               const peak = peaks[i * 2 + 1];
-              const _h = Math.round(peak * half_height);
-              freqctx.lineTo(i * 2, half_height - _h);
+              const _h = Math.round(peak * halfHeight);
+              frequencyContext.lineTo(i * 2, halfHeight - _h);
             }
 
-            freqctx.closePath();
-            freqctx.fill();
+            frequencyContext.closePath();
+            frequencyContext.fill();
           } else {
-            freqctx.beginPath();
-            freqctx.moveTo(0, half_height);
+            frequencyContext.beginPath();
+            frequencyContext.moveTo(0, halfHeight);
 
             for (let i = 0; i < width; ++i) {
               const peak = peaks[i * 2];
-              const _h = Math.round(peak * half_height);
-              freqctx.lineTo(i * 2, half_height - _h);
+              const _h = Math.round(peak * halfHeight);
+              frequencyContext.lineTo(i * 2, halfHeight - _h);
             }
 
             for (let i = width - 1; i >= 0; --i) {
               const peak = peaks[i * 2 + 1];
-              const _h = Math.round(peak * half_height);
-              freqctx.lineTo(i * 2, half_height - _h);
+              const _h = Math.round(peak * halfHeight);
+              frequencyContext.lineTo(i * 2, halfHeight - _h);
             }
 
-            freqctx.closePath();
-            freqctx.fill();
+            frequencyContext.closePath();
+            frequencyContext.fill();
           }
         };
 
@@ -335,60 +335,60 @@ export function openRecordingModal(app) {
           if (navigator.mediaDevices.enumerateDevices) {
             navigator.mediaDevices.enumerateDevices().then((devices) => {
               devices = devices.filter((d) => d.kind === 'audioinput');
-              has_devices = true;
+              hasDevices = true;
 
-              const len = devices.length;
-              for (let i = 0; i < len; ++i) {
-                const el = document.createElement('option');
-                el.value = devices[i].deviceId;
-                el.innerText = devices[i].label;
-                devices_sel.appendChild(el);
+              const length = devices.length;
+              for (let i = 0; i < length; ++i) {
+                const element = document.createElement('option');
+                element.value = devices[i].deviceId;
+                element.innerText = devices[i].label;
+                devicesSelect.appendChild(element);
               }
 
-              is_ready = true;
-              btn_start.classList.remove('pk_inact');
+              isReady = true;
+              buttonStart.classList.remove('pk_inact');
             });
           } else {
-            devices_sel.parentNode.style.display = 'none';
-            has_devices = false;
-            is_ready = true;
-            btn_start.classList.remove('pk_inact');
+            devicesSelect.parentNode.style.display = 'none';
+            hasDevices = false;
+            isReady = true;
+            buttonStart.classList.remove('pk_inact');
           }
         };
 
         const stop = function () {
-          stop_audio();
+          stopAudio();
 
-          is_active = false;
-          is_paused = false;
-          first_skip = 10;
+          isActive = false;
+          isPaused = false;
+          firstSkip = 10;
 
-          ++temp_buffer_index;
+          ++tempBufferIndex;
           let k = -1;
-          newbuff = new Float32Array(temp_buffer_index * buffer_size);
-          for (let i = 0; i < temp_buffer_index; ++i) {
-            for (let j = 0; j < buffer_size; ++j) {
-              newbuff[++k] = temp_buffers[i][j];
+          newbuff = new Float32Array(tempBufferIndex * bufferSize);
+          for (let i = 0; i < tempBufferIndex; ++i) {
+            for (let j = 0; j < bufferSize; ++j) {
+              newbuff[++k] = tempBuffers[i][j];
             }
           }
 
-          temp_buffer_index = -1;
-          temp_buffers = [];
+          tempBufferIndex = -1;
+          tempBuffers = [];
 
           // ------
-          btn_open.style.display = 'block';
+          buttonOpen.style.display = 'block';
 
           // check to see if we are ready
-          if (app.engine.is_ready) {
-            btn_add.style.display = 'block';
+          if (app.engine.isReady) {
+            buttonAdd.style.display = 'block';
           }
 
-          has_recorded = true;
+          hasRecorded = true;
         };
         // ---
 
-        btn_start.onclick = function () {
-          if (!is_ready) return;
+        buttonStart.onclick = function () {
+          if (!isReady) return;
 
           if (debounce) {
             return;
@@ -400,75 +400,75 @@ export function openRecordingModal(app) {
           }, 260);
 
           // check if recording exists - ask for confirmation
-          if (has_recorded) {
+          if (hasRecorded) {
             if (!window.confirm('Are you sure? This will discard the current recording.')) {
               return;
             }
           }
 
-          if (is_active) {
+          if (isActive) {
             stop();
 
-            btn_pause.classList.add('pk_inact');
-            btn_start.innerText = 'START RECORDING';
-            btn_start.style.boxShadow = 'none';
+            buttonPause.classList.add('pk_inact');
+            buttonStart.innerText = 'START RECORDING';
+            buttonStart.style.boxShadow = 'none';
 
             return;
           }
 
-          temp_buffer_index = -1;
-          temp_buffers = [];
+          tempBufferIndex = -1;
+          tempBuffers = [];
           newbuff = null;
           volume = 0;
 
-          btn_open.style.display = 'none';
-          btn_add.style.display = 'none';
+          buttonOpen.style.display = 'none';
+          buttonAdd.style.display = 'none';
 
-          audio_context = new (window.AudioContext || window.webkitAudioContext)();
-          sample_rate = audio_context.sampleRate;
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          sampleRate = audioContext.sampleRate;
 
-          let audio_val = true;
-          if (has_devices) {
-            audio_val = { deviceId: devices_sel.value };
-            // devices_sel.options[devices_sel.selectedIndex].value;
+          let audioConstraint = true;
+          if (hasDevices) {
+            audioConstraint = { deviceId: devicesSelect.value };
+            // devicesSelect.options[devicesSelect.selectedIndex].value;
           }
 
           navigator.mediaDevices
-            .getUserMedia({ audio: audio_val })
+            .getUserMedia({ audio: audioConstraint })
             .then(function (stream) {
-              audio_stream = stream;
-              media_stream_source = audio_context.createMediaStreamSource(stream);
+              audioStream = stream;
+              mediaStreamSource = audioContext.createMediaStreamSource(stream);
 
-              script_processor = audio_context.createScriptProcessor(
-                buffer_size,
-                channel_num,
-                channel_num_out
+              scriptProcessor = audioContext.createScriptProcessor(
+                bufferSize,
+                inputChannelCount,
+                outputChannelCount
               );
 
-              media_stream_source.connect(script_processor);
-              script_processor.connect(audio_context.destination);
+              mediaStreamSource.connect(scriptProcessor);
+              scriptProcessor.connect(audioContext.destination);
 
-              is_active = true;
-              btn_pause.classList.remove('pk_inact');
-              btn_start.innerText = 'FINISH RECORDING';
-              btn_start.style.boxShadow = '#992222 0px 0px 6px inset';
-              script_processor.onaudioprocess = fetchBufferFunction;
+              isActive = true;
+              buttonPause.classList.remove('pk_inact');
+              buttonStart.innerText = 'FINISH RECORDING';
+              buttonStart.style.boxShadow = '#992222 0px 0px 6px inset';
+              scriptProcessor.onaudioprocess = fetchBufferFunction;
 
-              draw_volume();
+              drawVolume();
             })
             .catch(function (error) {});
         };
 
-        btn_pause.onclick = function () {
-          if (!is_ready) return;
-          if (!is_active) return;
+        buttonPause.onclick = function () {
+          if (!isReady) return;
+          if (!isActive) return;
 
-          is_paused = !is_paused;
+          isPaused = !isPaused;
 
-          btn_pause.innerText = is_paused ? 'UN-PAUSE' : 'PAUSE';
+          buttonPause.innerText = isPaused ? 'UN-PAUSE' : 'PAUSE';
         };
 
-        btn_open.onclick = function () {
+        buttonOpen.onclick = function () {
           if (debounce) {
             return;
           }
@@ -480,7 +480,7 @@ export function openRecordingModal(app) {
 
           app.engine.wavesurfer.backend._add = 0;
           app.engine.LoadDB({
-            samplerate: sample_rate,
+            samplerate: sampleRate,
             data: [newbuff.buffer],
           });
 
@@ -488,7 +488,7 @@ export function openRecordingModal(app) {
           q.Destroy();
         };
 
-        btn_add.onclick = function () {
+        buttonAdd.onclick = function () {
           if (debounce) {
             return;
           }
@@ -500,7 +500,7 @@ export function openRecordingModal(app) {
 
           app.engine.wavesurfer.backend._add = 1;
           app.engine.LoadDB({
-            samplerate: sample_rate,
+            samplerate: sampleRate,
             data: [newbuff.buffer],
           });
 
@@ -510,11 +510,11 @@ export function openRecordingModal(app) {
 
         // ---
         app.fireEvent('RequestPause');
-        app.ui.InteractionHandler.checkAndSet(modal_name);
+        app.ui.InteractionHandler.checkAndSet(modalName);
         app.ui.KeyHandler.addCallback(
-          modal_esc_key,
+          modalEscapeKey,
           function (e) {
-            if (!app.ui.InteractionHandler.check(modal_name)) return;
+            if (!app.ui.InteractionHandler.check(modalName)) return;
             q.Destroy();
           },
           [27]

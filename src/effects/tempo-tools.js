@@ -8,8 +8,8 @@
 
 import { AudioEffectModal } from '../ui/modals.js';
 
-const modal_name = 'modalfx';
-const modal_esc_key = modal_name + 'esc';
+const modalName = 'modalfx';
+const modalEscapeKey = modalName + 'esc';
 
 ///////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -24,60 +24,60 @@ function getOfflineAudioContext(channels, sampleRate, duration) {
   );
 }
 function _normalize_array(data) {
-  const new_array = [];
+  const newArray = [];
   for (let i = 0; i < data.length; ++i) {
-    new_array.push(Math.abs(Math.round((data[i + 1] - data[i]) * 1000)));
+    newArray.push(Math.abs(Math.round((data[i + 1] - data[i]) * 1000)));
   }
 
-  return new_array;
+  return newArray;
 }
 
 function _normalize_array2(data) {
-  const new_array = [];
+  const newArray = [];
   for (let i = 0; i < data.length; ++i) {
-    new_array.push(Math.round(Math.abs(data[i] * 1000)));
+    newArray.push(Math.round(Math.abs(data[i] * 1000)));
   }
 
-  return new_array;
+  return newArray;
 }
 
-function _group_rhythm(data, diff_arr) {
-  if (diff_arr.length <= 1) return;
+function _group_rhythm(data, diffArray) {
+  if (diffArray.length <= 1) return;
 
-  let peak_median = 0;
+  let peakMedian = 0;
   for (let i = 0; i < data.length; ++i) {
-    peak_median += data[i];
+    peakMedian += data[i];
   }
 
-  peak_median /= diff_arr.length;
-  peak_median -= peak_median * 0.2;
+  peakMedian /= diffArray.length;
+  peakMedian -= peakMedian * 0.2;
 
-  let diff_median = 0;
-  for (let i = 0; i < diff_arr.length; ++i) {
-    diff_median += diff_arr[i];
+  let diffMedian = 0;
+  for (let i = 0; i < diffArray.length; ++i) {
+    diffMedian += diffArray[i];
   }
 
-  diff_median /= diff_arr.length;
-  if (diff_median > 1) diff_median -= diff_median * 0.2;
+  diffMedian /= diffArray.length;
+  if (diffMedian > 1) diffMedian -= diffMedian * 0.2;
 
   let existing = 0;
-  for (let i = 0; i < diff_arr.length; ++i) {
-    if (diff_arr[i] <= diff_median) continue;
+  for (let i = 0; i < diffArray.length; ++i) {
+    if (diffArray[i] <= diffMedian) continue;
     ++existing;
   }
 
-  // console.log (" DIFF MEDIAN IS ", diff_median, "    and total beats: ", existing, "  out of: ", diff_arr.length);
+  // console.log (" DIFF MEDIAN IS ", diffMedian, "    and total beats: ", existing, "  out of: ", diffArray.length);
   // clean-up the drums array - based on the median.
   // console.log ( JSON.stringify( data ) );
   // console.log ("----------");
 
   for (let i = 0, j = 0; i < data.length; ++i) {
     if (data[i] !== 0) {
-      if (diff_arr[j] && diff_arr[j] < diff_median) {
-        if (data[i] > peak_median && diff_arr[j] > diff_median * 0.6) {
-          //console.log ( 'ZEROEDC NOOOOT ', i, '    ',  data[i], ' with median ', peak_median , '  but diff was  ', diff_arr[j],  '   yet. ',  diff_median );
+      if (diffArray[j] && diffArray[j] < diffMedian) {
+        if (data[i] > peakMedian && diffArray[j] > diffMedian * 0.6) {
+          //console.log ( 'ZEROEDC NOOOOT ', i, '    ',  data[i], ' with median ', peakMedian , '  but diff was  ', diffArray[j],  '   yet. ',  diffMedian );
         } else {
-          //console.log ( 'ZEROEDC ', i, '    ',  data[i], ' with median ', peak_median , '  but diff was  ', diff_arr[j],  '   yet. ',  diff_median );
+          //console.log ( 'ZEROEDC ', i, '    ',  data[i], ' with median ', peakMedian , '  but diff was  ', diffArray[j],  '   yet. ',  diffMedian );
           data[i] = 0;
         }
       }
@@ -88,54 +88,54 @@ function _group_rhythm(data, diff_arr) {
   }
 
   // console.log( data );
-  window.final_arr = data;
+  window.finalArray = data;
 
   // console.log ( JSON.stringify( data ) );
 
   // now count distance between peaks
   const distances = {};
-  const unique_distances = [];
-  let first_found = 0;
-  let is_first = true;
+  const uniqueDistances = [];
+  let firstFound = 0;
+  let isFirst = true;
   for (let i = 0; i < data.length - 1; ++i) // #### do not litter the last data
   {
     if (data[i] === 0) {
-      ++first_found;
+      ++firstFound;
       continue;
     }
 
-    //if (first_found < 1 && !is_first) {
+    //if (firstFound < 1 && !isFirst) {
     //	continue;
     //}
 
-    if (is_first) {
-      is_first = false;
+    if (isFirst) {
+      isFirst = false;
     }
 
-    first_found = 0;
+    firstFound = 0;
 
     const own = [];
-    unique_distances.push(own);
+    uniqueDistances.push(own);
 
     // console.log ('----------------------------------');
     // console.log ('COMPUTING DISTANCE OF ' + i + '    value ' + data[i] );
 
     let interval = 0;
     let total = 12;
-    let last_found = 0;
+    let lastFound = 0;
     for (let j = i + 1; j < 1000; ++j) {
       if (data[j] === 0) {
         ++interval;
-        ++last_found;
+        ++lastFound;
         continue;
       } else if (!data[j]) {
         break;
       }
 
-      if (last_found < 0) {
+      if (lastFound < 0) {
         continue;
       }
-      last_found = 0;
+      lastFound = 0;
 
       if (--total === 0) break;
 
@@ -150,7 +150,7 @@ function _group_rhythm(data, diff_arr) {
     // break;
   }
 
-  console.log(unique_distances);
+  console.log(uniqueDistances);
 
   // grab only the big peaks.
 
@@ -205,9 +205,9 @@ function _group_rhythm(data, diff_arr) {
 
 export function openTempoTools(app) {
   app.fireEvent('RequestSelect', 1);
-  const filter_id = 'tempo_tools';
-  let act_index = 1;
-  let act_tool = null;
+  const filterId = 'tempo_tools';
+  let activeIndex = 1;
+  let activeTool = null;
 
   // ------
   const TempoMetro = function (app, modal) {
@@ -220,7 +220,7 @@ export function openTempoTools(app) {
     let time = ((60.0 / bpm) * 1000) >> 0;
     let audioContext = null; // new AudioContext();
     let osc = null;
-    let amp = null;
+    let amplitude = null;
     let ready = false;
     let volume = 0.5;
     let accentuate = true;
@@ -233,7 +233,7 @@ export function openTempoTools(app) {
     q.Init = function (container) {
       const q = this;
 
-      q.el = container;
+      q.element = container;
 
       _make_ui(q);
       _make_evs(q);
@@ -260,7 +260,7 @@ export function openTempoTools(app) {
           const now = audioContext.currentTime;
           osc.stop(now);
 
-          amp.disconnect();
+          amplitude.disconnect();
           osc.disconnect();
 
           audioContext = null;
@@ -278,10 +278,10 @@ export function openTempoTools(app) {
     };
 
     function _make_ui(q) {
-      const el_drawer = document.createElement('div');
-      el_drawer.className = 'pk_row';
+      const drawerElement = document.createElement('div');
+      drawerElement.className = 'pk_row';
 
-      el_drawer.innerHTML =
+      drawerElement.innerHTML =
         '<div class="pk_row">' +
         '<label>BPM</label>' +
         '<input type="range" min="20" max="300" class="pk_horiz" step="1" value="120" />' +
@@ -301,8 +301,8 @@ export function openTempoTools(app) {
         '<a class="pk_modal_a_bottom" style="display:inline-block;float:none">Play Both</a>' +
         '</div>';
 
-      q.body = el_drawer;
-      q.el.appendChild(el_drawer);
+      q.body = drawerElement;
+      q.element.appendChild(drawerElement);
     }
 
     function _make_evs(q) {
@@ -322,21 +322,21 @@ export function openTempoTools(app) {
       };
 
       range2.oninput = function () {
-        const val = range2.value / 1;
-        volume = val;
+        const value = range2.value / 1;
+        volume = value;
 
-        span2.innerHTML = ((val * 100) >> 0) + '%';
+        span2.innerHTML = ((value * 100) >> 0) + '%';
       };
 
       checkbox.oninput = function () {
         accentuate = checkbox.checked;
       };
 
-      const metronome_btn = q.body.getElementsByClassName('pk_modal_a_bottom')[0];
-      const play_btn = q.body.getElementsByClassName('pk_modal_a_bottom')[1];
-      const both_btn = q.body.getElementsByClassName('pk_modal_a_bottom')[2];
+      const metronomeButton = q.body.getElementsByClassName('pk_modal_a_bottom')[0];
+      const playButton = q.body.getElementsByClassName('pk_modal_a_bottom')[1];
+      const bothButton = q.body.getElementsByClassName('pk_modal_a_bottom')[2];
 
-      metronome_btn.onclick = function () {
+      metronomeButton.onclick = function () {
         if (tick) {
           clearTimeout(tick);
           tick = null;
@@ -367,15 +367,15 @@ export function openTempoTools(app) {
       };
 
       MetronomeInAct = function () {
-        metronome_btn.classList.remove('pk_act');
+        metronomeButton.classList.remove('pk_act');
       };
       MetronomeAct = function () {
-        metronome_btn.classList.add('pk_act');
+        metronomeButton.classList.add('pk_act');
       };
       q.app.listenFor('DidStartMetro', MetronomeAct);
       q.app.listenFor('DidStopMetro', MetronomeInAct);
 
-      play_btn.onclick = function () {
+      playButton.onclick = function () {
         if (app.engine.wavesurfer.isPlaying()) {
           q.app.fireEvent('RequestStop');
         } else {
@@ -383,34 +383,34 @@ export function openTempoTools(app) {
         }
       };
       if (!app.engine.wavesurfer.isReady) {
-        play_btn.className += ' pk_inact';
-        both_btn.className += ' pk_inact';
+        playButton.className += ' pk_inact';
+        bothButton.className += ' pk_inact';
       }
 
       if (app.engine.wavesurfer.isPlaying()) {
-        play_btn.className += ' pk_act';
+        playButton.className += ' pk_act';
       }
 
       DidStopPlay = function () {
-        play_btn.classList.remove('pk_act');
-        play_btn.innerText = 'Play Track';
+        playButton.classList.remove('pk_act');
+        playButton.innerText = 'Play Track';
       };
       DidPlay = function () {
-        play_btn.classList.add('pk_act');
-        play_btn.innerText = 'Stop Track';
+        playButton.classList.add('pk_act');
+        playButton.innerText = 'Stop Track';
       };
       q.app.listenFor('DidStopPlay', DidStopPlay);
       q.app.listenFor('DidPlay', DidPlay);
 
-      both_btn.onclick = function () {
-        if (tick) metronome_btn.onclick();
-        if (app.engine.wavesurfer.isPlaying()) play_btn.onclick();
+      bothButton.onclick = function () {
+        if (tick) metronomeButton.onclick();
+        if (app.engine.wavesurfer.isPlaying()) playButton.onclick();
 
         setTimeout(function () {
           if (!tick && !app.engine.wavesurfer.isPlaying()) {
-            play_btn.onclick();
+            playButton.onclick();
             setTimeout(function () {
-              metronome_btn.onclick();
+              metronomeButton.onclick();
             }, 0);
           }
         }, 66);
@@ -424,20 +424,20 @@ export function openTempoTools(app) {
         osc.frequency.value = 440.0;
       }
 
-      amp.gain.setValueAtTime(amp.gain.value, audioContext.currentTime);
-      amp.gain.linearRampToValueAtTime(volume, audioContext.currentTime + 0.01);
-      amp.gain.linearRampToValueAtTime(0.0, audioContext.currentTime + 0.12);
+      amplitude.gain.setValueAtTime(amplitude.gain.value, audioContext.currentTime);
+      amplitude.gain.linearRampToValueAtTime(volume, audioContext.currentTime + 0.01);
+      amplitude.gain.linearRampToValueAtTime(0.0, audioContext.currentTime + 0.12);
     }
 
     function _prepare() {
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
       osc = audioContext.createOscillator();
-      amp = audioContext.createGain();
-      amp.gain.value = 0;
+      amplitude = audioContext.createGain();
+      amplitude.gain.value = 0;
 
-      osc.connect(amp);
-      amp.connect(audioContext.destination);
+      osc.connect(amplitude);
+      amplitude.connect(audioContext.destination);
 
       osc.start(0);
 
@@ -458,7 +458,7 @@ export function openTempoTools(app) {
     q.Init = function (container) {
       const q = this;
 
-      q.el = container;
+      q.element = container;
 
       _make_ui(q);
       _make_evs(q);
@@ -486,11 +486,11 @@ export function openTempoTools(app) {
     };
 
     function _make_ui(q) {
-      const el_drawer = document.createElement('div');
-      el_drawer.className = 'pk_row';
+      const drawerElement = document.createElement('div');
+      drawerElement.className = 'pk_row';
 
       // Estimate tempo for selected area button
-      el_drawer.innerHTML =
+      drawerElement.innerHTML =
         '<div class="pk_row pk_pgeq_els">' +
         '<span>Average BPM</span>' +
         '<input style="margin-left:2px;min-width:64px;max-width:64px" ' +
@@ -525,75 +525,75 @@ export function openTempoTools(app) {
         '</span>' +
         '</div>';
 
-      q.body = el_drawer;
-      q.el.appendChild(el_drawer);
+      q.body = drawerElement;
+      q.element.appendChild(drawerElement);
     }
 
     function _make_evs(q) {
-      const tap_graph = q.body.querySelectorAll('#pk_tmp_tap')[0];
-      const tap_area = q.body.querySelectorAll('#pk_tmp_tap3')[0];
-      const reset_btn = q.body.getElementsByClassName('pk_modal_a_bottom')[0];
-      const play_btn = q.body.getElementsByClassName('pk_modal_a_bottom')[1];
-      const loop_btn = q.body.getElementsByClassName('pk_modal_a_bottom')[2];
+      const tapGraph = q.body.querySelectorAll('#pk_tmp_tap')[0];
+      const tapArea = q.body.querySelectorAll('#pk_tmp_tap3')[0];
+      const resetButton = q.body.getElementsByClassName('pk_modal_a_bottom')[0];
+      const playButton = q.body.getElementsByClassName('pk_modal_a_bottom')[1];
+      const loopButton = q.body.getElementsByClassName('pk_modal_a_bottom')[2];
 
       const canvas = q.body.getElementsByTagName('canvas')[0];
-      const ctx = canvas.getContext('2d', { alpha: false, antialias: false });
+      const canvasContext = canvas.getContext('2d', { alpha: false, antialias: false });
 
       const tempCanvas = document.createElement('canvas');
       tempCanvas.width = 500 * 2;
       tempCanvas.height = 100 * 2;
-      const tempCtx = tempCanvas.getContext('2d', { alpha: false, antialias: false });
+      const tempContext = tempCanvas.getContext('2d', { alpha: false, antialias: false });
 
-      ctx.imageSmoothingEnabled = true;
-      tempCtx.imageSmoothingEnabled = true;
+      canvasContext.imageSmoothingEnabled = true;
+      tempContext.imageSmoothingEnabled = true;
 
-      const value_els = q.body.getElementsByClassName('pk_val');
-      const tap_msg = tap_graph.getElementsByClassName('pk_obj2');
-      const tap_msg2 = tap_area.getElementsByTagName('span')[0];
+      const valueElements = q.body.getElementsByClassName('pk_val');
+      const tapMessage = tapGraph.getElementsByClassName('pk_obj2');
+      const tapMessageSecondary = tapArea.getElementsByTagName('span')[0];
 
-      const bpm_el = value_els[0];
-      const bpm_el_round = value_els[1];
-      const bpm_el_count = value_els[2];
-      const reset_wait = 3000;
+      const bpmElement = valueElements[0];
+      const bpmElementRound = valueElements[1];
+      const bpmElementCount = valueElements[2];
+      const resetWait = 3000;
 
-      let time_msec = 0;
-      let time_msec_prev = 0;
-      let time_msec_first = 0;
+      let timeMillisecond = 0;
+      let timeMillisecondPrevious = 0;
+      let timeMillisecondFirst = 0;
       let count = 0;
       let bpm = 0;
-      let steps_count = 0;
+      let stepsCount = 0;
       let first = true;
-      let is_playing = false;
+      let isPlaying = false;
 
       const _reset_count = function (force) {
         if (first) {
-          tap_msg[1].style.opacity = '0';
+          tapMessage[1].style.opacity = '0';
         }
 
         count = 0;
-        steps_count = 0;
+        stepsCount = 0;
         first = true;
 
         setTimeout(
           function () {
             if (!first) return;
 
-            tap_msg[0].style.opacity = '0.5';
+            tapMessage[0].style.opacity = '0.5';
             if (!force) {
-              reset_btn.className += ' pk_act';
+              resetButton.className += ' pk_act';
               setTimeout(function () {
-                reset_btn.classList.remove('pk_act');
+                resetButton.classList.remove('pk_act');
               }, 140);
             }
 
             setTimeout(
               function () {
                 if (first) {
-                  tap_msg[0].style.opacity = '0';
-                  tap_msg[1].style.opacity = '0.5';
+                  tapMessage[0].style.opacity = '0';
+                  tapMessage[1].style.opacity = '0.5';
                 } else {
-                  tap_msg[0].style.opacity = '0';
-                  tap_msg[1].style.opacity = '0';
+                  tapMessage[0].style.opacity = '0';
+                  tapMessage[1].style.opacity = '0';
                 }
               },
               force ? 490 : 874
@@ -603,26 +603,26 @@ export function openTempoTools(app) {
         );
 
         if (force) {
-          bpm_el.value = '-';
-          bpm_el_round.value = '-';
-          bpm_el_count.value = '-';
+          bpmElement.value = '-';
+          bpmElementRound.value = '-';
+          bpmElementCount.value = '-';
 
-          const els = tap_graph.parentNode.getElementsByClassName('pk_obj');
-          let l = els.length;
+          const elements = tapGraph.parentNode.getElementsByClassName('pk_obj');
+          let l = elements.length;
 
           while (l-- > 0) {
-            if (els[l]) {
-              els[l].parentNode.removeChild(els[l]);
+            if (elements[l]) {
+              elements[l].parentNode.removeChild(elements[l]);
             }
           }
         }
       };
 
-      reset_btn.onclick = function () {
+      resetButton.onclick = function () {
         _reset_count(true);
       };
 
-      play_btn.onclick = function () {
+      playButton.onclick = function () {
         if (app.engine.wavesurfer.isPlaying()) {
           q.app.fireEvent('RequestStop');
         } else {
@@ -631,29 +631,29 @@ export function openTempoTools(app) {
       };
 
       if (!app.engine.wavesurfer.isReady) {
-        play_btn.className += ' pk_inact';
-        loop_btn.className += ' pk_inact';
+        playButton.className += ' pk_inact';
+        loopButton.className += ' pk_inact';
       }
       if (app.engine.wavesurfer.isPlaying()) {
-        play_btn.className += ' pk_act';
+        playButton.className += ' pk_act';
       }
 
       DidStopPlay = function () {
-        is_playing = false;
-        play_btn.classList.remove('pk_act');
-        play_btn.innerText = 'Play Track';
+        isPlaying = false;
+        playButton.classList.remove('pk_act');
+        playButton.innerText = 'Play Track';
       };
       DidPlay = function () {
-        is_playing = true;
-        play_btn.classList.add('pk_act');
-        play_btn.innerText = 'Stop Track';
+        isPlaying = true;
+        playButton.classList.add('pk_act');
+        playButton.innerText = 'Stop Track';
       };
 
       q.app.listenFor('DidStopPlay', DidStopPlay);
       q.app.listenFor('DidPlay', DidPlay);
 
-      const old_left_time = -999999;
-      let old_right_time = -999999;
+      const oldLeftTime = -999999;
+      let oldRightTime = -999999;
       let peaks = [];
       const skipp = false;
       let remaining = 0;
@@ -667,144 +667,144 @@ export function openTempoTools(app) {
 
         const wv = app.engine.wavesurfer;
         const buffer = wv.backend.buffer;
-        const chan_data = buffer.getChannelData(0);
+        const channelData = buffer.getChannelData(0);
         const sample_rate = buffer.sampleRate;
 
-        const curr_time = wv.getCurrentTime();
+        const currentTime = wv.getCurrentTime();
         const width = 500;
         const height = 100;
-        const half_height = (height / 2) * 2;
-        let new_width = width;
-        let cached_index = 0;
+        const halfHeight = (height / 2) * 2;
+        let newWidth = width;
+        let cachedIndex = 0;
         let pixels = 0;
-        let raw_pixels = 0;
+        let rawPixels = 0;
         const limit = 3;
 
-        const left_time = curr_time - limit / 2;
-        const right_time = curr_time + limit / 2;
-        let quick_render = false;
+        const leftTime = currentTime - limit / 2;
+        const rightTime = currentTime + limit / 2;
+        let quickRender = false;
 
-        let start_offset = (left_time * sample_rate) >> 0;
-        let end_offset = ((left_time + limit) * sample_rate) >> 0;
-        let length = end_offset - start_offset;
+        let startOffset = (leftTime * sample_rate) >> 0;
+        let endOffset = ((leftTime + limit) * sample_rate) >> 0;
+        let length = endOffset - startOffset;
         let mod = (length / width) >> 0;
 
-        if (left_time < old_right_time) {
+        if (leftTime < oldRightTime) {
           // find pixels
-          const diff = right_time - old_right_time;
+          const diff = rightTime - oldRightTime;
           // pixels = Math.round ( (diff / limit) * width);
 
-          raw_pixels = (diff / limit) * width;
-          pixels = Math.round(raw_pixels);
+          rawPixels = (diff / limit) * width;
+          pixels = Math.round(rawPixels);
 
-          raw_pixels = ((raw_pixels * 1000) >> 0) / 1000;
+          rawPixels = ((rawPixels * 1000) >> 0) / 1000;
 
           if (pixels >= 0) {
             if (pixels === 0) return;
 
-            new_width = pixels;
+            newWidth = pixels;
 
-            start_offset = (old_right_time * sample_rate) >> 0;
-            end_offset = (right_time * sample_rate) >> 0;
-            length = end_offset - start_offset;
+            startOffset = (oldRightTime * sample_rate) >> 0;
+            endOffset = (rightTime * sample_rate) >> 0;
+            length = endOffset - startOffset;
             mod = (length / pixels) >> 0;
 
             peaks = peaks.slice(pixels * 2);
-            cached_index = width - pixels;
+            cachedIndex = width - pixels;
 
-            quick_render = true;
+            quickRender = true;
           }
         }
 
-        old_right_time = right_time;
+        oldRightTime = rightTime;
 
         let max = 0;
         let min = 0;
 
-        for (let i = 0; i < new_width; ++i) {
-          const new_offset = start_offset + mod * i;
+        for (let i = 0; i < newWidth; ++i) {
+          const newOffset = startOffset + mod * i;
 
           max = 0;
           min = 0;
 
-          if (new_offset >= 0) {
+          if (newOffset >= 0) {
             for (let j = 0; j < mod; j += 3) {
-              if (chan_data[new_offset + j] > max) {
-                max = chan_data[new_offset + j];
-              } else if (chan_data[new_offset + j] < min) {
-                min = chan_data[new_offset + j];
+              if (channelData[newOffset + j] > max) {
+                max = channelData[newOffset + j];
+              } else if (channelData[newOffset + j] < min) {
+                min = channelData[newOffset + j];
               }
             }
           }
 
-          peaks[2 * (i + cached_index)] = max;
-          peaks[2 * (i + cached_index) + 1] = min;
+          peaks[2 * (i + cachedIndex)] = max;
+          peaks[2 * (i + cachedIndex) + 1] = min;
         }
 
-        if (quick_render) {
-          // var imgdata = ctx.getImageData(0, 0, width, height);
-          // tempCtx.putImageData (imgdata, 0, 0);
-          tempCtx.drawImage(canvas, 0, 0); //, width, height, 0, 0, width, height);
+        if (quickRender) {
+          // var imgdata = canvasContext.getImageData(0, 0, width, height);
+          // tempContext.putImageData (imgdata, 0, 0);
+          tempContext.drawImage(canvas, 0, 0); //, width, height, 0, 0, width, height);
         }
 
-        ctx.fillStyle = '#000';
-        // ctx.clearRect( 0, 0, width, height );
-        ctx.fillRect(0, 0, width * 2, height * 2);
-        ctx.fillStyle = '#99c2c6';
+        canvasContext.fillStyle = '#000';
+        // canvasContext.clearRect( 0, 0, width, height );
+        canvasContext.fillRect(0, 0, width * 2, height * 2);
+        canvasContext.fillStyle = '#99c2c6';
 
-        if (quick_render) {
-          let forward = Math.round(raw_pixels * 2);
-          remaining += forward - raw_pixels * 2;
+        if (quickRender) {
+          let forward = Math.round(rawPixels * 2);
+          remaining += forward - rawPixels * 2;
           if (remaining > 1) {
             forward -= 1;
             remaining = 0;
           }
 
-          // ctx.translate(-1.5, 0);
-          ctx.translate(-forward, 0);
-          ctx.drawImage(tempCanvas, 0, 0); //, width, height, 0, 0, width, height);
-          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          // canvasContext.translate(-1.5, 0);
+          canvasContext.translate(-forward, 0);
+          canvasContext.drawImage(tempCanvas, 0, 0); //, width, height, 0, 0, width, height);
+          canvasContext.setTransform(1, 0, 0, 1, 0, 0);
 
-          //						ctx.drawImage (tempCanvas, 0, 0, width, 100, -(raw_pixels.toFixed(1)/1), 0, width, 100);
+          //						canvasContext.drawImage (tempCanvas, 0, 0, width, 100, -(rawPixels.toFixed(1)/1), 0, width, 100);
 
-          ctx.beginPath();
+          canvasContext.beginPath();
 
           let peak = peaks[(width - pixels - 2) * 2];
-          let _h = Math.round(peak * half_height);
-          ctx.moveTo((width - pixels - 2) * 2, half_height - _h);
+          let _h = Math.round(peak * halfHeight);
+          canvasContext.moveTo((width - pixels - 2) * 2, halfHeight - _h);
 
           for (let i = width - pixels - 1; i < width; ++i) {
             peak = peaks[i * 2];
-            _h = Math.round(peak * half_height);
-            ctx.lineTo(i * 2, half_height - _h);
+            _h = Math.round(peak * halfHeight);
+            canvasContext.lineTo(i * 2, halfHeight - _h);
           }
 
           for (let i = width - 1; i >= width - pixels - 1; --i) {
             const peak = peaks[i * 2 + 1];
-            const _h = Math.round(peak * half_height);
-            ctx.lineTo(i * 2, half_height - _h);
+            const _h = Math.round(peak * halfHeight);
+            canvasContext.lineTo(i * 2, halfHeight - _h);
           }
 
-          ctx.closePath();
-          ctx.fill();
+          canvasContext.closePath();
+          canvasContext.fill();
         } else {
-          ctx.beginPath();
-          ctx.moveTo(0, half_height);
+          canvasContext.beginPath();
+          canvasContext.moveTo(0, halfHeight);
 
           for (let i = 0; i < width; ++i) {
             const peak = peaks[i * 2];
-            const _h = Math.round(peak * half_height);
-            ctx.lineTo(i * 2, half_height - _h);
+            const _h = Math.round(peak * halfHeight);
+            canvasContext.lineTo(i * 2, halfHeight - _h);
           }
 
           for (let i = width - 1; i >= 0; --i) {
             const peak = peaks[i * 2 + 1];
-            const _h = Math.round(peak * half_height);
-            ctx.lineTo(i * 2, half_height - _h);
+            const _h = Math.round(peak * halfHeight);
+            canvasContext.lineTo(i * 2, halfHeight - _h);
           }
 
-          ctx.closePath();
-          ctx.fill();
+          canvasContext.closePath();
+          canvasContext.fill();
         }
 
         //console.log( peaks );
@@ -813,36 +813,36 @@ export function openTempoTools(app) {
       q.app.listenFor('DidAudioProcess', DidAudioProcess);
 
       if (app.engine.wavesurfer.regions.list[0]) {
-        if (app.engine.wavesurfer.regions.list[0].loop) loop_btn.className += ' pk_act';
+        if (app.engine.wavesurfer.regions.list[0].loop) loopButton.className += ' pk_act';
       }
-      loop_btn.onclick = function () {
+      loopButton.onclick = function () {
         q.app.fireEvent('RequestSetLoop');
       };
 
-      DidSetLoop = function (val) {
-        val ? loop_btn.classList.add('pk_act') : loop_btn.classList.remove('pk_act');
+      DidSetLoop = function (value) {
+        value ? loopButton.classList.add('pk_act') : loopButton.classList.remove('pk_act');
       };
       q.app.listenFor('DidSetLoop', DidSetLoop);
 
-      tap_graph.parentNode.addEventListener('transitionend', function (e) {
-        if (!tap_graph) return;
+      tapGraph.parentNode.addEventListener('transitionend', function (e) {
+        if (!tapGraph) return;
 
-        const el = e.target;
-        if (el.tagName !== 'DIV') return;
+        const element = e.target;
+        if (element.tagName !== 'DIV') return;
 
-        el.parentNode.removeChild(el);
-        --steps_count;
+        element.parentNode.removeChild(element);
+        --stepsCount;
 
-        if (steps_count === 0) {
-          if (is_playing)
+        if (stepsCount === 0) {
+          if (isPlaying)
             setTimeout(function () {
-              if (steps_count === 0) _reset_count();
+              if (stepsCount === 0) _reset_count();
             }, 1100);
           else _reset_count();
         }
       });
 
-      tap_area.onclick = function (ev) {
+      tapArea.onclick = function (ev) {
         if (ev) {
           ev.preventDefault();
           ev.stopPropagation();
@@ -850,63 +850,63 @@ export function openTempoTools(app) {
 
         if (first) {
           first = false;
-          tap_msg[1].style.opacity = '0';
+          tapMessage[1].style.opacity = '0';
         }
 
-        time_msec = Date.now();
+        timeMillisecond = Date.now();
 
-        if (time_msec - time_msec_prev > reset_wait) {
+        if (timeMillisecond - timeMillisecondPrevious > resetWait) {
           count = 0;
         }
 
         if (count === 0) {
-          time_msec_first = time_msec;
+          timeMillisecondFirst = timeMillisecond;
           count = 1;
 
-          bpm_el.value = 'First Beat';
-          bpm_el_round.value = 'First Beat';
-          bpm_el_count.value = count;
+          bpmElement.value = 'First Beat';
+          bpmElementRound.value = 'First Beat';
+          bpmElementCount.value = count;
         } else {
-          bpm = (60000 * count) / (time_msec - time_msec_first);
+          bpm = (60000 * count) / (timeMillisecond - timeMillisecondFirst);
           ++count;
 
-          bpm_el.value = Math.round(bpm * 100) / 100;
-          bpm_el_round.value = Math.round(bpm);
-          bpm_el_count.value = count;
+          bpmElement.value = Math.round(bpm * 100) / 100;
+          bpmElementRound.value = Math.round(bpm);
+          bpmElementCount.value = count;
         }
 
         const step = document.createElement('div');
         step.className = 'pk_obj';
 
-        if (is_playing) {
+        if (isPlaying) {
           canvas.parentNode.appendChild(step);
         } else {
-          tap_graph.appendChild(step);
+          tapGraph.appendChild(step);
         }
-        ++steps_count;
+        ++stepsCount;
 
-        tap_area.classList.add('pk_act');
+        tapArea.classList.add('pk_act');
 
         requestAnimationFrame(function () {
           step.style.transform = 'translate3d(-10%,0,0)';
 
           setTimeout(function () {
-            tap_area.classList.remove('pk_act');
+            tapArea.classList.remove('pk_act');
           }, 56);
         });
 
-        time_msec_prev = time_msec;
+        timeMillisecondPrevious = timeMillisecond;
       };
 
       app.ui.KeyHandler.addCallback(
         'tmpTap',
         function (e, o, ev) {
-          if (!app.ui.InteractionHandler.check(modal_name)) return;
+          if (!app.ui.InteractionHandler.check(modalName)) return;
 
           ev.preventDefault();
           ev.stopPropagation();
 
-          tap_area.onclick(null);
+          tapArea.onclick(null);
         },
         [32]
       );
@@ -923,7 +923,7 @@ export function openTempoTools(app) {
     q.Init = function (container) {
       const q = this;
 
-      q.el = container;
+      q.element = container;
 
       _make_ui(q);
       _make_evs(q);
@@ -944,164 +944,164 @@ export function openTempoTools(app) {
       const wavesurfer = q.app.engine.wavesurfer;
       const buffer = wavesurfer.backend.buffer;
 
-      const starting_time = 20.375;
-      const ending_time = wavesurfer.getDuration();
+      const startingTime = 20.375;
+      const endingTime = wavesurfer.getDuration();
       const sample_rate = buffer.sampleRate;
 
-      const look_ahead = 10 * sample_rate;
-      const offset_rate = starting_time * sample_rate;
-      const duration_rate = ending_time * sample_rate;
-      const dist_rhythm = {};
+      const lookAhead = 10 * sample_rate;
+      const offsetRate = startingTime * sample_rate;
+      const durationRate = endingTime * sample_rate;
+      const distanceRhythm = {};
 
       // now run offline
-      const audio_ctx = getOfflineAudioContext(1, buffer.sampleRate, buffer.length);
+      const audioContext = getOfflineAudioContext(1, buffer.sampleRate, buffer.length);
 
-      const source = audio_ctx.createBufferSource();
+      const source = audioContext.createBufferSource();
       source.buffer = buffer;
 
-      const filter = audio_ctx.createBiquadFilter();
+      const filter = audioContext.createBiquadFilter();
       filter.type = 'highpass';
       filter.frequency.value = 50;
       filter.Q.value = 1.1;
       source.connect(filter);
 
-      const filter2 = audio_ctx.createBiquadFilter();
+      const filter2 = audioContext.createBiquadFilter();
       filter2.type = 'lowpass';
       filter2.frequency.value = 140;
       filter2.Q.value = 2.5;
       filter.connect(filter2);
-      filter2.connect(audio_ctx.destination);
+      filter2.connect(audioContext.destination);
 
       source.start(0);
 
-      const offline_callback = function (rendered_buffer) {
-        _pass(rendered_buffer, offset_rate, duration_rate);
+      const offlineCallback = function (renderedBuffer) {
+        _pass(renderedBuffer, offsetRate, durationRate);
       };
 
-      const _pass = function (rendered_buffer, offset, duration) {
-        const chan_data = rendered_buffer.getChannelData(0);
-        const new_arr = [];
-        const diff_arr = [];
+      const _pass = function (renderedBuffer, offset, duration) {
+        const channelData = renderedBuffer.getChannelData(0);
+        const newArray = [];
+        const diffArray = [];
         let currval = 0;
-        let prev_val = 0;
+        let previousValue = 0;
         let bottom = 100000;
         let top = -100000;
-        let found_pick = false;
-        let going_up = false;
-        let peak_dist = 0;
-        let peak_prev = 0;
-        const next_offset = offset + look_ahead;
+        let foundPick = false;
+        let goingUp = false;
+        let peakDistance = 0;
+        let peakPrevious = 0;
+        const nextOffset = offset + lookAhead;
 
-        let trimmed_arr = [];
-        const modulus_coefficient = Math.round(look_ahead / 200);
-        const plus_one = look_ahead + modulus_coefficient;
+        let trimmedArray = [];
+        const modulusCoefficient = Math.round(lookAhead / 200);
+        const plusOne = lookAhead + modulusCoefficient;
 
-        for (let i = 0; i < plus_one; ++i) {
-          if (i % modulus_coefficient === 0) {
+        for (let i = 0; i < plusOne; ++i) {
+          if (i % modulusCoefficient === 0) {
             // look into 50 neighboring entries for higher values.
-            let val_clean = chan_data[offset + i];
-            let val = Math.abs(val_clean);
+            let cleanedValue = channelData[offset + i];
+            let value = Math.abs(cleanedValue);
 
-            //console.log( "was ", val_clean );
+            //console.log( "was ", cleanedValue );
 
-            let tmp_val = 0;
+            let tempValue = 0;
             for (let uu = 1; uu < 50; ++uu) {
-              tmp_val = Math.abs(chan_data[offset + i - uu]);
+              tempValue = Math.abs(channelData[offset + i - uu]);
 
-              if (tmp_val > val) {
-                val_clean = chan_data[offset + i - uu];
-                val = Math.abs(val_clean);
+              if (tempValue > value) {
+                cleanedValue = channelData[offset + i - uu];
+                value = Math.abs(cleanedValue);
               }
             }
 
             for (let uu = 1; uu < 50; ++uu) {
-              tmp_val = Math.abs(chan_data[offset + i + uu]);
+              tempValue = Math.abs(channelData[offset + i + uu]);
 
-              if (tmp_val > val) {
-                val_clean = chan_data[offset + i + uu];
-                val = Math.abs(val_clean);
+              if (tempValue > value) {
+                cleanedValue = channelData[offset + i + uu];
+                value = Math.abs(cleanedValue);
               }
             }
 
-            //console.log( "added ", val_clean );
+            //console.log( "added ", cleanedValue );
             //console.log("-----");
 
-            trimmed_arr.push(val_clean);
+            trimmedArray.push(cleanedValue);
           }
         }
 
-        trimmed_arr = _normalize_array2(trimmed_arr);
-        trimmed_arr.pop();
+        trimmedArray = _normalize_array2(trimmedArray);
+        trimmedArray.pop();
 
         // ------------
-        prev_val = trimmed_arr[0];
-        for (let j = 1; j < trimmed_arr.length; ++j) {
-          currval = trimmed_arr[j];
+        previousValue = trimmedArray[0];
+        for (let j = 1; j < trimmedArray.length; ++j) {
+          currval = trimmedArray[j];
 
-          if (currval > prev_val) {
-            if (!going_up) {
-              if (bottom > prev_val) {
-                bottom = prev_val;
+          if (currval > previousValue) {
+            if (!goingUp) {
+              if (bottom > previousValue) {
+                bottom = previousValue;
                 top = -100000;
               }
             }
 
-            going_up = true;
-          } else if (currval < prev_val) {
-            if (going_up) {
-              // console.log (":: peak: ", prev_val.toFixed(2)/1, "  bottom: ", bottom.toFixed(2)/1, "  diff: ", Math.abs(prev_val-bottom).toFixed(2)/1 );
+            goingUp = true;
+          } else if (currval < previousValue) {
+            if (goingUp) {
+              // console.log (":: peak: ", previousValue.toFixed(2)/1, "  bottom: ", bottom.toFixed(2)/1, "  diff: ", Math.abs(previousValue-bottom).toFixed(2)/1 );
 
-              found_pick = true;
+              foundPick = true;
 
-              if (peak_dist < 3 && Math.abs(new_arr[peak_prev] - prev_val) < 150) {
+              if (peakDistance < 3 && Math.abs(newArray[peakPrevious] - previousValue) < 150) {
                 // debugger;
 
-                if (prev_val > new_arr[peak_prev]) {
-                  new_arr[peak_prev] = 0;
-                  diff_arr.pop();
+                if (previousValue > newArray[peakPrevious]) {
+                  newArray[peakPrevious] = 0;
+                  diffArray.pop();
                 } else {
-                  found_pick = false;
+                  foundPick = false;
                 }
               }
 
-              if (found_pick) {
-                diff_arr.push(Math.abs(prev_val - bottom));
+              if (foundPick) {
+                diffArray.push(Math.abs(previousValue - bottom));
 
-                peak_dist = 0;
-                new_arr.push(prev_val);
+                peakDistance = 0;
+                newArray.push(previousValue);
 
-                peak_prev = new_arr.length - 1;
+                peakPrevious = newArray.length - 1;
 
-                if (prev_val > top) {
-                  top = prev_val;
+                if (previousValue > top) {
+                  top = previousValue;
                   bottom = 100000;
                 }
               }
               // -----
             }
 
-            going_up = false;
+            goingUp = false;
           }
 
-          prev_val = currval;
+          previousValue = currval;
 
-          if (!found_pick) {
-            new_arr.push(0);
-            //console.log( "ZEROED ", new_arr.length - 1 );
-            ++peak_dist;
+          if (!foundPick) {
+            newArray.push(0);
+            //console.log( "ZEROED ", newArray.length - 1 );
+            ++peakDistance;
           } else {
-            found_pick = false;
+            foundPick = false;
           }
         }
 
-        // console.log( trimmed_arr );
-        // console.log( new_arr );
-        // window.trimmed_arr = trimmed_arr;
-        // window.new_arr = new_arr;
-        // window.chan = chan_data;
+        // console.log( trimmedArray );
+        // console.log( newArray );
+        // window.trimmedArray = trimmedArray;
+        // window.newArray = newArray;
+        // window.chan = channelData;
 
         // ----
-        const ret = _group_rhythm(new_arr, diff_arr);
+        const ret = _group_rhythm(newArray, diffArray);
         if (!ret) {
           console.log('something weird happened, error 244');
           return;
@@ -1109,45 +1109,45 @@ export function openTempoTools(app) {
 
         const distances = ret[0];
 
-        // console.log( diff_arr );
+        // console.log( diffArray );
         // console.log( ret[1] );
 
         for (const k in distances) {
-          if (!dist_rhythm[k]) dist_rhythm[k] = 0;
+          if (!distanceRhythm[k]) distanceRhythm[k] = 0;
 
-          dist_rhythm[k] += distances[k];
+          distanceRhythm[k] += distances[k];
         }
 
         console.log(distances);
         // console.log( ' ---------------- ' );
         // console.log ('--------- END OF PASS -------  ',  offset, ' / ', duration);
 
-        if (next_offset + look_ahead >= duration) {
+        if (nextOffset + lookAhead >= duration) {
           // Done...
-          console.log(dist_rhythm);
+          console.log(distanceRhythm);
         } else {
-          // 	_pass ( rendered_buffer, next_offset, duration );
+          // 	_pass ( renderedBuffer, nextOffset, duration );
         }
         // ----
       };
 
-      const offline_renderer = audio_ctx.startRendering();
-      if (offline_renderer)
-        offline_renderer.then(offline_callback).catch(function (err) {
+      const offlineRenderer = audioContext.startRendering();
+      if (offlineRenderer)
+        offlineRenderer.then(offlineCallback).catch(function (err) {
           console.log('Rendering failed: ' + err);
         });
       else
-        audio_ctx.oncomplete = function (e) {
-          offline_callback(e.renderedBuffer);
+        audioContext.oncomplete = function (e) {
+          offlineCallback(e.renderedBuffer);
         };
     };
 
     function _make_ui(q) {
-      const el_drawer = document.createElement('div');
-      el_drawer.className = 'pk_row';
+      const drawerElement = document.createElement('div');
+      drawerElement.className = 'pk_row';
 
       // Estimate tempo for selected area button
-      el_drawer.innerHTML =
+      drawerElement.innerHTML =
         '<div class="pk_row">' +
         '<input type="radio" class="pk_check" id="tt4" name="xport" checked value="whole">' +
         '<label for="tt4">Whole track</label>' +
@@ -1157,15 +1157,15 @@ export function openTempoTools(app) {
         '<a class="pk_modal_a_bottom" style="margin:0;float:left">Estimate</a>' +
         '</div>';
 
-      q.body = el_drawer;
-      q.el.appendChild(el_drawer);
+      q.body = drawerElement;
+      q.element.appendChild(drawerElement);
     }
 
     function _make_evs(q) {
-      const btn_est = q.body.getElementsByTagName('a')[0];
-      if (!btn_est) return;
+      const buttonEstimate = q.body.getElementsByTagName('a')[0];
+      if (!buttonEstimate) return;
 
-      btn_est.onclick = function () {
+      buttonEstimate.onclick = function () {
         q.Est && q.Est(1);
         // q.app && q.app.fireEvent ('ReqEst', 1);
       };
@@ -1174,14 +1174,14 @@ export function openTempoTools(app) {
 
   const fxModal = AudioEffectModal(
     {
-      id: filter_id,
+      id: filterId,
       title: 'Tempo & Rhythm Tools',
 
       ondestroy: function (q) {
         app.ui.InteractionHandler.on = false;
-        app.ui.KeyHandler.removeCallback(modal_esc_key);
-        act_tool.Destroy();
-        act_tool = null;
+        app.ui.KeyHandler.removeCallback(modalEscapeKey);
+        activeTool.Destroy();
+        activeTool = null;
 
         app.fireEvent('RequestStop');
       },
@@ -1194,57 +1194,57 @@ export function openTempoTools(app) {
 
       //			buttons: [{
       //				title:'Apply EQ',
-      //				clss:'pk_modal_a_accpt',
+      //				className:'pk_modal_a_accpt',
       //				callback: function( q ) {
       //					q.Destroy ();
       //				}
       //			}],
 
       setup: function (q) {
-        const toplinks = q.el_body.getElementsByClassName('pk_tbsa');
+        const toplinks = q.bodyElement.getElementsByClassName('pk_tbsa');
 
         const destroy = function () {
-          if (act_tool) {
-            act_tool.Destroy();
-            act_tool = null;
-            toplinks[act_index].classList.remove('pk_act');
+          if (activeTool) {
+            activeTool.Destroy();
+            activeTool = null;
+            toplinks[activeIndex].classList.remove('pk_act');
           }
         };
 
         const activate = function () {
           // get the active state
-          if (act_index === 0) {
+          if (activeIndex === 0) {
             // toplinks[0].className += ' pk_act';
-            // act_tool = new TempoEstimation ( app, q );
+            // activeTool = new TempoEstimation ( app, q );
             return;
-          } else if (act_index === 1) {
+          } else if (activeIndex === 1) {
             toplinks[1].className += ' pk_act';
-            act_tool = new TempoTap(app, q);
-          } else if (act_index === 2) {
+            activeTool = new TempoTap(app, q);
+          } else if (activeIndex === 2) {
             toplinks[2].className += ' pk_act';
-            act_tool = new TempoMetro(app, q);
+            activeTool = new TempoMetro(app, q);
           }
 
-          act_tool && act_tool.Init(q.el_body);
+          activeTool && activeTool.Init(q.bodyElement);
         };
 
         //toplinks[0].onclick = function() {
         //	destroy ();
-        //	act_index = 0;
+        //	activeIndex = 0;
         //	activate ();
         //};
         toplinks[1].onclick = function () {
-          if (act_index === 1) return;
+          if (activeIndex === 1) return;
 
           destroy();
-          act_index = 1;
+          activeIndex = 1;
           activate();
         };
         toplinks[2].onclick = function () {
-          if (act_index === 2) return;
+          if (activeIndex === 2) return;
 
           destroy();
-          act_index = 2;
+          activeIndex = 2;
           activate();
         };
 
@@ -1252,11 +1252,11 @@ export function openTempoTools(app) {
 
         // ---
         app.fireEvent('RequestPause');
-        app.ui.InteractionHandler.checkAndSet(modal_name);
+        app.ui.InteractionHandler.checkAndSet(modalName);
         app.ui.KeyHandler.addCallback(
-          modal_esc_key,
+          modalEscapeKey,
           function (e) {
-            if (!app.ui.InteractionHandler.check(modal_name)) return;
+            if (!app.ui.InteractionHandler.check(modalName)) return;
             q.Destroy();
           },
           [27]

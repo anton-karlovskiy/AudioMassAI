@@ -18,12 +18,12 @@ import { openRecordingModal } from '../effects/recording-modal.js';
 function FxPresetStore() {
   let presets = {};
 
-  this.Set = function (filter_id, obj) {
-    let arr = presets[filter_id];
+  this.Set = function (filterId, obj) {
+    let arr = presets[filterId];
 
     if (!arr) {
       arr = [];
-      presets[filter_id] = arr;
+      presets[filterId] = arr;
     }
 
     arr.push(obj);
@@ -36,21 +36,21 @@ function FxPresetStore() {
     localStorage.setItem('pk_presetfx', JSON.stringify(presets));
   };
 
-  this.Get = function (filter_id) {
-    if (!filter_id) return presets;
-    return presets[filter_id];
+  this.Get = function (filterId) {
+    if (!filterId) return presets;
+    return presets[filterId];
   };
 
-  this.GetSingle = function (filter_id, custom_id) {
-    if (!filter_id) return false;
-    if (!custom_id) return false;
+  this.GetSingle = function (filterId, customId) {
+    if (!filterId) return false;
+    if (!customId) return false;
 
-    const arr = presets[filter_id];
+    const arr = presets[filterId];
     let l = arr.length;
     let found = null;
 
     while (l-- > 0) {
-      if (arr[l].id === custom_id) {
+      if (arr[l].id === customId) {
         found = arr[l];
         break;
       }
@@ -60,15 +60,15 @@ function FxPresetStore() {
     return false;
   };
 
-  this.Del = function (filter_id, custom_id) {
-    if (!filter_id) return presets;
+  this.Del = function (filterId, customId) {
+    if (!filterId) return presets;
 
-    const arr = presets[filter_id];
+    const arr = presets[filterId];
     let l = arr.length;
     let found = false;
 
     while (l-- > 0) {
-      if (arr[l].id === custom_id) {
+      if (arr[l].id === customId) {
         arr.splice(l, 1);
         found = true;
         break;
@@ -100,18 +100,18 @@ function FxPresetStore() {
 export function registerEffectsUI(app) {
   const UI = app.ui;
 
-  let curr_filter_ui = null;
-  const modal_name = 'modalfx';
-  const modal_esc_key = modal_name + 'esc';
+  let currentFilterUi = null;
+  const modalName = 'modalfx';
+  const modalEscapeKey = modalName + 'esc';
 
-  const custom_presets = new FxPresetStore();
+  const customPresets = new FxPresetStore();
 
   app.listenFor('DidCloseFX_UI', function () {
-    curr_filter_ui = null;
+    currentFilterUi = null;
   });
 
   app.listenFor('DidOpenFX_UI', function (modal) {
-    curr_filter_ui = modal;
+    currentFilterUi = modal;
   });
 
   app.listenFor('RequestFXUI_SELCUT', function () {
@@ -141,21 +141,21 @@ export function registerEffectsUI(app) {
 
     wv.backend.reg = reg;
 
-    const update_reg = function (region) {
+    const updateRegion = function (region) {
       reg.pos.start = (region.start * rate) >> 0;
       reg.pos.end = (region.end * rate) >> 0;
 
       wv.drawBuffer(true);
     };
 
-    wv.on('region-updated', update_reg);
+    wv.on('region-updated', updateRegion);
     // -- now make sure we resize it if needed be
   });
 
   app.listenFor('RequestFXUI_Gain', function () {
     app.fireEvent('RequestSelect', 1);
 
-    const filter_id = 'gain';
+    const filterId = 'gain';
     const auto = null;
 
     const getvalue = function (modal) {
@@ -164,7 +164,7 @@ export function registerEffectsUI(app) {
       if (auto) {
         value = auto.GetValue();
       } else {
-        const input = modal.el_body.getElementsByTagName('input')[0];
+        const input = modal.bodyElement.getElementsByTagName('input')[0];
         value = [{ val: input.value / 1 }];
       }
 
@@ -173,7 +173,7 @@ export function registerEffectsUI(app) {
 
     const fxModal = AudioEffectModal(
       {
-        id: filter_id,
+        id: filterId,
         title: 'Apply Gain to selected range',
 
         presets: [
@@ -184,10 +184,10 @@ export function registerEffectsUI(app) {
           { name: '+50%', val: 1.5 },
           { name: '+100%', val: 2 },
         ],
-        custom_pres: custom_presets.Get(filter_id),
+        customPresetList: customPresets.Get(filterId),
         ondestroy: function (modal) {
           app.ui.InteractionHandler.on = false;
-          app.ui.KeyHandler.removeCallback(modal_esc_key);
+          app.ui.KeyHandler.removeCallback(modalEscapeKey);
         },
         preview: function (modal) {
           const value = getvalue(modal);
@@ -196,7 +196,7 @@ export function registerEffectsUI(app) {
         buttons: [
           {
             title: 'Apply Gain',
-            clss: 'pk_modal_a_accpt',
+            className: 'pk_modal_a_accpt',
             callback: function (modal) {
               const value = getvalue(modal);
 
@@ -213,8 +213,8 @@ export function registerEffectsUI(app) {
           '<div class="pk_row" style="border:none;padding:0">',
 
         setup: function (modal) {
-          const range = modal.el_body.getElementsByTagName('input')[0];
-          const span = modal.el_body.getElementsByTagName('span')[0];
+          const range = modal.bodyElement.getElementsByTagName('input')[0];
+          const span = modal.bodyElement.getElementsByTagName('span')[0];
 
           range.oninput = function () {
             span.innerHTML = ((range.value * 100) >> 0) + '%';
@@ -224,11 +224,11 @@ export function registerEffectsUI(app) {
           //};
 
           app.fireEvent('RequestPause');
-          app.ui.InteractionHandler.checkAndSet(modal_name);
+          app.ui.InteractionHandler.checkAndSet(modalName);
           app.ui.KeyHandler.addCallback(
-            modal_esc_key,
+            modalEscapeKey,
             function (e) {
-              if (!app.ui.InteractionHandler.check(modal_name)) return;
+              if (!app.ui.InteractionHandler.check(modalName)) return;
 
               modal.Destroy();
             },
@@ -244,11 +244,11 @@ export function registerEffectsUI(app) {
   app.listenFor('RequestActionFXUI_Rate', function () {
     app.fireEvent('RequestSelect', 1);
 
-    const filter_id = 'speed';
+    const filterId = 'speed';
 
     const fxModal = AudioEffectModal(
       {
-        id: filter_id,
+        id: filterId,
         title: 'Change Speed',
         presets: [
           { name: 'A lot slower', val: 0.65 },
@@ -256,13 +256,13 @@ export function registerEffectsUI(app) {
           { name: 'Slightly faster', val: 1.15 },
           { name: 'Blazing Fast', val: 1.4 },
         ],
-        custom_pres: custom_presets.Get(filter_id),
+        customPresetList: customPresets.Get(filterId),
         ondestroy: function (modal) {
           app.ui.InteractionHandler.on = false;
-          app.ui.KeyHandler.removeCallback(modal_esc_key);
+          app.ui.KeyHandler.removeCallback(modalEscapeKey);
         },
         preview: function (modal) {
-          const input = modal.el_body.getElementsByTagName('input')[0];
+          const input = modal.bodyElement.getElementsByTagName('input')[0];
           const value = input.value.trim() / 1;
           app.fireEvent('RequestActionFX_PREVIEW_RATE', value);
         },
@@ -270,9 +270,9 @@ export function registerEffectsUI(app) {
         buttons: [
           {
             title: 'Apply Rate',
-            clss: 'pk_modal_a_accpt',
+            className: 'pk_modal_a_accpt',
             callback: function (modal) {
-              const input = modal.el_body.getElementsByTagName('input')[0];
+              const input = modal.bodyElement.getElementsByTagName('input')[0];
               const value = input.value.trim() / 1;
 
               if (value != 1.0) app.fireEvent('RequestActionFX_RATE', value);
@@ -286,8 +286,8 @@ export function registerEffectsUI(app) {
           '<input type="range" class="pk_horiz" min="0.2" max="2.0" step="0.05" value="1.0" />' +
           '<span class="pk_val">1.0</span></div>',
         setup: function (modal) {
-          const range = modal.el_body.getElementsByTagName('input')[0];
-          const span = modal.el_body.getElementsByTagName('span')[0];
+          const range = modal.bodyElement.getElementsByTagName('input')[0];
+          const span = modal.bodyElement.getElementsByTagName('span')[0];
 
           range.oninput = function () {
             span.innerHTML = range.value;
@@ -295,12 +295,12 @@ export function registerEffectsUI(app) {
           };
 
           app.fireEvent('RequestPause');
-          app.ui.InteractionHandler.checkAndSet(modal_name);
+          app.ui.InteractionHandler.checkAndSet(modalName);
 
           app.ui.KeyHandler.addCallback(
-            modal_esc_key,
+            modalEscapeKey,
             function (e) {
-              if (!app.ui.InteractionHandler.check(modal_name)) return;
+              if (!app.ui.InteractionHandler.check(modalName)) return;
 
               modal.Destroy();
             },
@@ -316,11 +316,11 @@ export function registerEffectsUI(app) {
   app.listenFor('RequestActionFXUI_Speed', function () {
     app.fireEvent('RequestSelect', 1);
 
-    const filter_id = 'speed';
+    const filterId = 'speed';
 
     const fxModal = AudioEffectModal(
       {
-        id: filter_id,
+        id: filterId,
         title: 'Change Speed',
         presets: [
           { name: '-1/4', val: 0.25 },
@@ -330,13 +330,13 @@ export function registerEffectsUI(app) {
           { name: '+1/4', val: 1.25 },
           { name: '+1/2', val: 1.5 },
         ],
-        custom_pres: custom_presets.Get(filter_id),
+        customPresetList: customPresets.Get(filterId),
         ondestroy: function (modal) {
           app.ui.InteractionHandler.on = false;
-          app.ui.KeyHandler.removeCallback(modal_esc_key);
+          app.ui.KeyHandler.removeCallback(modalEscapeKey);
         },
         preview: function (modal) {
-          const input = modal.el_body.getElementsByTagName('input')[0];
+          const input = modal.bodyElement.getElementsByTagName('input')[0];
           const value = input.value.trim() / 1;
           app.fireEvent('RequestActionFX_PREVIEW_SPEED', value);
         },
@@ -344,9 +344,9 @@ export function registerEffectsUI(app) {
         buttons: [
           {
             title: 'Apply Rate',
-            clss: 'pk_modal_a_accpt',
+            className: 'pk_modal_a_accpt',
             callback: function (modal) {
-              const input = modal.el_body.getElementsByTagName('input')[0];
+              const input = modal.bodyElement.getElementsByTagName('input')[0];
               const value = input.value.trim() / 1;
 
               if (value != 1.0) app.fireEvent('RequestActionFX_SPEED', value);
@@ -360,8 +360,8 @@ export function registerEffectsUI(app) {
           '<input type="range" class="pk_horiz" min="0.2" max="2.0" step="0.05" value="1.0" />' +
           '<span class="pk_val">1.0</span></div>',
         setup: function (modal) {
-          const range = modal.el_body.getElementsByTagName('input')[0];
-          const span = modal.el_body.getElementsByTagName('span')[0];
+          const range = modal.bodyElement.getElementsByTagName('input')[0];
+          const span = modal.bodyElement.getElementsByTagName('span')[0];
 
           range.oninput = function () {
             span.innerHTML = range.value;
@@ -369,12 +369,12 @@ export function registerEffectsUI(app) {
           };
 
           app.fireEvent('RequestPause');
-          app.ui.InteractionHandler.checkAndSet(modal_name);
+          app.ui.InteractionHandler.checkAndSet(modalName);
 
           app.ui.KeyHandler.addCallback(
-            modal_esc_key,
+            modalEscapeKey,
             function (e) {
-              if (!app.ui.InteractionHandler.check(modal_name)) return;
+              if (!app.ui.InteractionHandler.check(modalName)) return;
 
               modal.Destroy();
             },
@@ -388,46 +388,46 @@ export function registerEffectsUI(app) {
   });
 
   app.listenFor('RequestActionFXUI_Flip', function () {
-    if (!app.engine.is_ready) return;
+    if (!app.engine.isReady) return;
 
     app.fireEvent('RequestRegionClear');
     app.fireEvent('RequestSelect', 1);
 
-    const filter_id = 'flip';
+    const filterId = 'flip';
     let mode = 0;
 
     const fxModal = AudioEffectModal(
       {
-        id: filter_id,
+        id: filterId,
         title: 'Channel Info',
         ondestroy: function (modal) {
           app.ui.InteractionHandler.on = false;
-          app.ui.KeyHandler.removeCallback(modal_esc_key);
+          app.ui.KeyHandler.removeCallback(modalEscapeKey);
         },
         buttons: [
           {
             title: 'Apply Changes',
-            clss: 'pk_modal_a_accpt',
+            className: 'pk_modal_a_accpt',
             callback: function (modal) {
               if (mode === 1) {
                 // check if we are doing force mono, or force flip
-                const mono = modal.el_body.getElementsByClassName('pk_c_mm')[0];
-                const flip = modal.el_body.getElementsByClassName('pk_c_fl')[0];
+                const mono = modal.bodyElement.getElementsByClassName('pk_c_mm')[0];
+                const flip = modal.bodyElement.getElementsByClassName('pk_c_fl')[0];
 
                 if (mono.checked) {
-                  const chans = modal.el_body.getElementsByClassName('pk_c_c');
+                  const channelCount = modal.bodyElement.getElementsByClassName('pk_c_c');
                   // check which channel we pick
 
-                  if (chans[0].checked) {
+                  if (channelCount[0].checked) {
                     app.fireEvent('RequestActionFX_Flip', 'mono', 0);
-                  } else if (chans[1].checked) {
+                  } else if (channelCount[1].checked) {
                     app.fireEvent('RequestActionFX_Flip', 'mono', 1);
                   }
                 } else if (flip.checked) {
                   app.fireEvent('RequestActionFX_Flip', 'flip');
                 }
               } else if (mode === 2) {
-                const stereo = modal.el_body.getElementsByClassName('pk_c_ms')[0];
+                const stereo = modal.bodyElement.getElementsByClassName('pk_c_ms')[0];
                 if (stereo.checked) {
                   app.fireEvent('RequestActionFX_Flip', 'stereo');
                 }
@@ -457,26 +457,26 @@ export function registerEffectsUI(app) {
           '</div>',
         setup: function (modal) {
           let main = null;
-          const num = app.engine.wavesurfer.backend.buffer.numberOfChannels;
-          if (num === 2) {
+          const number = app.engine.wavesurfer.backend.buffer.numberOfChannels;
+          if (number === 2) {
             mode = 1;
-            main = modal.el_body.getElementsByClassName('pk_mm')[0];
+            main = modal.bodyElement.getElementsByClassName('pk_mm')[0];
 
             const mono = main.getElementsByClassName('pk_c_mm')[0];
             const flip = main.getElementsByClassName('pk_c_fl')[0];
-            const chans = main.getElementsByClassName('pk_c_c');
+            const channelCount = main.getElementsByClassName('pk_c_c');
             const tmp = main.getElementsByClassName('pk_dis');
             const lbls = [tmp[0], tmp[1]];
 
             mono.onchange = function (e) {
               if (mono.checked) {
                 flip.checked = false;
-                chans[0].checked = true;
+                channelCount[0].checked = true;
                 lbls[0].className = '';
                 lbls[1].className = '';
               } else {
-                chans[0].checked = false;
-                chans[1].checked = false;
+                channelCount[0].checked = false;
+                channelCount[1].checked = false;
                 lbls[0].className = 'pk_dis';
                 lbls[1].className = 'pk_dis';
               }
@@ -490,7 +490,7 @@ export function registerEffectsUI(app) {
             };
           } else {
             mode = 2;
-            main = modal.el_body.getElementsByClassName('pk_ms')[0];
+            main = modal.bodyElement.getElementsByClassName('pk_ms')[0];
           }
 
           main.style.display = 'block';
@@ -498,11 +498,11 @@ export function registerEffectsUI(app) {
           // --
 
           app.fireEvent('RequestPause');
-          app.ui.InteractionHandler.checkAndSet(modal_name);
+          app.ui.InteractionHandler.checkAndSet(modalName);
           app.ui.KeyHandler.addCallback(
-            modal_esc_key,
+            modalEscapeKey,
             function (e) {
-              if (!app.ui.InteractionHandler.check(modal_name)) return;
+              if (!app.ui.InteractionHandler.check(modalName)) return;
               modal.Destroy();
             },
             [27]
@@ -524,12 +524,12 @@ export function registerEffectsUI(app) {
       buttons: [
         {
           title: 'Insert Silence',
-          clss: 'pk_modal_a_accpt',
+          className: 'pk_modal_a_accpt',
           callback: function (modal) {
-            const input = modal.el_body.getElementsByClassName('pk_horiz')[0];
+            const input = modal.bodyElement.getElementsByClassName('pk_horiz')[0];
             const value = input.value.trim() / 1;
 
-            const radios = modal.el_body.getElementsByClassName('pk_check');
+            const radios = modal.bodyElement.getElementsByClassName('pk_check');
             let offset = 0;
 
             if (radios[1].checked) offset = app.engine.wavesurfer.getCurrentTime().toFixed(3) / 1;
@@ -548,11 +548,11 @@ export function registerEffectsUI(app) {
         '<input type="range" min="0.0" max="30.0" class="pk_horiz" step="0.01" value="5.0" />' +
         '<span class="pk_val">5s</span></div>',
       setup: function (modal) {
-        const cursor_pos_el = modal.el_body.getElementsByClassName('pkcdpk')[0];
-        cursor_pos_el.innerHTML = app.engine.wavesurfer.getCurrentTime().toFixed(2) + 's';
+        const cursorPositionElement = modal.bodyElement.getElementsByClassName('pkcdpk')[0];
+        cursorPositionElement.innerHTML = app.engine.wavesurfer.getCurrentTime().toFixed(2) + 's';
 
-        const range = modal.el_body.getElementsByClassName('pk_horiz')[0];
-        const span = modal.el_body.getElementsByClassName('pk_val')[0];
+        const range = modal.bodyElement.getElementsByClassName('pk_horiz')[0];
+        const span = modal.bodyElement.getElementsByClassName('pk_val')[0];
 
         range.oninput = function () {
           span.innerHTML = (range.value / 1).toFixed(2) + 's';
@@ -575,7 +575,7 @@ export function registerEffectsUI(app) {
   app.listenFor('RequestActionFXUI_Compressor', function () {
     app.fireEvent('RequestSelect', 1);
 
-    const filter_id = 'compressor';
+    const filterId = 'compressor';
     const auto = null;
     const getvalue = function (modal) {
       let value = [];
@@ -583,7 +583,7 @@ export function registerEffectsUI(app) {
       if (auto) {
         value = auto.GetValue();
       } else {
-        const inputs = modal.el_body.getElementsByTagName('input');
+        const inputs = modal.bodyElement.getElementsByTagName('input');
         value[0] = { val: inputs[0].value / 1 };
         value[1] = { val: inputs[1].value / 1 };
         value[2] = { val: inputs[2].value / 1 };
@@ -604,12 +604,12 @@ export function registerEffectsUI(app) {
 
     const fxModal = AudioEffectModal(
       {
-        id: filter_id,
+        id: filterId,
         title: 'Apply Compression to selected range',
-        clss: 'pk_bigger',
+        className: 'pk_bigger',
         ondestroy: function (modal) {
           app.ui.InteractionHandler.on = false;
-          app.ui.KeyHandler.removeCallback(modal_esc_key);
+          app.ui.KeyHandler.removeCallback(modalEscapeKey);
         },
         presets: [
           { name: 'Classic', val: '-40,5,7,0.002,0.1' },
@@ -617,22 +617,22 @@ export function registerEffectsUI(app) {
           { name: 'Dashed Distortion', val: '-45,26,2.05,0.233,0.0' },
           { name: 'Chaotic Distortion', val: '-60,14,11.07,0.036,0.00' },
         ],
-        custom_pres: custom_presets.Get(filter_id),
+        customPresetList: customPresets.Get(filterId),
         preview: function (modal) {
-          const inputs = modal.el_body.getElementsByTagName('input');
-          const val = getvalue(modal);
-          app.fireEvent('RequestActionFX_PREVIEW_COMPRESSOR', val);
+          const inputs = modal.bodyElement.getElementsByTagName('input');
+          const value = getvalue(modal);
+          app.fireEvent('RequestActionFX_PREVIEW_COMPRESSOR', value);
         },
 
         buttons: [
           {
             title: 'Apply',
-            clss: 'pk_modal_a_accpt',
+            className: 'pk_modal_a_accpt',
             callback: function (modal) {
-              const inputs = modal.el_body.getElementsByTagName('input');
-              const val = getvalue(modal);
+              const inputs = modal.bodyElement.getElementsByTagName('input');
+              const value = getvalue(modal);
 
-              app.fireEvent('RequestActionFX_Compressor', val);
+              app.fireEvent('RequestActionFX_Compressor', value);
 
               modal.Destroy();
             },
@@ -655,7 +655,7 @@ export function registerEffectsUI(app) {
           '<input class="pk_horiz" type="range" min="0.0" max="1.0" step="0.001" value="0.25" />' +
           '<span class="pk_val">0.25</span></div>',
         setup: function (modal) {
-          const inputs = modal.el_body.getElementsByTagName('input');
+          const inputs = modal.bodyElement.getElementsByTagName('input');
           for (let i = 0; i < inputs.length; ++i) {
             inputs[i].oninput = function () {
               const span = this.parentNode.getElementsByTagName('span')[0];
@@ -668,16 +668,16 @@ export function registerEffectsUI(app) {
           //};
 
           function updateFilter() {
-            const val = getvalue(modal);
-            app.fireEvent('RequestActionFX_UPDATE_PREVIEW', val);
+            const value = getvalue(modal);
+            app.fireEvent('RequestActionFX_UPDATE_PREVIEW', value);
           }
 
           app.fireEvent('RequestPause');
-          app.ui.InteractionHandler.checkAndSet(modal_name);
+          app.ui.InteractionHandler.checkAndSet(modalName);
           app.ui.KeyHandler.addCallback(
-            modal_esc_key,
+            modalEscapeKey,
             function (e) {
-              if (!app.ui.InteractionHandler.check(modal_name)) return;
+              if (!app.ui.InteractionHandler.check(modalName)) return;
               modal.Destroy();
             },
             [27]
@@ -702,12 +702,12 @@ export function registerEffectsUI(app) {
       buttons: [
         {
           title: 'Normalize Audio',
-          clss: 'pk_modal_a_accpt',
+          className: 'pk_modal_a_accpt',
           callback: function (modal) {
-            const input = modal.el_body.getElementsByClassName('pk_horiz')[0];
+            const input = modal.bodyElement.getElementsByClassName('pk_horiz')[0];
             const value = input.value / 1;
 
-            const toggle = modal.el_body.getElementsByClassName('pk_check')[0].checked;
+            const toggle = modal.bodyElement.getElementsByClassName('pk_check')[0].checked;
             app.fireEvent('RequestActionFX_Normalize', [toggle, value]);
             modal.Destroy();
           },
@@ -721,8 +721,8 @@ export function registerEffectsUI(app) {
         '<input type="range" min="0.0" max="2.0" class="pk_horiz" step="0.01" value="1.0" />' +
         '<span class="pk_val">100%</span></div>',
       setup: function (modal) {
-        const range = modal.el_body.getElementsByClassName('pk_horiz')[0];
-        const span = modal.el_body.getElementsByClassName('pk_val')[0];
+        const range = modal.bodyElement.getElementsByClassName('pk_horiz')[0];
+        const span = modal.bodyElement.getElementsByClassName('pk_val')[0];
 
         range.oninput = function () {
           span.innerHTML = (((range.value / 1) * 100) >> 0) + '%';
@@ -743,7 +743,7 @@ export function registerEffectsUI(app) {
   });
 
   app.listenFor('RequestActionFXUI_ParaGraphicEQ', function () {
-    openParagraphicEQ(app, custom_presets);
+    openParagraphicEQ(app, customPresets);
   });
 
   app.listenFor('RequestActionTempo', function () {
@@ -754,34 +754,34 @@ export function registerEffectsUI(app) {
     openRecordingModal(app);
   });
 
-  app.listenFor('RequestActionFXUI_GraphicEQ', function (num_of_bands) {
+  app.listenFor('RequestActionFXUI_GraphicEQ', function (bandCount) {
     app.fireEvent('RequestSelect', 1);
 
-    let filter_id = 'graph_eq';
+    let filterId = 'graph_eq';
     const auto = null;
     const getvalue = function (ranges) {
-      let val = {};
+      let value = {};
 
       if (auto) {
-        val = auto.GetValue();
+        value = auto.GetValue();
       } else {
-        val = [];
-        const len = ranges.length;
-        for (let i = 0; i < len; ++i) {
+        value = [];
+        const length = ranges.length;
+        for (let i = 0; i < length; ++i) {
           const range = ranges[i];
-          val.push({
+          value.push({
             type: range.getAttribute('data-type'),
             freq: range.getAttribute('data-freq') / 1,
             val: range.value / 1,
-            q: band_q,
+            q: bandQ,
           });
         }
       }
 
-      return val;
+      return value;
     };
 
-    let bands_str =
+    let bandsHtml =
       '<div class="pk_col"><span class="pk_val">0 db</span>' +
       '<input class="pk_vert" data-freq="32" data-type="lowshelf" ' +
       'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
@@ -827,13 +827,13 @@ export function registerEffectsUI(app) {
       { name: 'Old Radio', val: '-25,-22,-20,-18,-9,0,8,10,-8,-25' },
       { name: 'Lo Fi', val: '-18,-12,0,2,0,4,4,-1,-6,-8' },
     ];
-    let band_q = 4.6;
+    let bandQ = 4.6;
 
-    if (num_of_bands === 20) {
-      filter_id += '_2';
+    if (bandCount === 20) {
+      filterId += '_2';
       presets = null; // maybe add presets?
-      band_q = 10.2;
-      bands_str =
+      bandQ = 10.2;
+      bandsHtml =
         '<div class="pk_col"><span class="pk_val">0 db</span>' +
         '<input class="pk_vert" data-freq="31" data-type="lowshelf" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
@@ -918,17 +918,17 @@ export function registerEffectsUI(app) {
 
     const fxModal = AudioEffectModal(
       {
-        id: filter_id,
+        id: filterId,
         title: 'Graphic EQ',
-        clss: num_of_bands === 20 ? 'pk_dens' : '',
-        custom_pres: custom_presets.Get(filter_id),
+        className: bandCount === 20 ? 'pk_dens' : '',
+        customPresetList: customPresets.Get(filterId),
         ondestroy: function (modal) {
           app.ui.InteractionHandler.on = false;
-          app.ui.KeyHandler.removeCallback(modal_esc_key);
+          app.ui.KeyHandler.removeCallback(modalEscapeKey);
         },
         preview: function (modal) {
-          const ranges = modal.el_body.getElementsByTagName('input');
-          const len = ranges.length;
+          const ranges = modal.bodyElement.getElementsByTagName('input');
+          const length = ranges.length;
 
           app.fireEvent('RequestActionFX_PREVIEW_PARAMEQ', getvalue(ranges));
         },
@@ -936,9 +936,9 @@ export function registerEffectsUI(app) {
         buttons: [
           {
             title: 'Apply EQ',
-            clss: 'pk_modal_a_accpt',
+            className: 'pk_modal_a_accpt',
             callback: function (modal) {
-              const ranges = modal.el_body.getElementsByTagName('input');
+              const ranges = modal.bodyElement.getElementsByTagName('input');
               app.fireEvent('RequestActionFX_PARAMEQ', getvalue(ranges));
 
               modal.Destroy();
@@ -946,18 +946,18 @@ export function registerEffectsUI(app) {
           },
         ],
         presets: presets,
-        body: '<div class="pk_h200">' + bands_str + '<div style="clear:both;"></div></div>',
+        body: '<div class="pk_h200">' + bandsHtml + '<div style="clear:both;"></div></div>',
         setup: function (modal) {
-          const ranges = modal.el_body.getElementsByTagName('input');
-          const len = ranges.length;
+          const ranges = modal.bodyElement.getElementsByTagName('input');
+          const length = ranges.length;
 
           //			obj.type = range.getAttribute ('data-type');
           //			obj.freq = range.getAttribute ('data-freq')/1;
-          //			obj.q    = band_q;
+          //			obj.q    = bandQ;
           //		});
           //};
 
-          for (let i = 0; i < len; ++i) {
+          for (let i = 0; i < length; ++i) {
             const range = ranges[i];
 
             range.oninput = function () {
@@ -968,11 +968,11 @@ export function registerEffectsUI(app) {
           }
 
           app.fireEvent('RequestPause');
-          app.ui.InteractionHandler.checkAndSet(modal_name);
+          app.ui.InteractionHandler.checkAndSet(modalName);
           app.ui.KeyHandler.addCallback(
-            modal_esc_key,
+            modalEscapeKey,
             function (e) {
-              if (!app.ui.InteractionHandler.check(modal_name)) return;
+              if (!app.ui.InteractionHandler.check(modalName)) return;
               modal.Destroy();
             },
             [27]
@@ -997,7 +997,7 @@ export function registerEffectsUI(app) {
         buttons: [
           {
             title: 'Hard Limiting',
-            clss: 'pk_modal_a_accpt',
+            className: 'pk_modal_a_accpt',
             callback: function (modal) {
               app.fireEvent('RequestActionFX_HardLimit', modal.updateFilter(modal));
               modal.Destroy();
@@ -1020,17 +1020,17 @@ export function registerEffectsUI(app) {
           '<input type="range" min="1.0" max="500.0" class="pk_horiz pk_w180" step="0.01" value="10.0" />' +
           '<span class="pk_val">10 ms</span></div>',
         updateFilter: function (modal) {
-          const val = [modal.el_body.getElementsByClassName('pk_check')[0].checked];
-          const ranges = modal.el_body.getElementsByClassName('pk_horiz');
+          const value = [modal.bodyElement.getElementsByClassName('pk_check')[0].checked];
+          const ranges = modal.bodyElement.getElementsByClassName('pk_horiz');
 
           for (let i = 0; i < ranges.length; ++i) {
             const range = ranges[i];
-            val.push(range.value / 1);
+            value.push(range.value / 1);
           }
-          return val;
+          return value;
         },
         setup: function (modal) {
-          const ranges = modal.el_body.getElementsByClassName('pk_horiz');
+          const ranges = modal.bodyElement.getElementsByClassName('pk_horiz');
 
           ranges[0].oninput = function () {
             const span = this.parentNode.getElementsByTagName('span')[0];
@@ -1067,7 +1067,7 @@ export function registerEffectsUI(app) {
   app.listenFor('RequestActionFXUI_Delay', function () {
     app.fireEvent('RequestSelect', 1);
 
-    const filter_id = 'delay';
+    const filterId = 'delay';
     const auto = null;
     const getvalue = function (modal) {
       let value = [];
@@ -1075,7 +1075,7 @@ export function registerEffectsUI(app) {
       if (auto) {
         value = auto.GetValue();
       } else {
-        const inputs = modal.el_body.getElementsByTagName('input');
+        const inputs = modal.bodyElement.getElementsByTagName('input');
         value[0] = { val: inputs[0].value / 1 };
         value[1] = { val: inputs[1].value / 1 };
         value[2] = { val: inputs[2].value / 1 };
@@ -1092,32 +1092,32 @@ export function registerEffectsUI(app) {
 
     const fxModal = AudioEffectModal(
       {
-        id: filter_id,
+        id: filterId,
         title: 'Apply Delay to selected range',
-        clss: 'pk_bigger',
+        className: 'pk_bigger',
         ondestroy: function (modal) {
           app.ui.InteractionHandler.on = false;
-          app.ui.KeyHandler.removeCallback(modal_esc_key);
+          app.ui.KeyHandler.removeCallback(modalEscapeKey);
         },
         presets: [
           { name: 'Classic', val: '0.3,0.4,0.4' },
           { name: 'Spacey', val: '3.0,0.6,0.3' },
         ],
-        custom_pres: custom_presets.Get(filter_id),
+        customPresetList: customPresets.Get(filterId),
         preview: function (modal) {
-          const val = getvalue(modal);
+          const value = getvalue(modal);
 
-          app.fireEvent('RequestActionFX_PREVIEW_DELAY', val);
+          app.fireEvent('RequestActionFX_PREVIEW_DELAY', value);
         },
 
         buttons: [
           {
             title: 'Apply',
-            clss: 'pk_modal_a_accpt',
+            className: 'pk_modal_a_accpt',
             callback: function (modal) {
-              const val = getvalue(modal);
+              const value = getvalue(modal);
 
-              app.fireEvent('RequestActionFX_DELAY', val);
+              app.fireEvent('RequestActionFX_DELAY', value);
 
               modal.Destroy();
             },
@@ -1134,7 +1134,7 @@ export function registerEffectsUI(app) {
           '<input class="pk_horiz" type="range" min="0.0" max="1.0" step="0.01" value="0.4" />' +
           '<span class="pk_val">0.4</span></div>',
         setup: function (modal) {
-          const inputs = modal.el_body.getElementsByTagName('input');
+          const inputs = modal.bodyElement.getElementsByTagName('input');
           for (let i = 0; i < inputs.length; ++i) {
             inputs[i].oninput = function () {
               const span = this.parentNode.getElementsByTagName('span')[0];
@@ -1147,16 +1147,16 @@ export function registerEffectsUI(app) {
           //};
 
           function updateFilter() {
-            const val = getvalue(modal);
-            app.fireEvent('RequestActionFX_UPDATE_PREVIEW', val);
+            const value = getvalue(modal);
+            app.fireEvent('RequestActionFX_UPDATE_PREVIEW', value);
           }
 
           app.fireEvent('RequestPause');
-          app.ui.InteractionHandler.checkAndSet(modal_name);
+          app.ui.InteractionHandler.checkAndSet(modalName);
           app.ui.KeyHandler.addCallback(
-            modal_esc_key,
+            modalEscapeKey,
             function (e) {
-              if (!app.ui.InteractionHandler.check(modal_name)) return;
+              if (!app.ui.InteractionHandler.check(modalName)) return;
               modal.Destroy();
             },
             [27]
@@ -1172,7 +1172,7 @@ export function registerEffectsUI(app) {
   app.listenFor('RequestActionFXUI_Distortion', function () {
     app.fireEvent('RequestSelect', 1);
 
-    const filter_id = 'dist';
+    const filterId = 'dist';
     const auto = null;
     const getvalue = function (modal) {
       let value;
@@ -1180,7 +1180,7 @@ export function registerEffectsUI(app) {
       if (auto) {
         value = auto.GetValue();
       } else {
-        const input = modal.el_body.getElementsByTagName('input')[0];
+        const input = modal.bodyElement.getElementsByTagName('input')[0];
         value = [{ val: input.value / 1 }];
       }
 
@@ -1189,25 +1189,25 @@ export function registerEffectsUI(app) {
 
     const fxModal = AudioEffectModal(
       {
-        id: filter_id,
+        id: filterId,
         title: 'Apply Distortion to selected range',
-        clss: 'pk_bigger',
+        className: 'pk_bigger',
         ondestroy: function (modal) {
           app.ui.InteractionHandler.on = false;
-          app.ui.KeyHandler.removeCallback(modal_esc_key);
+          app.ui.KeyHandler.removeCallback(modalEscapeKey);
         },
         preview: function (modal) {
-          const val = getvalue(modal);
-          app.fireEvent('RequestActionFX_PREVIEW_DISTORT', val);
+          const value = getvalue(modal);
+          app.fireEvent('RequestActionFX_PREVIEW_DISTORT', value);
         },
 
         buttons: [
           {
             title: 'Apply',
-            clss: 'pk_modal_a_accpt',
+            className: 'pk_modal_a_accpt',
             callback: function (modal) {
-              const val = getvalue(modal);
-              app.fireEvent('RequestActionFX_DISTORT', val);
+              const value = getvalue(modal);
+              app.fireEvent('RequestActionFX_DISTORT', value);
 
               modal.Destroy();
             },
@@ -1219,7 +1219,7 @@ export function registerEffectsUI(app) {
           '<span class="pk_val">0.5</span></div>',
 
         setup: function (modal) {
-          const inputs = modal.el_body.getElementsByTagName('input');
+          const inputs = modal.bodyElement.getElementsByTagName('input');
           for (let i = 0; i < inputs.length; ++i) {
             inputs[i].oninput = function () {
               const span = this.parentNode.getElementsByTagName('span')[0];
@@ -1232,16 +1232,16 @@ export function registerEffectsUI(app) {
           //};
 
           function updateFilter() {
-            const val = getvalue(modal);
-            app.fireEvent('RequestActionFX_UPDATE_PREVIEW', val);
+            const value = getvalue(modal);
+            app.fireEvent('RequestActionFX_UPDATE_PREVIEW', value);
           }
 
           app.fireEvent('RequestPause');
-          app.ui.InteractionHandler.checkAndSet(modal_name);
+          app.ui.InteractionHandler.checkAndSet(modalName);
           app.ui.KeyHandler.addCallback(
-            modal_esc_key,
+            modalEscapeKey,
             function (e) {
-              if (!app.ui.InteractionHandler.check(modal_name)) return;
+              if (!app.ui.InteractionHandler.check(modalName)) return;
               modal.Destroy();
             },
             [27]
@@ -1257,45 +1257,45 @@ export function registerEffectsUI(app) {
   app.listenFor('RequestActionFXUI_Reverb', function () {
     app.fireEvent('RequestSelect', 1);
 
-    const filter_id = 'reverb';
+    const filterId = 'reverb';
 
     const fxModal = AudioEffectModal(
       {
-        id: filter_id,
+        id: filterId,
         title: 'Apply Reverb to selected range',
-        clss: 'pk_bigger',
+        className: 'pk_bigger',
         ondestroy: function (modal) {
           app.ui.InteractionHandler.on = false;
-          app.ui.KeyHandler.removeCallback(modal_esc_key);
+          app.ui.KeyHandler.removeCallback(modalEscapeKey);
         },
         presets: [
           { name: 'Classic', val: '0.3,0.4,0.4' },
           { name: 'Spacey', val: '3.0,0.6,0.3' },
         ],
-        custom_pres: custom_presets.Get(filter_id),
+        customPresetList: customPresets.Get(filterId),
         preview: function (modal) {
-          const inputs = modal.el_body.getElementsByTagName('input');
-          const val = {
+          const inputs = modal.bodyElement.getElementsByTagName('input');
+          const value = {
             time: inputs[0].value / 1,
             decay: inputs[1].value / 1,
             mix: inputs[2].value / 1,
           };
-          app.fireEvent('RequestActionFX_PREVIEW_REVERB', val);
+          app.fireEvent('RequestActionFX_PREVIEW_REVERB', value);
         },
 
         buttons: [
           {
             title: 'Apply',
-            clss: 'pk_modal_a_accpt',
+            className: 'pk_modal_a_accpt',
             callback: function (modal) {
-              const inputs = modal.el_body.getElementsByTagName('input');
-              const val = {
+              const inputs = modal.bodyElement.getElementsByTagName('input');
+              const value = {
                 time: inputs[0].value / 1,
                 decay: inputs[1].value / 1,
                 mix: inputs[2].value / 1,
               };
 
-              app.fireEvent('RequestActionFX_REVERB', val);
+              app.fireEvent('RequestActionFX_REVERB', value);
 
               modal.Destroy();
             },
@@ -1312,7 +1312,7 @@ export function registerEffectsUI(app) {
           '<input class="pk_horiz" type="range" min="0.0" max="1.0" step="0.01" value="0.6" />' +
           '<span class="pk_val">0.6</span></div>',
         setup: function (modal) {
-          const inputs = modal.el_body.getElementsByTagName('input');
+          const inputs = modal.bodyElement.getElementsByTagName('input');
           for (let i = 0; i < inputs.length; ++i) {
             inputs[i].oninput = function () {
               const span = this.parentNode.getElementsByTagName('span')[0];
@@ -1323,22 +1323,22 @@ export function registerEffectsUI(app) {
           }
 
           function updateFilter() {
-            const inputs = modal.el_body.getElementsByTagName('input');
-            const val = {
+            const inputs = modal.bodyElement.getElementsByTagName('input');
+            const value = {
               time: inputs[0].value / 1,
               decay: inputs[1].value / 1,
               mix: inputs[2].value / 1,
             };
 
-            app.fireEvent('RequestActionFX_UPDATE_PREVIEW', val);
+            app.fireEvent('RequestActionFX_UPDATE_PREVIEW', value);
           }
 
           app.fireEvent('RequestPause');
-          app.ui.InteractionHandler.checkAndSet(modal_name);
+          app.ui.InteractionHandler.checkAndSet(modalName);
           app.ui.KeyHandler.addCallback(
-            modal_esc_key,
+            modalEscapeKey,
             function (e) {
-              if (!app.ui.InteractionHandler.check(modal_name)) return;
+              if (!app.ui.InteractionHandler.check(modalName)) return;
               modal.Destroy();
             },
             [27]
@@ -1353,16 +1353,16 @@ export function registerEffectsUI(app) {
 
   // -----
 
-  let current_tags = null;
-  app.listenFor('RequestActionID3', function (flag, new_tags) {
+  let currentTags = null;
+  app.listenFor('RequestActionID3', function (flag, newTags) {
     if (flag) {
-      current_tags = new_tags;
+      currentTags = newTags;
       return;
     }
 
-    const modal_id = '_id3';
+    const modalId = '_id3';
 
-    const render_tags = function (el, tags) {
+    const renderTags = function (element, tags) {
       let str = '<div style="margin-top:18px">';
 
       str +=
@@ -1402,15 +1402,15 @@ export function registerEffectsUI(app) {
           '"/></span></div>';
       }
 
-      el.innerHTML = str + '</div>';
+      element.innerHTML = str + '</div>';
     };
 
     new SimpleModal({
       title: 'ID3 Metatags Explorer',
 
       ondestroy: function (modal) {
-        app.ui.InteractionHandler.forceUnset(modal_id);
-        app.ui.KeyHandler.removeCallback(modal_id + 'esc');
+        app.ui.InteractionHandler.forceUnset(modalId);
+        app.ui.KeyHandler.removeCallback(modalId + 'esc');
       },
 
       buttons: [],
@@ -1418,8 +1418,8 @@ export function registerEffectsUI(app) {
         '<input type="file" accept="audio/*" />' +
         '<div class="pk_row pk_ttx">Choose file to view audio metatags!</div>',
       setup: function (modal) {
-        const input = modal.el_body.getElementsByTagName('input')[0];
-        const txt_el = modal.el_body.getElementsByClassName('pk_ttx')[0];
+        const input = modal.bodyElement.getElementsByTagName('input')[0];
+        const textElement = modal.bodyElement.getElementsByClassName('pk_ttx')[0];
 
         input.onchange = function (e) {
           const reader = new FileReader();
@@ -1428,24 +1428,25 @@ export function registerEffectsUI(app) {
             const tags = app.engine.ID3(this.result);
 
             if (!tags) {
-              txt_el.innerHTML = '<div style="padding:30px 0">No audio metadata found...</div>';
+              textElement.innerHTML =
+                '<div style="padding:30px 0">No audio metadata found...</div>';
             } else {
-              render_tags(txt_el, tags);
+              renderTags(textElement, tags);
             }
           };
 
           reader.readAsArrayBuffer(this.files[0]);
         };
 
-        if (current_tags) {
-          render_tags(txt_el, current_tags);
+        if (currentTags) {
+          renderTags(textElement, currentTags);
         }
 
-        app.ui.InteractionHandler.forceSet(modal_id);
+        app.ui.InteractionHandler.forceSet(modalId);
         app.ui.KeyHandler.addCallback(
-          modal_id + 'esc',
+          modalId + 'esc',
           function (e) {
-            if (!app.ui.InteractionHandler.check(modal_id)) return;
+            if (!app.ui.InteractionHandler.check(modalId)) return;
             modal.Destroy();
           },
           [27]
@@ -1456,14 +1457,14 @@ export function registerEffectsUI(app) {
 
   // ---- save presets
   app.listenFor('RequestSavePreset', function () {
-    if (!curr_filter_ui) return;
+    if (!currentFilterUi) return;
 
-    const el = curr_filter_ui.el_body;
-    if (!el) return;
+    const element = currentFilterUi.bodyElement;
+    if (!element) return;
 
     const escapeHtml = function (text) {
       const map = {
-        '&': '&amp;',
+        '&': '&amplitude;',
         '<': '&lt;',
         '>': '&gt;',
         '"': '&quot;',
@@ -1476,68 +1477,68 @@ export function registerEffectsUI(app) {
     };
 
     // check if the preset is custom
-    let is_new = true;
-    let custom_id = null;
-    const el_presets = curr_filter_ui.el_presets;
-    const sel_opt = el_presets.options[el_presets.selectedIndex];
+    let isNew = true;
+    let customId = null;
+    const presetSelectElement = currentFilterUi.presetSelectElement;
+    const selectedOption = presetSelectElement.options[presetSelectElement.selectedIndex];
 
-    const inputs = el.querySelectorAll('select, input');
-    const preset_obj = {
-      target: curr_filter_ui.id,
+    const inputs = element.querySelectorAll('select, input');
+    const presetObject = {
+      target: currentFilterUi.id,
       name: 'My Preset',
-      id: curr_filter_ui.id + '_' + ((Math.random() * 99) >> 0),
+      id: currentFilterUi.id + '_' + ((Math.random() * 99) >> 0),
       date: Date.now(),
       val: '',
     };
 
-    if (sel_opt && sel_opt.getAttribute('data-custom')) {
-      is_new = false;
-      custom_id = sel_opt.getAttribute('data-custom');
+    if (selectedOption && selectedOption.getAttribute('data-custom')) {
+      isNew = false;
+      customId = selectedOption.getAttribute('data-custom');
     }
 
     // ----------
     for (let i = 0; i < inputs.length; ++i) {
       if (inputs[i].type === 'checkbox') {
-        preset_obj.val += (inputs[i].checked ? '1' : '0') + ',';
+        presetObject.val += (inputs[i].checked ? '1' : '0') + ',';
       } else {
-        preset_obj.val += inputs[i].value + ',';
+        presetObject.val += inputs[i].value + ',';
       }
     }
 
-    if (preset_obj.val.length > 0) {
-      preset_obj.val = preset_obj.val.substring(0, preset_obj.val.length - 1);
+    if (presetObject.val.length > 0) {
+      presetObject.val = presetObject.val.substring(0, presetObject.val.length - 1);
 
       // open ui for setting preset name
-      const modal_id = '_ctPr';
-      let default_txt = '';
+      const modalId = '_ctPr';
+      let defaultText = '';
 
-      let btn_delete = {};
-      let btn_update = {};
-      let custom_obj = null;
+      let buttonDelete = {};
+      let buttonUpdate = {};
+      let customObject = null;
 
-      if (!is_new) {
-        custom_obj = custom_presets.GetSingle(preset_obj.target, custom_id);
-        default_txt = 'value="' + custom_obj.name + '"';
+      if (!isNew) {
+        customObject = customPresets.GetSingle(presetObject.target, customId);
+        defaultText = 'value="' + customObject.name + '"';
 
-        btn_delete = {
+        buttonDelete = {
           title: 'Delete',
-          clss: 'pk_modal_a_red',
+          className: 'pk_modal_a_red',
           callback: function (modal) {
             showToast('Successfully deleted preset!', 1400);
 
-            const custom = custom_presets.Del(preset_obj.target, custom_id);
-            app.fireEvent('DidSetPresets', preset_obj.target, custom);
+            const custom = customPresets.Del(presetObject.target, customId);
+            app.fireEvent('DidSetPresets', presetObject.target, custom);
 
             modal.Destroy();
             // -
           },
         };
 
-        btn_update = {
+        buttonUpdate = {
           title: 'Update',
           callback: function (modal) {
-            if (custom_obj) {
-              const input = modal.el_body.getElementsByTagName('input')[0];
+            if (customObject) {
+              const input = modal.bodyElement.getElementsByTagName('input')[0];
               let value = input.value.trim();
 
               value = escapeHtml(value);
@@ -1546,13 +1547,13 @@ export function registerEffectsUI(app) {
                 showToast('Successfully updated preset!', 1400);
 
                 // add preset to localStorage
-                custom_obj.name = value;
-                custom_obj.val = preset_obj.val;
+                customObject.name = value;
+                customObject.val = presetObject.val;
 
-                custom_presets.Save();
+                customPresets.Save();
 
-                const arr = custom_presets.Get(preset_obj.target);
-                app.fireEvent('DidSetPresets', preset_obj.target, arr);
+                const arr = customPresets.Get(presetObject.target);
+                app.fireEvent('DidSetPresets', presetObject.target, arr);
 
                 modal.Destroy();
               } else {
@@ -1564,28 +1565,28 @@ export function registerEffectsUI(app) {
         };
       }
 
-      let title = 'Save Custom Preset for filter "' + curr_filter_ui.id + '"';
-      if (!is_new) {
-        const cname = custom_obj.name;
-        title = 'Edit Custom Preset "' + cname + '", for filter "' + curr_filter_ui.id + '"';
+      let title = 'Save Custom Preset for filter "' + currentFilterUi.id + '"';
+      if (!isNew) {
+        const cname = customObject.name;
+        title = 'Edit Custom Preset "' + cname + '", for filter "' + currentFilterUi.id + '"';
       }
 
       new SimpleModal({
         title: title,
 
         ondestroy: function (modal) {
-          app.ui.InteractionHandler.forceUnset(modal_id);
+          app.ui.InteractionHandler.forceUnset(modalId);
 
-          app.ui.KeyHandler.removeCallback(modal_id + 'esc');
-          app.ui.KeyHandler.removeCallback(modal_id + 'ent');
+          app.ui.KeyHandler.removeCallback(modalId + 'esc');
+          app.ui.KeyHandler.removeCallback(modalId + 'ent');
         },
 
         buttons: [
           {
-            title: is_new ? 'Save' : 'Save As New',
-            clss: 'pk_modal_a_accpt',
+            title: isNew ? 'Save' : 'Save As New',
+            className: 'pk_modal_a_accpt',
             callback: function (modal) {
-              const input = modal.el_body.getElementsByTagName('input')[0];
+              const input = modal.bodyElement.getElementsByTagName('input')[0];
               let value = input.value.trim();
 
               value = escapeHtml(value);
@@ -1594,12 +1595,12 @@ export function registerEffectsUI(app) {
                 showToast('Successfully saved preset!', 1400);
 
                 // add preset to localStorage
-                preset_obj.name = value;
+                presetObject.name = value;
 
-                const custom = custom_presets.Set(preset_obj.target, preset_obj);
+                const custom = customPresets.Set(presetObject.target, presetObject);
 
-                app.fireEvent('DidSetPresets', preset_obj.target, custom);
-                app.fireEvent('RequestSetPresetActive', preset_obj.target, preset_obj.id);
+                app.fireEvent('DidSetPresets', presetObject.target, custom);
+                app.fireEvent('RequestSetPresetActive', presetObject.target, presetObject.id);
 
                 modal.Destroy();
               } else {
@@ -1609,23 +1610,23 @@ export function registerEffectsUI(app) {
             },
           },
 
-          btn_update,
-          btn_delete,
+          buttonUpdate,
+          buttonDelete,
         ],
         body:
           '<label for="k07">Preset Name</label>' +
           '<input style="min-width:340px" maxlength="16" placeholder="Please type a name, eg: My Preset" ' +
-          default_txt +
+          defaultText +
           ' class="pk_txt" type="text" id="k07" />',
         setup: function (modal) {
           // app.fireEvent ('RequestPause');
 
-          app.ui.InteractionHandler.forceSet(modal_id);
+          app.ui.InteractionHandler.forceSet(modalId);
 
           app.ui.KeyHandler.addCallback(
-            modal_id + 'esc',
+            modalId + 'esc',
             function (e) {
-              if (!app.ui.InteractionHandler.check(modal_id)) return;
+              if (!app.ui.InteractionHandler.check(modalId)) return;
 
               modal.Destroy();
             },
@@ -1633,18 +1634,18 @@ export function registerEffectsUI(app) {
           );
 
           app.ui.KeyHandler.addCallback(
-            modal_id + 'en',
+            modalId + 'en',
             function (e) {
-              if (!app.ui.InteractionHandler.check(modal_id)) return;
+              if (!app.ui.InteractionHandler.check(modalId)) return;
 
-              modal.els.bottom[0].click();
+              modal.elements.bottom[0].click();
             },
             [13]
           );
 
           setTimeout(function () {
-            if (modal.el) {
-              const inp = modal.el.getElementsByTagName('input')[0];
+            if (modal.element) {
+              const inp = modal.element.getElementsByTagName('input')[0];
               inp.focus();
 
               if (inp.value.length > 0) {
@@ -1662,19 +1663,19 @@ export function registerEffectsUI(app) {
 
   // ---- windows ----
 
-  let eq_win = {};
+  let equalizerWindow = {};
 
   app.listenFor('WillUnload', function () {
-    let cur;
+    let current;
 
-    for (const k in eq_win) {
-      cur = eq_win[k];
-      if (cur && !cur.type) {
-        cur.destroy && cur.destroy();
+    for (const k in equalizerWindow) {
+      current = equalizerWindow[k];
+      if (current && !current.type) {
+        current.destroy && current.destroy();
       }
     }
 
-    eq_win = {};
+    equalizerWindow = {};
   });
 
   app.listenFor('RequestDragI', function (url) {
@@ -1683,41 +1684,41 @@ export function registerEffectsUI(app) {
       return;
     }
 
-    const cur_win = eq_win[url];
+    const currentWindow = equalizerWindow[url];
 
-    if (!cur_win || !cur_win.el) return;
+    if (!currentWindow || !currentWindow.element) return;
 
-    cur_win.el.style.pointerEvents = 'none';
-    cur_win.el.style.zIndex = '9';
+    currentWindow.element.style.pointerEvents = 'none';
+    currentWindow.element.style.zIndex = '9';
 
-    cur_win.win.document.body.classList.add('c');
+    currentWindow.win.document.body.classList.add('c');
 
-    let el_back = document.createElement('div');
-    el_back.className = 'pk_modal_back';
-    document.body.appendChild(el_back);
+    let backdropElement = document.createElement('div');
+    backdropElement.className = 'pk_modal_back';
+    document.body.appendChild(backdropElement);
 
-    let is_drag = true;
+    let isDrag = true;
     let x = 0;
     let y = 0;
     let moved = 2;
 
-    let top = parseInt(cur_win.el.style.top) || 0;
-    let left = parseInt(cur_win.el.style.left) || 0;
+    let top = parseInt(currentWindow.element.style.top) || 0;
+    let left = parseInt(currentWindow.element.style.left) || 0;
 
     app.ui.InteractionHandler.on = true;
 
     setTimeout(function () {
-      if (cur_win && cur_win.el) {
-        cur_win.el.style.display = 'none';
+      if (currentWindow && currentWindow.element) {
+        currentWindow.element.style.display = 'none';
         setTimeout(function () {
-          cur_win.el.style.display = 'block';
+          currentWindow.element.style.display = 'block';
         }, 0);
-        el_back.focus();
+        backdropElement.focus();
       }
     }, 60);
 
-    el_back.onmousemove = function (e) {
-      if (!is_drag) return;
+    backdropElement.onmousemove = function (e) {
+      if (!isDrag) return;
 
       if (x === 0 && y === 0) {
         x = e.pageX;
@@ -1726,14 +1727,14 @@ export function registerEffectsUI(app) {
         return;
       }
 
-      const dist_x = e.pageX - x;
-      const dist_y = e.pageY - y;
+      const distanceX = e.pageX - x;
+      const distanceY = e.pageY - y;
 
-      top += dist_y;
-      left += dist_x;
+      top += distanceY;
+      left += distanceX;
 
-      cur_win.el.style.top = top + 'px';
-      cur_win.el.style.left = left + 'px';
+      currentWindow.element.style.top = top + 'px';
+      currentWindow.element.style.left = left + 'px';
 
       x = e.pageX;
       y = e.pageY;
@@ -1741,43 +1742,43 @@ export function registerEffectsUI(app) {
       --moved;
     };
 
-    el_back.onmouseup = function (e) {
-      is_drag = false;
+    backdropElement.onmouseup = function (e) {
+      isDrag = false;
 
-      cur_win.win.document.body.classList.remove('c');
-      cur_win.el.style.pointerEvents = '';
-      cur_win.el.style.zIndex = '7';
+      currentWindow.win.document.body.classList.remove('c');
+      currentWindow.element.style.pointerEvents = '';
+      currentWindow.element.style.zIndex = '7';
 
       app.ui.InteractionHandler.on = false;
 
-      document.body.removeChild(el_back);
+      document.body.removeChild(backdropElement);
 
       if (e.type === 'mouseup') {
         if (moved > 0) {
-          cur_win.el.style.top = '0px';
+          currentWindow.element.style.top = '0px';
 
-          const ch = app.ui.BarBtm.el.childNodes;
+          const ch = app.ui.BarBtm.element.childNodes;
 
           let lw = 0;
           for (let ji = 0; ji < ch.length; ++ji) {
-            if (cur_win.el === ch[ji]) break;
+            if (currentWindow.element === ch[ji]) break;
             lw += ch[ji].clientWidth + 18;
           }
 
-          cur_win.el.style.left = lw + 'px';
+          currentWindow.element.style.left = lw + 'px';
           // ----
         }
         // check if we didn't move - in that return
       }
 
-      el_back.onmousemove = null;
-      el_back.onmouseleave = null;
-      el_back.onmouseup = null;
-      el_back = null;
+      backdropElement.onmousemove = null;
+      backdropElement.onmouseleave = null;
+      backdropElement.onmouseup = null;
+      backdropElement = null;
     };
 
-    el_back.onmouseleave = function (e) {
-      el_back.onmouseup(e);
+    backdropElement.onmouseleave = function (e) {
+      backdropElement.onmouseup(e);
       app.fireEvent('RequestShowFreqAn', url, [
         [window.screenLeft + e.pageX || 0, window.screenTop + e.pageY || 0],
         0,
@@ -1785,50 +1786,50 @@ export function registerEffectsUI(app) {
     };
   });
 
-  app.listenFor('RequestShowFreqAn', function (url, args_arr) {
+  app.listenFor('RequestShowFreqAn', function (url, argsArray) {
     if (app.isMobile) {
       alert('Currently unsupported on mobile');
       return;
     }
 
-    const toggle = args_arr[0];
-    const type = args_arr[1];
+    const toggle = argsArray[0];
+    const type = argsArray[1];
     let title = 'Frequency Analysis';
-    let curr_win = eq_win[url];
+    let currentWindow = equalizerWindow[url];
 
     if (url === 'sp') title = 'Spectrum Analysis';
 
     let toggled = false;
-    if (curr_win && toggle) {
+    if (currentWindow && toggle) {
       let ext = false;
-      if (curr_win.type === type) ext = true;
+      if (currentWindow.type === type) ext = true;
 
-      curr_win.destroy();
-      curr_win = null;
+      currentWindow.destroy();
+      currentWindow = null;
 
-      eq_win[url] = null;
+      equalizerWindow[url] = null;
 
       if (ext) return;
       toggled = true;
     }
 
-    const freq_cb = function (_, freq) {
-      curr_win && curr_win.win.update && curr_win.win.update(freq);
+    const frequencyCallback = function (_, freq) {
+      currentWindow && currentWindow.win.update && currentWindow.win.update(freq);
     };
 
     const setEvents = function (obj, _url) {
       obj.win.destroy = function () {
-        app.stopListeningFor('DidAudioProcess', freq_cb);
+        app.stopListeningFor('DidAudioProcess', frequencyCallback);
         app.fireEvent('DidToggleFreqAn', _url, null);
 
         // if (obj && obj.type === undefined) {
-        if (obj && obj === eq_win[url]) {
-          eq_win[url] = null;
+        if (obj && obj === equalizerWindow[url]) {
+          equalizerWindow[url] = null;
         }
 
         let stop = true;
-        for (const k in eq_win) {
-          if (eq_win[k]) {
+        for (const k in equalizerWindow) {
+          if (equalizerWindow[k]) {
             stop = false;
             break;
           }
@@ -1837,8 +1838,8 @@ export function registerEffectsUI(app) {
         if (stop) app.engine.wavesurfer.backend.logFrequencies = false;
       };
 
-      app.listenFor('DidAudioProcess', freq_cb);
-      app.fireEvent('DidToggleFreqAn', _url, curr_win);
+      app.listenFor('DidAudioProcess', frequencyCallback);
+      app.fireEvent('DidToggleFreqAn', _url, currentWindow);
       app.engine.wavesurfer.backend.logFrequencies = true;
     };
 
@@ -1865,20 +1866,20 @@ export function registerEffectsUI(app) {
           return;
         }
 
-        eq_win[url] = {
+        equalizerWindow[url] = {
           type: type,
-          el: null,
+          element: null,
           win: wnd,
           destroy: function () {
             wnd && wnd.close && wnd.close();
           },
         };
 
-        curr_win = eq_win[url];
+        currentWindow = equalizerWindow[url];
 
         // wnd.moveTo(500, 100);
 
-        setEvents(curr_win, url);
+        setEvents(currentWindow, url);
       };
 
       if (!toggled) makePopup(toggle);
@@ -1892,7 +1893,7 @@ export function registerEffectsUI(app) {
       iframe.id = 'pk_fr' + url;
 
       if (app.ui.BarBtm.on) {
-        const ch = app.ui.BarBtm.el.childNodes;
+        const ch = app.ui.BarBtm.element.childNodes;
         let lw = 0;
         for (let ji = 0; ji < ch.length; ++ji) {
           lw += ch[ji].clientWidth + 18;
@@ -1901,18 +1902,18 @@ export function registerEffectsUI(app) {
         iframe.style.left = lw + 'px';
       }
 
-      app.ui.BarBtm.el.appendChild(iframe);
+      app.ui.BarBtm.element.appendChild(iframe);
       app.ui.BarBtm.Show();
 
-      eq_win[url] = {
+      equalizerWindow[url] = {
         type: type,
-        el: iframe,
+        element: iframe,
         win: null,
         destroy: function () {
           iframe.parentNode.removeChild(iframe);
           iframe = null;
 
-          const ch = app.ui.BarBtm.el.childNodes;
+          const ch = app.ui.BarBtm.element.childNodes;
           if (ch.length === 0) {
             app.ui.BarBtm.Hide();
             return;
@@ -1935,12 +1936,12 @@ export function registerEffectsUI(app) {
         },
       };
 
-      curr_win = eq_win[url];
+      currentWindow = equalizerWindow[url];
 
       iframe.onload = function (e) {
-        if (curr_win && curr_win.type === type) {
-          curr_win.win = iframe.contentWindow;
-          setEvents(curr_win, url);
+        if (currentWindow && currentWindow.type === type) {
+          currentWindow.win = iframe.contentWindow;
+          setEvents(currentWindow, url);
         }
       };
       iframe.src = '/' + url + '.html?iframe=1';

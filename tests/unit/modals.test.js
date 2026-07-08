@@ -28,7 +28,7 @@ describe('SimpleModal', () => {
       buttons: [{ title: 'Apply', callback }],
     }).Show();
 
-    modal.els.bottom[0].click();
+    modal.elements.bottom[0].click();
     expect(callback).toHaveBeenCalledWith(modal);
   });
 

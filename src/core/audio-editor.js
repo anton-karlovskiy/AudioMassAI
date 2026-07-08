@@ -25,7 +25,7 @@ let nextEditorId = -1;
 export class AudioEditor {
   constructor() {
     /** Root DOM element the editor is mounted into (set by init). */
-    this.el = null;
+    this.element = null;
 
     /** Instance id, used to namespace DOM ids and key-handler names. */
     this.id = ++nextEditorId;
@@ -87,12 +87,12 @@ export class AudioEditor {
    * subsystems. Returns the editor instance.
    */
   init(elementId) {
-    const el = document.getElementById(elementId);
-    if (!el) {
+    const element = document.getElementById(elementId);
+    if (!element) {
       console.log('invalid element');
       return;
     }
-    this.el = el;
+    this.element = element;
 
     // Order matters: the UI builds the DOM that the engine mounts wavesurfer
     // into, and later subsystems reach both through the instance.
