@@ -27,7 +27,7 @@ const StringUtils = {
       offset2 = 1;
     }
 
-    const arr = [];
+    const characters = [];
     for (let j = 0; ix < maxBytes; j++) {
       const byte1 = bytes[ix + offset1];
       const byte2 = bytes[ix + offset2];
@@ -36,16 +36,16 @@ const StringUtils = {
       if (word1 == 0x0000) {
         break;
       } else if (byte1 < 0xd8 || byte1 >= 0xe0) {
-        arr[j] = String.fromCharCode(word1);
+        characters[j] = String.fromCharCode(word1);
       } else {
         const byte3 = bytes[ix + offset1];
         const byte4 = bytes[ix + offset2];
         const word2 = (byte3 << 8) + byte4;
         ix += 2;
-        arr[j] = String.fromCharCode(word1, word2);
+        characters[j] = String.fromCharCode(word1, word2);
       }
     }
-    const string = new String(arr.join(''));
+    const string = new String(characters.join(''));
     string.bytesReadCount = ix;
     return string;
   },
@@ -57,20 +57,20 @@ const StringUtils = {
       ix = 3;
     }
 
-    const arr = [];
+    const characters = [];
     for (let j = 0; ix < maxBytes; j++) {
       const byte1 = bytes[ix++];
       if (byte1 == 0x00) {
         break;
       } else if (byte1 < 0x80) {
-        arr[j] = String.fromCharCode(byte1);
+        characters[j] = String.fromCharCode(byte1);
       } else if (byte1 >= 0xc2 && byte1 < 0xe0) {
         const byte2 = bytes[ix++];
-        arr[j] = String.fromCharCode(((byte1 & 0x1f) << 6) + (byte2 & 0x3f));
+        characters[j] = String.fromCharCode(((byte1 & 0x1f) << 6) + (byte2 & 0x3f));
       } else if (byte1 >= 0xe0 && byte1 < 0xf0) {
         const byte2 = bytes[ix++];
         const byte3 = bytes[ix++];
-        arr[j] = String.fromCharCode(
+        characters[j] = String.fromCharCode(
           ((byte1 & 0xff) << 12) + ((byte2 & 0x3f) << 6) + (byte3 & 0x3f)
         );
       } else if (byte1 >= 0xf0 && byte1 < 0xf5) {
@@ -83,23 +83,26 @@ const StringUtils = {
           ((byte3 & 0x3f) << 6) +
           (byte4 & 0x3f) -
           0x10000;
-        arr[j] = String.fromCharCode((codepoint >> 10) + 0xd800, (codepoint & 0x3ff) + 0xdc00);
+        characters[j] = String.fromCharCode(
+          (codepoint >> 10) + 0xd800,
+          (codepoint & 0x3ff) + 0xdc00
+        );
       }
     }
-    const string = new String(arr.join(''));
+    const string = new String(characters.join(''));
     string.bytesReadCount = ix;
     return string;
   },
   readNullTerminatedString: function (bytes, maxBytes) {
-    const arr = [];
+    const characters = [];
     maxBytes = maxBytes || bytes.length;
     let i = 0;
     for (; i < maxBytes;) {
       const byte1 = bytes[i++];
       if (byte1 == 0x00) break;
-      arr[i - 1] = String.fromCharCode(byte1);
+      characters[i - 1] = String.fromCharCode(byte1);
     }
-    const string = new String(arr.join(''));
+    const string = new String(characters.join(''));
     string.bytesReadCount = i;
     return string;
   },

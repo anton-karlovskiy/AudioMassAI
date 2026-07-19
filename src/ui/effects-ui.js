@@ -18,18 +18,18 @@ import { openRecordingModal } from '../effects/recording-modal.js';
 function FxPresetStore() {
   let presets = {};
 
-  this.Set = function (filterId, obj) {
-    let arr = presets[filterId];
+  this.Set = function (filterId, preset) {
+    let presetList = presets[filterId];
 
-    if (!arr) {
-      arr = [];
-      presets[filterId] = arr;
+    if (!presetList) {
+      presetList = [];
+      presets[filterId] = presetList;
     }
 
-    arr.push(obj);
+    presetList.push(preset);
     localStorage.setItem('pk_presetfx', JSON.stringify(presets));
 
-    return arr;
+    return presetList;
   };
 
   this.Save = function () {
@@ -45,13 +45,13 @@ function FxPresetStore() {
     if (!filterId) return false;
     if (!customId) return false;
 
-    const arr = presets[filterId];
-    let l = arr.length;
+    const presetList = presets[filterId];
+    let index = presetList.length;
     let found = null;
 
-    while (l-- > 0) {
-      if (arr[l].id === customId) {
-        found = arr[l];
+    while (index-- > 0) {
+      if (presetList[index].id === customId) {
+        found = presetList[index];
         break;
       }
     }
@@ -63,13 +63,13 @@ function FxPresetStore() {
   this.Del = function (filterId, customId) {
     if (!filterId) return presets;
 
-    const arr = presets[filterId];
-    let l = arr.length;
+    const presetList = presets[filterId];
+    let index = presetList.length;
     let found = false;
 
-    while (l-- > 0) {
-      if (arr[l].id === customId) {
-        arr.splice(l, 1);
+    while (index-- > 0) {
+      if (presetList[index].id === customId) {
+        presetList.splice(index, 1);
         found = true;
         break;
       }
@@ -77,7 +77,7 @@ function FxPresetStore() {
 
     if (found) localStorage.setItem('pk_presetfx', JSON.stringify(presets));
 
-    return arr;
+    return presetList;
   };
 
   // loadCustomPresets
@@ -1361,25 +1361,25 @@ export function registerEffectsUI(app) {
     const modalId = '_id3';
 
     const renderTags = function (element, tags) {
-      let str = '<div style="margin-top:18px">';
+      let markup = '<div style="margin-top:18px">';
 
-      str +=
+      markup +=
         '<div><span class="pk_id3ttl">Artist</span><span>' + (tags.artist || '-') + '</span></div>';
-      str +=
+      markup +=
         '<div><span class="pk_id3ttl">Title</span><span>' + (tags.title || '-') + '</span></div>';
-      str +=
+      markup +=
         '<div><span class="pk_id3ttl">Album</span><span>' + (tags.album || '-') + '</span></div>';
-      str +=
+      markup +=
         '<div><span class="pk_id3ttl">Year</span><span>' + (tags.year || '-') + '</span></div>';
-      str +=
+      markup +=
         '<div><span class="pk_id3ttl">Genre</span><span>' + (tags.genre || '-') + '</span></div>';
-      str +=
+      markup +=
         '<div style="max-width:700px"><span class="pk_id3ttl">Comment</span><span>' +
         ((tags.comment || {}).text || '-') +
         '</span></div>';
-      str +=
+      markup +=
         '<div><span class="pk_id3ttl">Track</span><span>' + (tags.track || '-') + '</span></div>';
-      str +=
+      markup +=
         '<div style="max-width:700px"><span class="pk_id3ttl">Lyrics</span><span>' +
         ((tags.lyrics || {}).lyrics || '-') +
         '</span></div>';
@@ -1391,7 +1391,7 @@ export function registerEffectsUI(app) {
           base64str += String.fromCharCode(image.data[i]);
         }
 
-        str +=
+        markup +=
           '<div><span style="float:left" class="pk_id3ttl">Cover</span>' +
           '<span><img style="max-width:340px" src="data:' +
           image.format +
@@ -1400,7 +1400,7 @@ export function registerEffectsUI(app) {
           '"/></span></div>';
       }
 
-      element.innerHTML = str + '</div>';
+      element.innerHTML = markup + '</div>';
     };
 
     new SimpleModal({
@@ -1550,8 +1550,8 @@ export function registerEffectsUI(app) {
 
                 customPresets.Save();
 
-                const arr = customPresets.Get(presetObject.target);
-                app.fireEvent('DidSetPresets', presetObject.target, arr);
+                const presetList = customPresets.Get(presetObject.target);
+                app.fireEvent('DidSetPresets', presetObject.target, presetList);
 
                 modal.Destroy();
               } else {
@@ -1815,13 +1815,13 @@ export function registerEffectsUI(app) {
       currentWindow && currentWindow.win.update && currentWindow.win.update(freq);
     };
 
-    const setEvents = function (obj, _url) {
-      obj.win.destroy = function () {
+    const setEvents = function (analyzerWindow, _url) {
+      analyzerWindow.win.destroy = function () {
         app.stopListeningFor('DidAudioProcess', frequencyCallback);
         app.fireEvent('DidToggleFreqAn', _url, null);
 
-        // if (obj && obj.type === undefined) {
-        if (obj && obj === equalizerWindow[url]) {
+        // if (analyzerWindow && analyzerWindow.type === undefined) {
+        if (analyzerWindow && analyzerWindow === equalizerWindow[url]) {
           equalizerWindow[url] = null;
         }
 

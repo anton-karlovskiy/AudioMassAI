@@ -53,7 +53,7 @@ function ParagraphicEqGraph() {
         x: coordinateX || 0,
         y: coordinateY || 0,
       },
-      _arr: [],
+      _curve: [],
     };
 
     q.ranges.push(newRange);
@@ -65,7 +65,7 @@ function ParagraphicEqGraph() {
 
     q.act = newRange;
 
-    _range_compute_arr(newRange);
+    _computeRangeCurve(newRange);
     newRange.element = _range_render_el(q, newRange, ' pk_act');
 
     q.Callback && q.Callback();
@@ -261,10 +261,6 @@ function ParagraphicEqGraph() {
 
     // render the line based on the elements
     let first = true;
-    const arr = [];
-    for (let i = 0; i < total; ++i) {
-      arr[i] = 0;
-    }
 
     for (let o = 0; o < q.ranges.length; ++o) {
       const current = q.ranges[o];
@@ -274,11 +270,11 @@ function ParagraphicEqGraph() {
       if (first) {
         first = false;
         for (let i = 0; i < total; ++i) {
-          lineArray[i] = current._arr[i];
+          lineArray[i] = current._curve[i];
         }
       } else {
         for (let i = 0; i < total; ++i) {
-          lineArray[i] += current._arr[i];
+          lineArray[i] += current._curve[i];
         }
       }
       // ---
@@ -406,7 +402,7 @@ function ParagraphicEqGraph() {
           else if (range[key] === 'lowpass') element.options[1].selected = true;
           else if (range[key] === 'highpass') element.options[2].selected = true;
 
-          _range_compute_arr(range);
+          _computeRangeCurve(range);
           q.ranges.sort(_compare);
         }
         // ---
@@ -459,14 +455,14 @@ function ParagraphicEqGraph() {
     return t * t * t * t;
   }
 
-  function _range_compute_arr(range) {
-    const arr = [];
+  function _computeRangeCurve(range) {
+    const curve = [];
 
     for (let i = 0; i < total; ++i) {
-      arr[i] = 0;
+      curve[i] = 0;
     }
 
-    range._arr = arr;
+    range._curve = curve;
 
     // -------------
     const rounding = totalFrequency * (2 / range.q);
@@ -484,10 +480,10 @@ function ParagraphicEqGraph() {
         const ii = i * jump;
         if (ii < range.freq) {
           ++j;
-          arr[i] += _ease(j / (halfRounding / 2)) * range.gain;
+          curve[i] += _ease(j / (halfRounding / 2)) * range.gain;
         } else {
           --j;
-          arr[i] += _ease(j / (halfRounding / 2)) * range.gain;
+          curve[i] += _ease(j / (halfRounding / 2)) * range.gain;
         }
       }
 
@@ -500,14 +496,14 @@ function ParagraphicEqGraph() {
       const end = (range.freq / jump) >> 0;
 
       for (let i = 0; i < start; ++i) {
-        arr[i] = -maxDecibelValue;
+        curve[i] = -maxDecibelValue;
       }
 
       // todo improve this!!!
       let j = halfRounding;
       for (let i = start; i < end; ++i) {
         --j;
-        arr[i] -= _ease_out(j / halfRounding) * maxDecibelValue;
+        curve[i] -= _ease_out(j / halfRounding) * maxDecibelValue;
       }
 
       return;
@@ -519,14 +515,14 @@ function ParagraphicEqGraph() {
       const end = (edgeRight / jump) >> 0;
 
       for (let i = end; i < total; ++i) {
-        arr[i] = -maxDecibelValue;
+        curve[i] = -maxDecibelValue;
       }
 
       // todo improve this!!!
       let j = 0;
       for (let i = start; i < end; ++i) {
         ++j;
-        arr[i] -= _ease_out(j / halfRounding) * maxDecibelValue;
+        curve[i] -= _ease_out(j / halfRounding) * maxDecibelValue;
       }
 
       return;
@@ -676,7 +672,7 @@ function ParagraphicEqGraph() {
         freq: freq,
         gain: gain,
       });
-      _range_compute_arr(q.act);
+      _computeRangeCurve(q.act);
     };
 
     const _end = function (e) {
@@ -926,7 +922,7 @@ function ParagraphicEqGraph() {
       }
 
       _range_update(q, range, { gain: this.value / 1 }, 1);
-      _range_compute_arr(range);
+      _computeRangeCurve(range);
     };
     gainElement.getElementsByClassName('pk_gain')[0].onfocus = function (e) {
       if (this.hasAttribute('data-open')) return;
@@ -981,7 +977,7 @@ function ParagraphicEqGraph() {
       }
 
       _range_update(q, range, { freq: this.value / 1 }, 1);
-      _range_compute_arr(range);
+      _computeRangeCurve(range);
     };
 
     frequencyElement.getElementsByClassName('pk_freq')[0].onfocus = function (e) {
@@ -1035,7 +1031,7 @@ function ParagraphicEqGraph() {
       }
 
       _range_update(q, range, { q: this.value / 1 }, 1);
-      _range_compute_arr(range);
+      _computeRangeCurve(range);
     };
 
     qElement.getElementsByClassName('pk_q')[0].onfocus = function (e) {

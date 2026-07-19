@@ -135,13 +135,13 @@ export function AudioEngine(app) {
     );
 
     for (let i = 0; i < e.data.length; ++i) {
-      const arr = new Float32Array(e.data[i]);
+      const channelSamples = new Float32Array(e.data[i]);
 
       if (newBuffer.copyToChannel) {
-        newBuffer.copyToChannel(arr, i, 0);
+        newBuffer.copyToChannel(channelSamples, i, 0);
       } else {
-        const chan = newBuffer.getChannelData(i);
-        chan.set(arr);
+        const channel = newBuffer.getChannelData(i);
+        channel.set(channelSamples);
       }
     }
 

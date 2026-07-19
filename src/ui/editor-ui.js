@@ -32,7 +32,7 @@ export function EditorUI(app) {
   this.InteractionHandler = {
     on: false,
     by: null,
-    arr: [],
+    stack: [],
 
     check: function (_name) {
       if (this.on && this.by !== _name) {
@@ -52,7 +52,7 @@ export function EditorUI(app) {
 
     forceSet: function (_name) {
       if (this.on) {
-        this.arr.push({
+        this.stack.push({
           on: this.on,
           by: this.by,
         });
@@ -64,7 +64,7 @@ export function EditorUI(app) {
 
     forceUnset: function (_name) {
       if (this.check(_name)) {
-        const previous = this.arr.pop();
+        const previous = this.stack.pop();
         if (previous) {
           this.on = previous.on;
           this.by = previous.by;
@@ -301,14 +301,14 @@ function _topbarConfig(app, ui) {
             }).Show();
           },
           className: 'pk_inact',
-          setup: function (obj) {
-            obj.setAttribute('data-id', 'dl');
+          setup: function (menuItemElement) {
+            menuItemElement.setAttribute('data-id', 'dl');
 
             app.listenFor('DidUnloadFile', function () {
-              obj.classList.add('pk_inact');
+              menuItemElement.classList.add('pk_inact');
             });
             app.listenFor('DidLoadFile', function () {
-              obj.classList.remove('pk_inact');
+              menuItemElement.classList.remove('pk_inact');
             });
           },
         },
@@ -348,7 +348,7 @@ function _topbarConfig(app, ui) {
                     const input = modal.bodyElement.getElementsByTagName('input')[0];
                     const value = input.value.trim();
 
-                    function isURL(str) {
+                    function isURL(value) {
                       const pattern = new RegExp(
                         '^((https?:)?\\/\\/)?' + // protocol
                           '(?:\\S+(?::\\S*)?@)?' + // authentication
@@ -359,7 +359,7 @@ function _topbarConfig(app, ui) {
                           '(\\#[-a-z\\d_]*)?$',
                         'i'
                       ); // fragment locater
-                      if (!pattern.test(str)) {
+                      if (!pattern.test(value)) {
                         return false;
                       } else {
                         return true;
@@ -541,29 +541,29 @@ function _topbarConfig(app, ui) {
             return;
           },
 
-          setup: function (obj) {
+          setup: function (menuItemElement) {
             app.listenFor('DidUnloadFile', function () {
-              obj.classList.add('pk_inact');
+              menuItemElement.classList.add('pk_inact');
             });
             app.listenFor('DidLoadFile', function () {
-              obj.classList.remove('pk_inact');
+              menuItemElement.classList.remove('pk_inact');
             });
 
-            app.listenFor('DidStoreDB', function (obj, e) {
-              const name = obj.id;
+            app.listenFor('DidStoreDB', function (storedSession, e) {
+              const name = storedSession.id;
               const txt =
                 '<div style="padding:2px 0">id: ' +
                 name +
                 '</div>' +
                 '<div style="padding:2px 0"><span>durr: ' +
-                obj.durr +
+                storedSession.durr +
                 's</span>' +
                 '&nbsp;&nbsp;&nbsp;' +
                 '<span>chan: ' +
-                (obj.chans === 1 ? 'mono' : 'stereo') +
+                (storedSession.chans === 1 ? 'mono' : 'stereo') +
                 '</span></div>' +
                 '<div style="padding:2px 0"><img src="' +
-                obj.thumb +
+                storedSession.thumb +
                 '" /></div>';
 
               new SimpleModal({
@@ -938,14 +938,14 @@ function _topbarConfig(app, ui) {
           action: function () {
             app.fireEvent('RequestTranscription');
           },
-          setup: function (obj) {
-            obj.setAttribute('data-id', 'transcribe');
+          setup: function (menuItemElement) {
+            menuItemElement.setAttribute('data-id', 'transcribe');
 
             app.listenFor('DidUnloadFile', function () {
-              obj.classList.add('pk_inact');
+              menuItemElement.classList.add('pk_inact');
             });
             app.listenFor('DidLoadFile', function () {
-              obj.classList.remove('pk_inact');
+              menuItemElement.classList.remove('pk_inact');
             });
           },
         },
@@ -960,17 +960,17 @@ function _topbarConfig(app, ui) {
           action: function () {
             app.fireEvent('StateRequestUndo');
           },
-          setup: function (obj) {
+          setup: function (menuItemElement) {
             app.listenFor('DidStateChange', function (undoStates, redoStates) {
               if (undoStates.length === 0) {
-                obj.innerHTML = 'Undo <span class="pk_shrtct">Shft+Z</span>';
-                obj.classList.add('pk_inact');
+                menuItemElement.innerHTML = 'Undo <span class="pk_shrtct">Shft+Z</span>';
+                menuItemElement.classList.add('pk_inact');
               } else {
-                obj.innerHTML =
+                menuItemElement.innerHTML =
                   'Undo&nbsp;<i style="pointer-events:none">' +
                   undoStates[undoStates.length - 1].desc +
                   '</i><span class="pk_shrtct">Shft+Z</span>';
-                obj.classList.remove('pk_inact');
+                menuItemElement.classList.remove('pk_inact');
               }
             });
           },
@@ -982,17 +982,17 @@ function _topbarConfig(app, ui) {
           action: function () {
             app.fireEvent('StateRequestRedo');
           },
-          setup: function (obj) {
+          setup: function (menuItemElement) {
             app.listenFor('DidStateChange', function (undoStates, redoStates) {
               if (redoStates.length === 0) {
-                obj.innerHTML = 'Redo <span class="pk_shrtct">Shft+Y</span>';
-                obj.classList.add('pk_inact');
+                menuItemElement.innerHTML = 'Redo <span class="pk_shrtct">Shft+Y</span>';
+                menuItemElement.classList.add('pk_inact');
               } else {
-                obj.innerHTML =
+                menuItemElement.innerHTML =
                   'Redo&nbsp;<i style="pointer-events:none">' +
                   redoStates[0].desc +
                   '</i><span class="pk_shrtct">Shft+Y</span>';
-                obj.classList.remove('pk_inact');
+                menuItemElement.classList.remove('pk_inact');
               }
             });
           },
@@ -1032,12 +1032,12 @@ function _topbarConfig(app, ui) {
             app.fireEvent('RequestActionFXUI_Flip');
           },
           className: 'pk_inact',
-          setup: function (obj) {
+          setup: function (menuItemElement) {
             app.listenFor('DidUnloadFile', function () {
-              obj.classList.add('pk_inact');
+              menuItemElement.classList.add('pk_inact');
             });
             app.listenFor('DidLoadFile', function () {
-              obj.classList.remove('pk_inact');
+              menuItemElement.classList.remove('pk_inact');
             });
           },
         },
@@ -1178,19 +1178,19 @@ function _topbarConfig(app, ui) {
       children: [
         {
           name: 'Follow Cursor  &#10004;',
-          action: function (obj) {
+          action: function () {
             app.fireEvent('RequestViewFollowCursorToggle');
           },
-          setup: function (obj) {
+          setup: function (menuItemElement) {
             // perhaps read from stored settings?
 
             app.listenFor('DidViewFollowCursorToggle', function (value) {
               const txt = 'Follow Cursor';
 
               if (value) {
-                obj.innerHTML = txt + ' &#10004;';
+                menuItemElement.innerHTML = txt + ' &#10004;';
               } else {
-                obj.textContent = txt;
+                menuItemElement.textContent = txt;
               }
             });
           },
@@ -1198,16 +1198,16 @@ function _topbarConfig(app, ui) {
 
         {
           name: 'Peak Separators &#10004;',
-          action: function (obj) {
+          action: function () {
             app.fireEvent('RequestViewPeakSeparatorToggle');
           },
-          setup: function (obj) {
+          setup: function (menuItemElement) {
             app.listenFor('DidViewPeakSeparatorToggle', function (value) {
               const txt = 'Peak Separators';
               if (value) {
-                obj.innerHTML = txt + ' &#10004;';
+                menuItemElement.innerHTML = txt + ' &#10004;';
               } else {
-                obj.textContent = txt;
+                menuItemElement.textContent = txt;
               }
             });
           },
@@ -1215,16 +1215,16 @@ function _topbarConfig(app, ui) {
 
         {
           name: 'Timeline &#10004;',
-          action: function (obj) {
+          action: function () {
             app.fireEvent('RequestViewTimelineToggle');
           },
-          setup: function (obj) {
+          setup: function (menuItemElement) {
             app.listenFor('DidViewTimelineToggle', function (value) {
               const txt = 'Timeline';
               if (value) {
-                obj.innerHTML = txt + ' &#10004;';
+                menuItemElement.innerHTML = txt + ' &#10004;';
               } else {
-                obj.textContent = txt;
+                menuItemElement.textContent = txt;
               }
             });
           },
@@ -1236,18 +1236,18 @@ function _topbarConfig(app, ui) {
 
         {
           name: 'Frequency Analyser',
-          action: function (obj) {
+          action: function () {
             app.fireEvent('RequestShowFreqAn', 'eq', [1]);
           },
-          setup: function (obj) {
+          setup: function (menuItemElement) {
             app.listenFor('DidToggleFreqAn', function (url, value) {
               if (url !== 'eq') return;
 
               const txt = 'Frequency Analyser';
               if (value) {
-                obj.innerHTML = txt + ' &#10004;';
+                menuItemElement.innerHTML = txt + ' &#10004;';
               } else {
-                obj.textContent = txt;
+                menuItemElement.textContent = txt;
               }
             });
           },
@@ -1255,18 +1255,18 @@ function _topbarConfig(app, ui) {
 
         {
           name: 'Spectrum Analyser',
-          action: function (obj) {
+          action: function () {
             app.fireEvent('RequestShowFreqAn', 'sp', [1]);
           },
-          setup: function (obj) {
+          setup: function (menuItemElement) {
             app.listenFor('DidToggleFreqAn', function (url, value) {
               if (url !== 'sp') return;
 
               const txt = 'Spectrum Analyser';
               if (value) {
-                obj.innerHTML = txt + ' &#10004;';
+                menuItemElement.innerHTML = txt + ' &#10004;';
               } else {
-                obj.textContent = txt;
+                menuItemElement.textContent = txt;
               }
             });
           },
@@ -1274,14 +1274,14 @@ function _topbarConfig(app, ui) {
 
         {
           name: 'Tempo Tools',
-          action: function (obj) {
+          action: function () {
             app.fireEvent('RequestActionTempo');
           },
         },
 
         {
           name: 'ID3 Tags',
-          action: function (obj) {
+          action: function () {
             app.fireEvent('RequestActionID3');
           },
         },
@@ -1292,14 +1292,14 @@ function _topbarConfig(app, ui) {
 
         {
           name: 'Center to Cursor <span class="pk_shrtct">[Tab]</span>',
-          action: function (obj) {
+          action: function () {
             app.fireEvent('RequestViewCenterToCursor');
           },
         },
 
         {
           name: 'Reset Zoom <span class="pk_shrtct">[0]</span>',
-          action: function (obj) {
+          action: function () {
             app.fireEvent('RequestZoomUI', 0);
           },
         },
@@ -1371,11 +1371,11 @@ function _makeUITopHeader(menuTree, UI) {
 
         if (currentOption.action) {
           (function (button, action) {
-            button.onclick = function (obj) {
+            button.onclick = function (event) {
               if (this.classList.contains('pk_inact')) return;
 
               menu.closeMenu();
-              action(obj);
+              action(event);
             };
           })(button, currentOption.action);
         }
@@ -2035,11 +2035,11 @@ function _makeUIMainView(UI, app) {
   const markers = document.createElement('div');
   markers.className = 'pk_markers pk_noselect';
 
-  let str = '<span class="pk_mark1">-Inf</span>';
+  let markup = '<span class="pk_mark1">-Inf</span>';
   for (let i = 35; i >= 0; --i) {
-    str += '<span class="pk_mark1 ' + (i % 2 ? 'pk_odd' : '') + '">' + -(i * 2) + '</span>';
+    markup += '<span class="pk_mark1 ' + (i % 2 ? 'pk_odd' : '') + '">' + -(i * 2) + '</span>';
   }
-  markers.innerHTML = str;
+  markers.innerHTML = markup;
 
   volumeParent.appendChild(this.volumeGauge);
   volumeParent.appendChild(this.volumeGauge2);
