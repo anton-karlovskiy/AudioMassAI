@@ -828,13 +828,10 @@ export function AudioEngine(app) {
     const sampleRate = buffer.sampleRate;
 
     const peaks = [];
-    const currentTime = 0;
     const width = ww || 200;
     const height = hh || 80;
     const halfHeight = height / 2;
     const newWidth = width;
-    const pixels = 0;
-    const rawPixels = 0;
 
     const startOffset = offset || 0;
     const endOffset = llen || (buffer.duration * sampleRate) >> 0;
@@ -969,7 +966,6 @@ export function AudioEngine(app) {
 
     app.fireEvent('RequestPause');
 
-    const region = wavesurfer.regions.list[0];
     let dims = [0, 0];
 
     if (!silenceDuration || silenceDuration < 0) silenceDuration = 1;
@@ -1144,7 +1140,6 @@ export function AudioEngine(app) {
     }
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     if (!region) {
       wavesurfer.regions.add({
@@ -1167,7 +1162,6 @@ export function AudioEngine(app) {
     app.fireEvent('RequestPause');
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     function handleStateInline(start, end) {
       app.fireEvent('StateRequestPush', {
@@ -1201,7 +1195,6 @@ export function AudioEngine(app) {
     app.fireEvent('RequestPause');
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     function handleStateInline(start, end) {
       app.fireEvent('StateRequestPush', {
@@ -1237,7 +1230,6 @@ export function AudioEngine(app) {
     }
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     if (!region) {
       wavesurfer.regions.add({
@@ -1264,7 +1256,6 @@ export function AudioEngine(app) {
     }
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     if (!region) {
       wavesurfer.regions.add({
@@ -1287,7 +1278,6 @@ export function AudioEngine(app) {
     app.fireEvent('RequestPause');
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     function handleStateInline(start, end) {
       app.fireEvent('StateRequestPush', {
@@ -1324,7 +1314,6 @@ export function AudioEngine(app) {
     }
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     if (!region) {
       wavesurfer.regions.add({
@@ -1347,7 +1336,6 @@ export function AudioEngine(app) {
     app.fireEvent('RequestPause');
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     function handleStateInline(start, end) {
       app.fireEvent('StateRequestPush', {
@@ -1384,7 +1372,6 @@ export function AudioEngine(app) {
     }
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     if (!region) {
       wavesurfer.regions.add({
@@ -1407,7 +1394,6 @@ export function AudioEngine(app) {
     app.fireEvent('RequestPause');
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     function handleStateInline(start, end) {
       app.fireEvent('StateRequestPush', {
@@ -1444,7 +1430,6 @@ export function AudioEngine(app) {
     }
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     if (!region) {
       wavesurfer.regions.add({
@@ -1468,7 +1453,6 @@ export function AudioEngine(app) {
     app.fireEvent('RequestPause');
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     function handleStateInline(start, end) {
       app.fireEvent('StateRequestPush', {
@@ -1501,7 +1485,6 @@ export function AudioEngine(app) {
     app.fireEvent('RequestPause');
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     function handleStateInline(start, end) {
       app.fireEvent('StateRequestPush', {
@@ -1535,7 +1518,6 @@ export function AudioEngine(app) {
     app.fireEvent('RequestPause');
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     function handleStateInline(start, end) {
       app.fireEvent('StateRequestPush', {
@@ -1569,7 +1551,6 @@ export function AudioEngine(app) {
     app.fireEvent('RequestPause');
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     function handleStateInline(start, end) {
       app.fireEvent('StateRequestPush', {
@@ -1669,8 +1650,6 @@ export function AudioEngine(app) {
         let currentSilenceStart = currentSilence[0];
         let currentSilenceEnd = currentSilence[1];
         let h = 0;
-        const useOld = false;
-        const oldHeight = 0;
 
         for (let j = 0; j < newChannel.length; ++j) {
           h = j + silenceOffset;
@@ -1805,7 +1784,6 @@ export function AudioEngine(app) {
     app.fireEvent('RequestPause');
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     function handleStateInline(start, end) {
       app.fireEvent('StateRequestPush', {
@@ -1906,7 +1884,6 @@ export function AudioEngine(app) {
     app.fireEvent('RequestPause');
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     function handleStateInline(start, end) {
       app.fireEvent('StateRequestPush', {
@@ -1939,7 +1916,6 @@ export function AudioEngine(app) {
     app.fireEvent('RequestPause');
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     function handleStateInline(start, end) {
       app.fireEvent('StateRequestPush', {
@@ -1997,7 +1973,6 @@ export function AudioEngine(app) {
     }
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     if (!region) {
       wavesurfer.regions.add({
@@ -2022,7 +1997,6 @@ export function AudioEngine(app) {
     app.fireEvent('RequestPause');
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     function handleStateInline(start, end) {
       app.fireEvent('StateRequestPush', {
@@ -2059,7 +2033,6 @@ export function AudioEngine(app) {
     }
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     if (!region) {
       wavesurfer.regions.add({
@@ -2084,7 +2057,6 @@ export function AudioEngine(app) {
     app.fireEvent('RequestPause');
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     function handleStateInline(start, end) {
       app.fireEvent('StateRequestPush', {
@@ -2112,7 +2084,6 @@ export function AudioEngine(app) {
 
     let fxBuffer = audioUtils.Copy(start, end);
     const originalBuffer = wavesurfer.backend.buffer;
-    const newOffset = ((start / 1) * originalBuffer.sampleRate) >> 0;
     const newLength = ((duration / 1) * originalBuffer.sampleRate) >> 0;
     const oldLength = ((end / 1) * originalBuffer.sampleRate) >> 0;
     const stretchRatio = newLength / oldLength;
@@ -2267,7 +2238,6 @@ export function AudioEngine(app) {
     }
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     if (!region) {
       wavesurfer.regions.add({
@@ -2283,7 +2253,6 @@ export function AudioEngine(app) {
     const duration = (region.end - region.start) / value;
 
     const originalBuffer = wavesurfer.backend.buffer;
-    const newOffset = ((start / 1) * originalBuffer.sampleRate) >> 0;
     const newLength = ((duration / 1) * originalBuffer.sampleRate) >> 0;
     const oldLength = ((end / 1) * originalBuffer.sampleRate) >> 0;
 
@@ -2301,7 +2270,6 @@ export function AudioEngine(app) {
     app.fireEvent('RequestPause');
 
     let region = wavesurfer.regions.list[0];
-    const dims = [0, 0];
 
     function handleStateInline(start, end) {
       app.fireEvent('StateRequestPush', {
@@ -2329,9 +2297,7 @@ export function AudioEngine(app) {
 
     let fxBuffer = audioUtils.Copy(start, end);
     const originalBuffer = wavesurfer.backend.buffer;
-    const newOffset = ((start / 1) * originalBuffer.sampleRate) >> 0;
     const newLength = ((duration / 1) * originalBuffer.sampleRate) >> 0;
-    const oldLength = ((end / 1) * originalBuffer.sampleRate) >> 0;
 
     /*
 			var emptySegment = wavesurfer.backend.ac.createBuffer (
