@@ -1,3 +1,23 @@
+/*
+ * Editor styles.
+ *
+ * On the `pk_` prefix: it is inherited from the original AudioMass and every
+ * class here carries it. The naming refactor deliberately left these alone,
+ * and anyone picking the rename up later should know what it costs:
+ *
+ *   - `pk_ctxmn`, `pk_prgwv`, `pk_wave_cursor` and `pk_wavepoint` are emitted
+ *     by the vendored wavesurfer fork in public/vendor/. Renaming those means
+ *     editing vendor code, so they would have to keep the prefix either way
+ *     and the codebase ends up with two conventions.
+ *   - A handful of names are built by concatenation rather than written out
+ *     (`'pk_' + name` in editor-ui.js, `'pk_av_' + app.id` in audio-engine.js),
+ *     so a find-and-replace over the literals silently misses them.
+ *   - There is no visual regression coverage. A missed reference loses styling
+ *     without failing a single test.
+ *
+ * Worth doing behind screenshot baselines; not worth doing blind.
+ */
+
 @font-face {
   font-family: 'icomoon';
   src: url('fonts/icomoon.eot');
