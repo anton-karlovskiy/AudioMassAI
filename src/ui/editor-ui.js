@@ -555,7 +555,7 @@ function _topbarConfig(app, ui) {
                 '<div style="padding:2px 0">id: ' +
                 name +
                 '</div>' +
-                '<div style="padding:2px 0"><span>durr: ' +
+                '<div style="padding:2px 0"><span>length: ' +
                 storedSession.duration +
                 's</span>' +
                 '&nbsp;&nbsp;&nbsp;' +
@@ -665,7 +665,7 @@ function _topbarConfig(app, ui) {
                       '<br/>' +
                       agostr +
                       '</span></span>' +
-                      '<span style="text-align:right;float:right" class="pk_local_draft_stat"><i class="pk_field_label">durr:</i>' +
+                      '<span style="text-align:right;float:right" class="pk_local_draft_stat"><i class="pk_field_label">length:</i>' +
                       duration +
                       's</span></div><div>' +
                       '<img class="pk_local_draft_image" src="' +
@@ -2375,17 +2375,17 @@ function _makeUIToolbar(UI) {
         const position = UI.app.engine.wavesurfer.ActiveMarker;
         const totalDuration = UI.app.engine.wavesurfer.getDuration();
 
-        let durr = region.end / totalDuration;
+        let targetPosition = region.end / totalDuration;
 
-        if (position > durr + 0.004) {
-          UI.fireEvent('RequestSeekTo', durr - 0.0001);
+        if (position > targetPosition + 0.004) {
+          UI.fireEvent('RequestSeekTo', targetPosition - 0.0001);
           return;
         }
 
-        durr = region.start / totalDuration;
+        targetPosition = region.start / totalDuration;
 
-        if (position > durr + 0.004) {
-          UI.fireEvent('RequestSeekTo', durr);
+        if (position > targetPosition + 0.004) {
+          UI.fireEvent('RequestSeekTo', targetPosition);
           return;
         }
       }
@@ -2405,17 +2405,17 @@ function _makeUIToolbar(UI) {
         const position = UI.app.engine.wavesurfer.ActiveMarker;
         const totalDuration = UI.app.engine.wavesurfer.getDuration();
 
-        let durr = region.start / totalDuration;
+        let targetPosition = region.start / totalDuration;
 
-        if (position < durr - 0.004) {
-          UI.fireEvent('RequestSeekTo', durr);
+        if (position < targetPosition - 0.004) {
+          UI.fireEvent('RequestSeekTo', targetPosition);
           return;
         }
 
-        durr = region.end / totalDuration;
+        targetPosition = region.end / totalDuration;
 
-        if (position < durr - 0.004) {
-          UI.fireEvent('RequestSeekTo', durr - 0.0001);
+        if (position < targetPosition - 0.004) {
+          UI.fireEvent('RequestSeekTo', targetPosition - 0.0001);
           return;
         }
       }
