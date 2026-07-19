@@ -30,10 +30,14 @@
  * it ships, changing that string orphans every saved preset, so treat it as
  * fixed from the first release onward.
  *
- * `pk_aut`, `pk_aut_active`, `pk_dens` and `pk_r` were left alone for a duller
- * reason -- nothing in src/ references them, so there was no call site to read
- * their meaning from, and inventing a name for a rule you do not understand is
- * worse than leaving the abbreviation.
+ * `pk_aut` and `pk_aut_act` are left alone: nothing in src/ references them, so
+ * there is no call site to read their meaning from, and inventing a name for a
+ * rule you do not understand is worse than leaving the abbreviation.
+ *
+ * `pk_r` is also left alone, for a different reason. It is passed as a toast
+ * variant in effects-ui.js, but no rule anywhere matches it -- the class is
+ * inert. Renaming it would dress up dead code; it wants deleting or styling,
+ * which is a behaviour change rather than a rename.
  *
  * Renames here are checked two ways: tests/e2e/style-baseline.spec.js compares
  * computed styles across nine UI states, and tests/unit/css-class-consistency
@@ -1110,11 +1114,11 @@ a {
   width: 10%;
   min-width: 38px;
 }
-.pk_dens .pk_height_200 .pk_column {
+.pk_dense .pk_height_200 .pk_column {
   max-width: 54px;
   overflow: hidden;
 }
-.pk_dens .pk_height_200 .pk_value {
+.pk_dense .pk_height_200 .pk_value {
   padding: 2px 6px;
   font-size: 11px;
 }

@@ -919,7 +919,7 @@ export function registerEffectsUI(app) {
       {
         id: filterId,
         title: 'Graphic EQ',
-        className: bandCount === 20 ? 'pk_dens' : '',
+        className: bandCount === 20 ? 'pk_dense' : '',
         customPresetList: customPresets.Get(filterId),
         ondestroy: function (modal) {
           app.ui.InteractionHandler.on = false;
