@@ -60,13 +60,13 @@ function ParagraphicEqGraph() {
     graph.ranges.sort(_compare);
 
     if (graph.act) {
-      graph.act.element.classList.remove('pk_act');
+      graph.act.element.classList.remove('pk_active');
     }
 
     graph.act = newRange;
 
     _computeRangeCurve(newRange);
-    newRange.element = _range_render_el(graph, newRange, ' pk_act');
+    newRange.element = _range_render_el(graph, newRange, ' pk_active');
 
     graph.Callback && graph.Callback();
 
@@ -605,7 +605,7 @@ function ParagraphicEqGraph() {
 
     listElement.innerHTML =
       '<div class="pk_pgeq_els">' +
-      '<span class="pk_txlft"> #</span><span>type</span><span>gain</span><span>freq</span><span>Q</span>' +
+      '<span class="pk_text_left"> #</span><span>type</span><span>gain</span><span>freq</span><span>Q</span>' +
       '</div>';
 
     graph.element.appendChild(listElement);
@@ -711,11 +711,11 @@ function ParagraphicEqGraph() {
           Math.abs(current._coords.y - posy) < distanceY
         ) {
           if (unchecked) {
-            graph.act.element.classList.remove('pk_act');
+            graph.act.element.classList.remove('pk_active');
           }
 
           graph.act = current;
-          graph.act.element.classList.add('pk_act');
+          graph.act.element.classList.add('pk_active');
 
           isDragging = true;
 
@@ -740,7 +740,7 @@ function ParagraphicEqGraph() {
       }
 
       if (unchecked) {
-        graph.act.element.classList.remove('pk_act');
+        graph.act.element.classList.remove('pk_active');
         // un-highlight
         graph.act = null;
 
@@ -820,11 +820,11 @@ function ParagraphicEqGraph() {
 
         if (range !== graph.act) {
           if (graph.act) {
-            graph.act.element.classList.remove('pk_act');
+            graph.act.element.classList.remove('pk_active');
           }
 
           graph.act = range;
-          graph.act.element.classList.add('pk_act');
+          graph.act.element.classList.add('pk_active');
 
           graph.Render();
         }
@@ -862,7 +862,7 @@ function ParagraphicEqGraph() {
     const chckd = range._on ? 'checked' : '';
     const number = '<i>' + range.id + '</i>';
     const numberElement = document.createElement('div');
-    numberElement.className = 'pk_txlft';
+    numberElement.className = 'pk_text_left';
     numberElement.innerHTML =
       number +
       '<input type="checkbox" id="pgon' +
@@ -897,9 +897,9 @@ function ParagraphicEqGraph() {
       const value = this.options[this.selectedIndex].value;
 
       if (value === 'peaking') {
-        element.classList.remove('pk_dis');
+        element.classList.remove('pk_disabled');
       } else {
-        element.classList.add('pk_dis');
+        element.classList.add('pk_disabled');
       }
 
       _range_update(graph, range, { type: value }, 1);
@@ -910,7 +910,9 @@ function ParagraphicEqGraph() {
     // gain
     const gainElement = document.createElement('div');
     gainElement.innerHTML =
-      '<input type="number" class="pk_val pk_gain" min="-35" max="35" value="' + range.gain + '">';
+      '<input type="number" class="pk_value pk_gain" min="-35" max="35" value="' +
+      range.gain +
+      '">';
 
     gainElement.getElementsByClassName('pk_gain')[0].onchange = function (e) {
       if (!this.value) {
@@ -918,7 +920,7 @@ function ParagraphicEqGraph() {
       }
 
       if (this.hasAttribute('data-open')) {
-        this.parentNode.getElementsByClassName('pk_horiz')[0].value = this.value;
+        this.parentNode.getElementsByClassName('pk_horizontal')[0].value = this.value;
       }
 
       _range_update(graph, range, { gain: this.value / 1 }, 1);
@@ -932,11 +934,11 @@ function ParagraphicEqGraph() {
       const bar = document.createElement('div');
       bar.className = 'pk_pgeq_freq pk_gain';
       bar.innerHTML =
-        '<div class="pk_arr"></div><input type="range" min="-35" max="35" class="pk_horiz pk_gain" step="0.1" value="' +
+        '<div class="pk_arrow"></div><input type="range" min="-35" max="35" class="pk_horizontal pk_gain" step="0.1" value="' +
         range.gain +
         '">';
 
-      bar.getElementsByClassName('pk_horiz')[0].oninput = function (e) {
+      bar.getElementsByClassName('pk_horizontal')[0].oninput = function (e) {
         if (self.value != this.value) {
           self.value = this.value;
           self.onchange();
@@ -964,7 +966,7 @@ function ParagraphicEqGraph() {
     // freq
     const frequencyElement = document.createElement('div');
     frequencyElement.innerHTML =
-      '<input type="number" class="pk_val pk_freq" min="16" max="20000" value="' +
+      '<input type="number" class="pk_value pk_freq" min="16" max="20000" value="' +
       range.freq +
       '">';
     frequencyElement.getElementsByClassName('pk_freq')[0].onchange = function (e) {
@@ -973,7 +975,7 @@ function ParagraphicEqGraph() {
       }
 
       if (this.hasAttribute('data-open')) {
-        this.parentNode.getElementsByClassName('pk_horiz')[0].value = this.value;
+        this.parentNode.getElementsByClassName('pk_horizontal')[0].value = this.value;
       }
 
       _range_update(graph, range, { freq: this.value / 1 }, 1);
@@ -988,11 +990,11 @@ function ParagraphicEqGraph() {
       const bar = document.createElement('div');
       bar.className = 'pk_pgeq_freq pk_freq';
       bar.innerHTML =
-        '<div class="pk_arr"></div><input type="range" min="16" max="20000" class="pk_horiz pk_freq" step="1" value="' +
+        '<div class="pk_arrow"></div><input type="range" min="16" max="20000" class="pk_horizontal pk_freq" step="1" value="' +
         range.freq +
         '">';
 
-      bar.getElementsByClassName('pk_horiz')[0].oninput = function (e) {
+      bar.getElementsByClassName('pk_horizontal')[0].oninput = function (e) {
         if (self.value != this.value) {
           self.value = this.value;
           self.onchange();
@@ -1020,14 +1022,14 @@ function ParagraphicEqGraph() {
     // graph
     const qElement = document.createElement('div');
     qElement.innerHTML =
-      '<input type="number" class="pk_val pk_q" min="1" max="50" value="' + range.q + '">';
+      '<input type="number" class="pk_value pk_q" min="1" max="50" value="' + range.q + '">';
     qElement.getElementsByClassName('pk_q')[0].onchange = function (e) {
       if (!this.value) {
         this.value = 1;
       }
 
       if (this.hasAttribute('data-open')) {
-        this.parentNode.getElementsByClassName('pk_horiz')[0].value = this.value;
+        this.parentNode.getElementsByClassName('pk_horizontal')[0].value = this.value;
       }
 
       _range_update(graph, range, { q: this.value / 1 }, 1);
@@ -1042,11 +1044,11 @@ function ParagraphicEqGraph() {
       const bar = document.createElement('div');
       bar.className = 'pk_pgeq_freq pk_q';
       bar.innerHTML =
-        '<div class="pk_arr"></div><input type="range" min="1" max="50" class="pk_horiz pk_q" step="0.1" value="' +
+        '<div class="pk_arrow"></div><input type="range" min="1" max="50" class="pk_horizontal pk_q" step="0.1" value="' +
         range.q +
         '">';
 
-      bar.getElementsByClassName('pk_horiz')[0].oninput = function (e) {
+      bar.getElementsByClassName('pk_horizontal')[0].oninput = function (e) {
         if (self.value != this.value) {
           self.value = this.value;
           self.onchange();

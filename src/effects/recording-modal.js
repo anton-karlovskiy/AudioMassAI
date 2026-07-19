@@ -74,8 +74,8 @@ export function openRecordingModal(app) {
         '<div><label>Waveform</label><canvas width="1000" height="200" style="image-rendering:pixelated;width:500px;height:100px;display:block;background:#000"></canvas></div>' +
         '</div>' +
         '<div class="pk_row">' +
-        '<a class="pk_toolbar_action pk_inact" style="text-align: center;">START RECORDING</a>' +
-        '<a class="pk_toolbar_action pk_inact" style="margin-left: 24px; text-align: center;">PAUSE</a>' +
+        '<a class="pk_toolbar_action pk_inactive" style="text-align: center;">START RECORDING</a>' +
+        '<a class="pk_toolbar_action pk_inactive" style="margin-left: 24px; text-align: center;">PAUSE</a>' +
         '</div>' +
         '<div class="pk_row">' +
         '<a class="pk_toolbar_action" style="float:left;display:none;text-align:center;box-shadow:0 0 7px #3a6b79 inset;">OPEN RECORDING</a>' +
@@ -346,13 +346,13 @@ export function openRecordingModal(app) {
               }
 
               isReady = true;
-              buttonStart.classList.remove('pk_inact');
+              buttonStart.classList.remove('pk_inactive');
             });
           } else {
             devicesSelect.parentNode.style.display = 'none';
             hasDevices = false;
             isReady = true;
-            buttonStart.classList.remove('pk_inact');
+            buttonStart.classList.remove('pk_inactive');
           }
         };
 
@@ -409,7 +409,7 @@ export function openRecordingModal(app) {
           if (isActive) {
             stop();
 
-            buttonPause.classList.add('pk_inact');
+            buttonPause.classList.add('pk_inactive');
             buttonStart.innerText = 'START RECORDING';
             buttonStart.style.boxShadow = 'none';
 
@@ -449,7 +449,7 @@ export function openRecordingModal(app) {
               scriptProcessor.connect(audioContext.destination);
 
               isActive = true;
-              buttonPause.classList.remove('pk_inact');
+              buttonPause.classList.remove('pk_inactive');
               buttonStart.innerText = 'FINISH RECORDING';
               buttonStart.style.boxShadow = '#992222 0px 0px 6px inset';
               scriptProcessor.onaudioprocess = fetchBufferFunction;

@@ -55,7 +55,7 @@ export function AudioEngine(app) {
   const promptOpenOrAppend = function (loadFunc) {
     new SimpleModal({
       title: 'Open or append',
-      className: 'pk_modal_anim pk_fnt10',
+      className: 'pk_modal_anim pk_font_10',
       ondestroy: function () {
         app.ui.InteractionHandler.on = false;
         app.ui.KeyHandler.removeCallback('modalTempErr');

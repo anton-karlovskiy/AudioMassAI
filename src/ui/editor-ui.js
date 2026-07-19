@@ -22,7 +22,7 @@ export function EditorUI(app) {
   this.app = app;
 
   // if mobile add proper class
-  this.element.className += ' pk_app' + (app.isMobile ? ' pk_mob' : '');
+  this.element.className += ' pk_app' + (app.isMobile ? ' pk_mobile' : '');
 
   // hold refferences to the event functions
   this.fireEvent = app.fireEvent;
@@ -78,9 +78,9 @@ export function EditorUI(app) {
   };
 
   if (app.isMobile) {
-    document.body.className = 'pk_stndln';
+    document.body.className = 'pk_standalone';
     const fxd = document.createElement('div');
-    fxd.className = 'pk_fxd';
+    fxd.className = 'pk_fixed';
     fxd.appendChild(this.element);
 
     document.body.appendChild(fxd);
@@ -195,7 +195,7 @@ function _topbarConfig(app, ui) {
               body:
                 '<div class="pk_row"><label for="k0">File Name</label>' +
                 '<input style="min-width:250px" placeholder="mp3 filename" value="audiomass-output.mp3" ' +
-                'class="pk_txt" type="text" id="k0" /></div>' +
+                'class="pk_text" type="text" id="k0" /></div>' +
                 '<div class="pk_row" id="frmtex" style="padding-bottom:4px"><label style="display:inline">Format</label>' +
                 '<input type="radio" class="pk_check" id="k01" name="frmtex" checked value="mp3">' +
                 '<label for="k01">mp3</label>' +
@@ -212,8 +212,8 @@ function _topbarConfig(app, ui) {
                 '<label for="k3">256kbps</label></div>' +
                 '<div class="pk_row" style="display:none" id="frmtex-flac">' +
                 '<label>Flac: Compression Level</label>' +
-                '<input type="range" class="pk_horiz" min="0" max="8" step="1" value="5" id="flac-comp">' +
-                '<span class="pk_val" style="float:left;margin-left:15px">5</span></div>' +
+                '<input type="range" class="pk_horizontal" min="0" max="8" step="1" value="5" id="flac-comp">' +
+                '<span class="pk_value" style="float:left;margin-left:15px">5</span></div>' +
                 '<div class="pk_row" style="padding-bottom:5px">' +
                 '<input type="radio" class="pk_check" id="k6" name="chnl" checked value="mono">' +
                 '<label for="k6">Mono</label>' +
@@ -234,7 +234,7 @@ function _topbarConfig(app, ui) {
                 const region = wavesurfer.regions.list[0];
                 if (!region) {
                   const lbl = modal.bodyElement.getElementsByClassName('pk_lblmp3')[0];
-                  lbl.className = 'pk_dis';
+                  lbl.className = 'pk_disabled';
                 }
 
                 const channelNumber = wavesurfer.backend.buffer.numberOfChannels;
@@ -300,15 +300,15 @@ function _topbarConfig(app, ui) {
               },
             }).Show();
           },
-          className: 'pk_inact',
+          className: 'pk_inactive',
           setup: function (menuItemElement) {
             menuItemElement.setAttribute('data-id', 'dl');
 
             app.listenFor('DidUnloadFile', function () {
-              menuItemElement.classList.add('pk_inact');
+              menuItemElement.classList.add('pk_inactive');
             });
             app.listenFor('DidLoadFile', function () {
-              menuItemElement.classList.remove('pk_inact');
+              menuItemElement.classList.remove('pk_inactive');
             });
           },
         },
@@ -379,7 +379,7 @@ function _topbarConfig(app, ui) {
               ],
               body:
                 '<label for="k00">Insert url</label>' +
-                '<input style="min-width:250px" placeholder="Please insert url" class="pk_txt" type="text" id="k00" />',
+                '<input style="min-width:250px" placeholder="Please insert url" class="pk_text" type="text" id="k00" />',
               setup: function (modal) {
                 app.fireEvent('RequestPause');
                 app.ui.InteractionHandler.checkAndSet('modal');
@@ -417,7 +417,7 @@ function _topbarConfig(app, ui) {
 
         {
           name: 'Save Draft Locally',
-          className: 'pk_inact',
+          className: 'pk_inactive',
           action: function (e) {
             if (!app.engine.isReady) return;
 
@@ -495,7 +495,7 @@ function _topbarConfig(app, ui) {
                 '<label style="vertical-align:top" class="pk_lblsel2" for="sl3">"Copy" clipboard/buffer</label></div>' +
                 '<div class="pk_row"><label for="slk0">Draft Name</label>' +
                 '<input style="min-width:250px" placeholder="(optional) filename" maxlength="100" ' +
-                'class="pk_txt" type="text" id="slk0" /></div>',
+                'class="pk_text" type="text" id="slk0" /></div>',
 
               setup: function (modal) {
                 // check if selection
@@ -505,7 +505,7 @@ function _topbarConfig(app, ui) {
                 const region = wavesurfer.regions.list[0];
                 const lblr = modal.bodyElement.getElementsByClassName('pk_lblsel')[0];
                 if (!region) {
-                  lblr.className = 'pk_dis';
+                  lblr.className = 'pk_disabled';
                 } else {
                   modal.bodyElement.getElementsByClassName('pk_check')[1].checked = true;
                   lblr.childNodes[1].textContent =
@@ -516,12 +516,12 @@ function _topbarConfig(app, ui) {
                 const copy = app.engine.GetCopyBuff();
                 if (!copy) {
                   const lbl = modal.bodyElement.getElementsByClassName('pk_lblsel2')[0];
-                  lbl.className = 'pk_dis';
+                  lbl.className = 'pk_disabled';
                 }
 
                 if (!app.isMobile) {
                   setTimeout(function () {
-                    modal.element && modal.element.getElementsByClassName('pk_txt')[0].focus();
+                    modal.element && modal.element.getElementsByClassName('pk_text')[0].focus();
                   }, 20);
                 }
 
@@ -543,10 +543,10 @@ function _topbarConfig(app, ui) {
 
           setup: function (menuItemElement) {
             app.listenFor('DidUnloadFile', function () {
-              menuItemElement.classList.add('pk_inact');
+              menuItemElement.classList.add('pk_inactive');
             });
             app.listenFor('DidLoadFile', function () {
-              menuItemElement.classList.remove('pk_inact');
+              menuItemElement.classList.remove('pk_inactive');
             });
 
             app.listenFor('DidStoreDB', function (storedSession, e) {
@@ -652,20 +652,20 @@ function _topbarConfig(app, ui) {
                       '<div id="pk_' +
                       current.id +
                       '" class="pk_lcldrf">' +
-                      '<div style="padding-bottom:2px"><span><i class="pk_i">name:</i>' +
+                      '<div style="padding-bottom:2px"><span><i class="pk_field_label">name:</i>' +
                       filename +
                       '</span></div>' +
-                      '<div><span class="pk_lcls"><i class="pk_i">id:</i><strong>' +
+                      '<div><span class="pk_lcls"><i class="pk_field_label">id:</i><strong>' +
                       current.id +
-                      '</strong><br/><i class="pk_i">chn:</i>' +
+                      '</strong><br/><i class="pk_field_label">chn:</i>' +
                       chns +
                       '</span>' +
-                      '<span class="pk_lcls" style="width:50%;text-align:center"><i class="pk_i">date:</i><span>' +
+                      '<span class="pk_lcls" style="width:50%;text-align:center"><i class="pk_field_label">date:</i><span>' +
                       datestr +
                       '<br/>' +
                       agostr +
                       '</span></span>' +
-                      '<span style="text-align:right;float:right" class="pk_lcls"><i class="pk_i">durr:</i>' +
+                      '<span style="text-align:right;float:right" class="pk_lcls"><i class="pk_field_label">durr:</i>' +
                       duration +
                       's</span></div><div>' +
                       '<img class="pk_lcli" src="' +
@@ -703,15 +703,15 @@ function _topbarConfig(app, ui) {
                 const setActiveButton = function (name, state) {
                   let act;
                   if (!state) {
-                    act = modal.bodyElement.getElementsByClassName('pk_act')[0];
+                    act = modal.bodyElement.getElementsByClassName('pk_active')[0];
                     if (act) {
-                      act.classList.remove('pk_act');
+                      act.classList.remove('pk_active');
                     }
                   } else {
                     const element = document.getElementById('pk_' + name);
                     if (element) {
                       act = element.getElementsByClassName('pk_lcla2')[0];
-                      act && act.classList.add('pk_act');
+                      act && act.classList.add('pk_active');
                     }
                   }
                   // --
@@ -934,7 +934,7 @@ function _topbarConfig(app, ui) {
         },
         {
           name: 'Transcribe (with AI)',
-          className: 'pk_inact',
+          className: 'pk_inactive',
           action: function () {
             app.fireEvent('RequestTranscription');
           },
@@ -942,10 +942,10 @@ function _topbarConfig(app, ui) {
             menuItemElement.setAttribute('data-id', 'transcribe');
 
             app.listenFor('DidUnloadFile', function () {
-              menuItemElement.classList.add('pk_inact');
+              menuItemElement.classList.add('pk_inactive');
             });
             app.listenFor('DidLoadFile', function () {
-              menuItemElement.classList.remove('pk_inact');
+              menuItemElement.classList.remove('pk_inactive');
             });
           },
         },
@@ -955,51 +955,51 @@ function _topbarConfig(app, ui) {
       name: 'Edit',
       children: [
         {
-          name: 'Undo <span class="pk_shrtct">Shft+Z</span>',
-          className: 'pk_inact',
+          name: 'Undo <span class="pk_shortcut">Shft+Z</span>',
+          className: 'pk_inactive',
           action: function () {
             app.fireEvent('StateRequestUndo');
           },
           setup: function (menuItemElement) {
             app.listenFor('DidStateChange', function (undoStates, redoStates) {
               if (undoStates.length === 0) {
-                menuItemElement.innerHTML = 'Undo <span class="pk_shrtct">Shft+Z</span>';
-                menuItemElement.classList.add('pk_inact');
+                menuItemElement.innerHTML = 'Undo <span class="pk_shortcut">Shft+Z</span>';
+                menuItemElement.classList.add('pk_inactive');
               } else {
                 menuItemElement.innerHTML =
                   'Undo&nbsp;<i style="pointer-events:none">' +
                   undoStates[undoStates.length - 1].desc +
-                  '</i><span class="pk_shrtct">Shft+Z</span>';
-                menuItemElement.classList.remove('pk_inact');
+                  '</i><span class="pk_shortcut">Shft+Z</span>';
+                menuItemElement.classList.remove('pk_inactive');
               }
             });
           },
         },
 
         {
-          name: 'Redo <span class="pk_shrtct">Shft+Y</span>',
-          className: 'pk_inact',
+          name: 'Redo <span class="pk_shortcut">Shft+Y</span>',
+          className: 'pk_inactive',
           action: function () {
             app.fireEvent('StateRequestRedo');
           },
           setup: function (menuItemElement) {
             app.listenFor('DidStateChange', function (undoStates, redoStates) {
               if (redoStates.length === 0) {
-                menuItemElement.innerHTML = 'Redo <span class="pk_shrtct">Shft+Y</span>';
-                menuItemElement.classList.add('pk_inact');
+                menuItemElement.innerHTML = 'Redo <span class="pk_shortcut">Shft+Y</span>';
+                menuItemElement.classList.add('pk_inactive');
               } else {
                 menuItemElement.innerHTML =
                   'Redo&nbsp;<i style="pointer-events:none">' +
                   redoStates[0].desc +
-                  '</i><span class="pk_shrtct">Shft+Y</span>';
-                menuItemElement.classList.remove('pk_inact');
+                  '</i><span class="pk_shortcut">Shft+Y</span>';
+                menuItemElement.classList.remove('pk_inactive');
               }
             });
           },
         },
 
         {
-          name: 'Play <span class="pk_shrtct">Space</span>',
+          name: 'Play <span class="pk_shortcut">Space</span>',
           action: function () {
             app.fireEvent('RequestPlay');
           },
@@ -1013,14 +1013,14 @@ function _topbarConfig(app, ui) {
         },
 
         {
-          name: 'Select All <span class="pk_shrtct">Shft+A</span>',
+          name: 'Select All <span class="pk_shortcut">Shft+A</span>',
           action: function () {
             app.fireEvent('RequestSelect');
           },
         },
 
         {
-          name: 'Deselect All <span class="pk_shrtct">~</span>',
+          name: 'Deselect All <span class="pk_shortcut">~</span>',
           action: function () {
             app.fireEvent('RequestDeselect');
           },
@@ -1031,13 +1031,13 @@ function _topbarConfig(app, ui) {
           action: function () {
             app.fireEvent('RequestActionFXUI_Flip');
           },
-          className: 'pk_inact',
+          className: 'pk_inactive',
           setup: function (menuItemElement) {
             app.listenFor('DidUnloadFile', function () {
-              menuItemElement.classList.add('pk_inact');
+              menuItemElement.classList.add('pk_inactive');
             });
             app.listenFor('DidLoadFile', function () {
-              menuItemElement.classList.remove('pk_inact');
+              menuItemElement.classList.remove('pk_inactive');
             });
           },
         },
@@ -1291,14 +1291,14 @@ function _topbarConfig(app, ui) {
         },
 
         {
-          name: 'Center to Cursor <span class="pk_shrtct">[Tab]</span>',
+          name: 'Center to Cursor <span class="pk_shortcut">[Tab]</span>',
           action: function () {
             app.fireEvent('RequestViewCenterToCursor');
           },
         },
 
         {
-          name: 'Reset Zoom <span class="pk_shrtct">[0]</span>',
+          name: 'Reset Zoom <span class="pk_shortcut">[0]</span>',
           action: function () {
             app.fireEvent('RequestZoomUI', 0);
           },
@@ -1372,7 +1372,7 @@ function _makeUITopHeader(menuTree, UI) {
         if (currentOption.action) {
           (function (button, action) {
             button.onclick = function (event) {
-              if (this.classList.contains('pk_inact')) return;
+              if (this.classList.contains('pk_inactive')) return;
 
               menu.closeMenu();
               action(event);
@@ -1410,7 +1410,7 @@ function _makeUITopHeader(menuTree, UI) {
     targetElement = previousTargetElement = null;
 
     if (targetOption) {
-      targetOption.classList.remove('pk_act');
+      targetOption.classList.remove('pk_active');
       targetOption = null;
     }
 
@@ -1449,9 +1449,9 @@ function _makeUITopHeader(menuTree, UI) {
       if (offset > 1) parent.getElementsByClassName('pk_menu')[0].style.left = -offset / 2 + 'px';
     }
 
-    parent.className += ' pk_vis';
+    parent.className += ' pk_visible';
     setTimeout(function () {
-      if (targetElement === currentTarget) parent.className += ' pk_act';
+      if (targetElement === currentTarget) parent.className += ' pk_active';
     }, 0);
 
     targetIndex = index;
@@ -1495,11 +1495,11 @@ function _makeUITopHeader(menuTree, UI) {
           const elements = targetElement.parentNode.getElementsByClassName('pk_opt');
           if (elements[0]) {
             targetOption = elements[0];
-            targetOption.classList.add('pk_act');
+            targetOption.classList.add('pk_active');
           }
         } else {
           const ind = targetOption.getAttribute('data-index') / 1;
-          targetOption.classList.remove('pk_act');
+          targetOption.classList.remove('pk_active');
 
           targetOption = targetElement.parentNode.getElementsByClassName('pk_opt');
           if (ind - 1 < 0) {
@@ -1507,7 +1507,7 @@ function _makeUITopHeader(menuTree, UI) {
           } else {
             targetOption = targetOption[ind - 1];
           }
-          targetOption.classList.add('pk_act');
+          targetOption.classList.add('pk_active');
         }
       },
       [38]
@@ -1519,11 +1519,11 @@ function _makeUITopHeader(menuTree, UI) {
           const elements = targetElement.parentNode.getElementsByClassName('pk_opt');
           if (elements[0]) {
             targetOption = elements[0];
-            targetOption.classList.add('pk_act');
+            targetOption.classList.add('pk_active');
           }
         } else {
           const ind = targetOption.getAttribute('data-index') / 1;
-          targetOption.classList.remove('pk_act');
+          targetOption.classList.remove('pk_active');
 
           targetOption = targetElement.parentNode.getElementsByClassName('pk_opt');
           if (targetOption.length <= ind + 1) {
@@ -1531,7 +1531,7 @@ function _makeUITopHeader(menuTree, UI) {
           } else {
             targetOption = targetOption[ind + 1];
           }
-          targetOption.classList.add('pk_act');
+          targetOption.classList.add('pk_active');
         }
       },
       [40]
@@ -1583,12 +1583,12 @@ function _makeUITopHeader(menuTree, UI) {
       const x = e.target || e.srcElement;
 
       if (x.className.indexOf('pk_opt') >= 0) {
-        if (targetOption) targetOption.classList.remove('pk_act');
+        if (targetOption) targetOption.classList.remove('pk_active');
 
         targetOption = x;
-        targetOption.classList.add('pk_act');
+        targetOption.classList.add('pk_active');
       } else {
-        if (targetOption) targetOption.classList.remove('pk_act');
+        if (targetOption) targetOption.classList.remove('pk_active');
         targetOption = null;
       }
 
@@ -1730,18 +1730,18 @@ function _makeUIMainView(UI, app) {
   app.listenFor('DidChanToggle', function (chan, value) {
     if (chan === 0) {
       if (value) {
-        buttonPannerLeft.classList.remove('pk_inact');
+        buttonPannerLeft.classList.remove('pk_inactive');
         buttonPannerLeft.innerHTML = '<strong>L</strong> ON';
       } else {
-        buttonPannerLeft.classList.add('pk_inact');
+        buttonPannerLeft.classList.add('pk_inactive');
         buttonPannerLeft.innerHTML = '<strong>L</strong> OFF';
       }
     } else {
       if (value) {
-        buttonPannerRight.classList.remove('pk_inact');
+        buttonPannerRight.classList.remove('pk_inactive');
         buttonPannerRight.innerHTML = '<strong>R</strong> ON';
       } else {
-        buttonPannerRight.classList.add('pk_inact');
+        buttonPannerRight.classList.add('pk_inactive');
         buttonPannerRight.innerHTML = '<strong>R</strong> OFF';
       }
     }
@@ -1761,7 +1761,7 @@ function _makeUIMainView(UI, app) {
   };
 
   const buttonZoomOutHorizontal = document.createElement('button');
-  buttonZoomOutHorizontal.className = 'pk_button pk_zoom_out_h pk_inact';
+  buttonZoomOutHorizontal.className = 'pk_button pk_zoom_out_h pk_inactive';
   buttonZoomOutHorizontal.innerHTML = '&ndash;<span>Zoom Out Horiz (-)</span>';
   buttonZoomOutHorizontal.setAttribute('tabIndex', -1);
   buttonZoomOutHorizontal.onclick = function () {
@@ -1770,7 +1770,7 @@ function _makeUIMainView(UI, app) {
   };
 
   const buttonZoomReset = document.createElement('button');
-  buttonZoomReset.className = 'pk_button pk_zoom_reset pk_inact';
+  buttonZoomReset.className = 'pk_button pk_zoom_reset pk_inactive';
   buttonZoomReset.innerHTML = '[R] <span>Reset Zoom (0)</span>';
   buttonZoomReset.setAttribute('tabIndex', -1);
   buttonZoomReset.onclick = function () {
@@ -1839,7 +1839,7 @@ function _makeUIMainView(UI, app) {
 
   const wavedrag = document.createElement('div');
   const waveDragStyle = wavedrag.style;
-  wavedrag.className = 'pk_wave_drag pk_inact';
+  wavedrag.className = 'pk_wave_drag pk_inactive';
 
   const waveDragLeft = document.createElement('div');
   waveDragLeft.className = 'pk_wave_drag_left';
@@ -1870,15 +1870,15 @@ function _makeUIMainView(UI, app) {
     const o = v[1];
 
     if (e === 1) {
-      buttonZoomOutHorizontal.classList.add('pk_inact');
-      buttonZoomReset.classList.add('pk_inact');
+      buttonZoomOutHorizontal.classList.add('pk_inactive');
+      buttonZoomReset.classList.add('pk_inactive');
     } else {
-      buttonZoomOutHorizontal.classList.remove('pk_inact');
-      buttonZoomReset.classList.remove('pk_inact');
+      buttonZoomOutHorizontal.classList.remove('pk_inactive');
+      buttonZoomReset.classList.remove('pk_inactive');
     }
 
     if (v[2] != 1) {
-      buttonZoomReset.classList.remove('pk_inact');
+      buttonZoomReset.classList.remove('pk_inactive');
     }
 
     if (e === 1) {
@@ -1902,13 +1902,13 @@ function _makeUIMainView(UI, app) {
       waveDragStyle.width = '100%';
       waveDragStyle.left = '0%';
       //waveDragStyle.transform = 'translate(0,0)';
-      wavedrag.classList.add('pk_inact');
+      wavedrag.classList.add('pk_inactive');
     } else {
       waveDragWidth = 100 / e;
       waveDragStyle.width = waveDragWidth + '%';
       waveDragStyle.left = o + '%';
       //waveDragStyle.transform = 'translate(' +  (e * o) + '%,0)';
-      wavedrag.classList.remove('pk_inact');
+      wavedrag.classList.remove('pk_inactive');
     }
   });
   UI.listenFor('DidCursorCenter', function (value, zoom) {
@@ -2035,9 +2035,9 @@ function _makeUIMainView(UI, app) {
   const markers = document.createElement('div');
   markers.className = 'pk_markers pk_noselect';
 
-  let markup = '<span class="pk_mark1">-Inf</span>';
+  let markup = '<span class="pk_marker">-Inf</span>';
   for (let i = 35; i >= 0; --i) {
-    markup += '<span class="pk_mark1 ' + (i % 2 ? 'pk_odd' : '') + '">' + -(i * 2) + '</span>';
+    markup += '<span class="pk_marker ' + (i % 2 ? 'pk_odd' : '') + '">' + -(i * 2) + '</span>';
   }
   markers.innerHTML = markup;
 
@@ -2075,11 +2075,11 @@ function _makeUIMainView(UI, app) {
   UI.loaderEl = ttmp2;
 
   UI.listenFor('WillDownloadFile', function () {
-    UI.loaderEl.classList.add('pk_act');
+    UI.loaderEl.classList.add('pk_active');
     UI.loaderEl.getElementsByTagName('span')[1].style.display = 'none';
   });
   UI.listenFor('DidDownloadFile', function () {
-    UI.loaderEl.classList.remove('pk_act');
+    UI.loaderEl.classList.remove('pk_active');
   });
   UI.listenFor('DidProgressModal', function (value) {
     UI.loaderEl.getElementsByTagName('span')[1].style.display = 'block';
@@ -2120,10 +2120,10 @@ function _makeUIToolbar(UI) {
     this.blur();
   };
   UI.listenFor('DidStopPlay', function () {
-    buttonPlay.classList.remove('pk_act');
+    buttonPlay.classList.remove('pk_active');
   });
   UI.listenFor('DidPlay', function () {
-    buttonPlay.classList.add('pk_act');
+    buttonPlay.classList.add('pk_active');
   });
 
   const buttonPause = document.createElement('button');
@@ -2146,7 +2146,7 @@ function _makeUIToolbar(UI) {
     this.blur();
   };
   UI.listenFor('DidSetLoop', function (value) {
-    value ? buttonLoop.classList.add('pk_act') : buttonLoop.classList.remove('pk_act');
+    value ? buttonLoop.classList.add('pk_active') : buttonLoop.classList.remove('pk_active');
   });
 
   const buttonBackJump = document.createElement('button');
@@ -2486,10 +2486,10 @@ function _makeUIToolbar(UI) {
   );
 
   UI.listenFor('DidActionRecordStart', function () {
-    buttonRecord.classList.add('pk_act');
+    buttonRecord.classList.add('pk_active');
   });
   UI.listenFor('DidActionRecordStop', function () {
-    buttonRecord.classList.remove('pk_act');
+    buttonRecord.classList.remove('pk_active');
   });
 
   UI.KeyHandler.addCallback(
@@ -2678,15 +2678,15 @@ function _makeUIToolbar(UI) {
 
     mainContext.onOpen = function (menu, div) {
       const divs = div.childNodes;
-      if (!copable) divs[4].className += ' pk_inact';
+      if (!copable) divs[4].className += ' pk_inactive';
 
       UI.fireEvent('RequestPause');
 
       const region = UI.app.engine.wavesurfer.regions.list[0];
       if (region) return;
 
-      divs[3].className += ' pk_inact';
-      divs[5].className += ' pk_inact';
+      divs[3].className += ' pk_inactive';
+      divs[5].className += ' pk_inactive';
     };
   }, 1000);
 
@@ -2774,7 +2774,7 @@ function _makeUIToolbar(UI) {
       // UI.footer.volumeGaugeInner.style.width = '100%';
       // UI.footer.volumeGaugeInner2.style.width = '100%';
     } else if (loudness[0] > 0) {
-      UI.footer.volumeGaugePeaker.className = 'pk_peaker pk_act';
+      UI.footer.volumeGaugePeaker.className = 'pk_peaker pk_active';
 
       UI.footer.volumeGaugeInner.style.transform = 'translate3d(100%,0,0)';
       // UI.footer.volumeGaugeInner.style.width = '0%';
@@ -2785,7 +2785,7 @@ function _makeUIToolbar(UI) {
         'Peak at ' + UI.app.engine.wavesurfer.getCurrentTime().toFixed(2)
       );
       if (loudness[1] > 0) {
-        UI.footer.volumeGaugePeaker2.className = 'pk_peaker pk_act';
+        UI.footer.volumeGaugePeaker2.className = 'pk_peaker pk_active';
 
         UI.footer.volumeGaugeInner2.style.transform = 'translate3d(100%,0,0)';
         // UI.footer.volumeGaugeInner2.style.width = '0%';
@@ -2797,7 +2797,7 @@ function _makeUIToolbar(UI) {
         );
       }
     } else if (loudness[1] > 0) {
-      UI.footer.volumeGaugePeaker2.className = 'pk_peaker pk_act';
+      UI.footer.volumeGaugePeaker2.className = 'pk_peaker pk_active';
 
       UI.footer.volumeGaugeInner2.style.transform = 'translate3d(100%,0,0)';
       // UI.footer.volumeGaugeInner2.style.width = '0%';
@@ -2836,7 +2836,7 @@ function _makeUIToolbar(UI) {
 
   const copyButton = document.createElement('button');
   copyButton.setAttribute('tabIndex', -1);
-  copyButton.className = 'pk_button icon-files-empty pk_inact';
+  copyButton.className = 'pk_button icon-files-empty pk_inactive';
   copyButton.innerHTML = '<span>Copy Selection (Shift + C)</span>';
   actions.appendChild(copyButton);
 
@@ -2846,13 +2846,13 @@ function _makeUIToolbar(UI) {
   };
 
   UI.listenFor('DidSetClipboard', function (value) {
-    if (value) pasteButton.classList.remove('pk_inact');
-    else pasteButton.classList.add('pk_inact');
+    if (value) pasteButton.classList.remove('pk_inactive');
+    else pasteButton.classList.add('pk_inactive');
   });
 
   const pasteButton = document.createElement('button');
   pasteButton.setAttribute('focusable', 'false');
-  pasteButton.className = 'pk_button icon-file-text2 pk_inact';
+  pasteButton.className = 'pk_button icon-file-text2 pk_inactive';
   pasteButton.innerHTML = '<span>Paste Selection (Shift + V)</span>';
   actions.appendChild(pasteButton);
 
@@ -2863,7 +2863,7 @@ function _makeUIToolbar(UI) {
 
   const cutButton = document.createElement('button');
   cutButton.setAttribute('tabIndex', -1);
-  cutButton.className = 'pk_button icon-scissors pk_inact';
+  cutButton.className = 'pk_button icon-scissors pk_inactive';
   cutButton.innerHTML = '<span>Cut Selection (Shift + X)</span>';
   actions.appendChild(cutButton);
 
@@ -2905,14 +2905,14 @@ function _makeUIToolbar(UI) {
 
   const buttonClearSelection = document.createElement('button');
   buttonClearSelection.setAttribute('tabIndex', -1);
-  buttonClearSelection.className = 'pk_button icon-clearsel pk_inact';
+  buttonClearSelection.className = 'pk_button icon-clearsel pk_inactive';
   buttonClearSelection.innerHTML = '<span>Clear Selection (Q key)</span>';
 
   let selectedSpans = selection.getElementsByClassName('pk_dat');
   UI.listenFor('DidCreateRegion', function (region) {
-    copyButton.classList.remove('pk_inact');
-    cutButton.classList.remove('pk_inact');
-    buttonClearSelection.classList.remove('pk_inact');
+    copyButton.classList.remove('pk_inactive');
+    cutButton.classList.remove('pk_inactive');
+    buttonClearSelection.classList.remove('pk_inactive');
 
     if (region) {
       if (!selectedSpans[0]) selectedSpans = document.querySelectorAll('.pk_sellist .pk_dat');
@@ -2922,9 +2922,9 @@ function _makeUIToolbar(UI) {
     }
   });
   UI.listenFor('DidDestroyRegion', function () {
-    copyButton.classList.add('pk_inact');
-    cutButton.classList.add('pk_inact');
-    buttonClearSelection.classList.add('pk_inact');
+    copyButton.classList.add('pk_inactive');
+    cutButton.classList.add('pk_inactive');
+    buttonClearSelection.classList.add('pk_inactive');
 
     if (!selectedSpans[0]) selectedSpans = document.querySelectorAll('.pk_sellist .pk_dat');
     selectedSpans[0].textContent = '-';

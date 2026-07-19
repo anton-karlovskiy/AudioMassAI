@@ -284,13 +284,13 @@ export function openTempoTools(app) {
       drawerElement.innerHTML =
         '<div class="pk_row">' +
         '<label>BPM</label>' +
-        '<input type="range" min="20" max="300" class="pk_horiz" step="1" value="120" />' +
-        '<span class="pk_val">120</span>' +
+        '<input type="range" min="20" max="300" class="pk_horizontal" step="1" value="120" />' +
+        '<span class="pk_value">120</span>' +
         '</div>' +
         '<div class="pk_row">' +
         '<label>Volume</label>' +
-        '<input type="range" min="0.0" max="1.0" class="pk_horiz" step="0.1" value="0.5" />' +
-        '<span class="pk_val">50%</span>' +
+        '<input type="range" min="0.0" max="1.0" class="pk_horizontal" step="0.1" value="0.5" />' +
+        '<span class="pk_value">50%</span>' +
         '</div>' +
         '<div class="pk_row">' +
         '<input type="checkbox" id="xxcjgs" class="pk_check" checked name="metroAccent">' +
@@ -306,11 +306,11 @@ export function openTempoTools(app) {
     }
 
     function _make_evs(tool) {
-      const range = tool.body.getElementsByClassName('pk_horiz')[0];
-      const span = tool.body.getElementsByClassName('pk_val')[0];
+      const range = tool.body.getElementsByClassName('pk_horizontal')[0];
+      const span = tool.body.getElementsByClassName('pk_value')[0];
 
-      const range2 = tool.body.getElementsByClassName('pk_horiz')[1];
-      const span2 = tool.body.getElementsByClassName('pk_val')[1];
+      const range2 = tool.body.getElementsByClassName('pk_horizontal')[1];
+      const span2 = tool.body.getElementsByClassName('pk_value')[1];
 
       const checkbox = tool.body.getElementsByClassName('pk_check')[0];
 
@@ -367,10 +367,10 @@ export function openTempoTools(app) {
       };
 
       MetronomeInAct = function () {
-        metronomeButton.classList.remove('pk_act');
+        metronomeButton.classList.remove('pk_active');
       };
       MetronomeAct = function () {
-        metronomeButton.classList.add('pk_act');
+        metronomeButton.classList.add('pk_active');
       };
       tool.app.listenFor('DidStartMetro', MetronomeAct);
       tool.app.listenFor('DidStopMetro', MetronomeInAct);
@@ -383,20 +383,20 @@ export function openTempoTools(app) {
         }
       };
       if (!app.engine.wavesurfer.isReady) {
-        playButton.className += ' pk_inact';
-        bothButton.className += ' pk_inact';
+        playButton.className += ' pk_inactive';
+        bothButton.className += ' pk_inactive';
       }
 
       if (app.engine.wavesurfer.isPlaying()) {
-        playButton.className += ' pk_act';
+        playButton.className += ' pk_active';
       }
 
       DidStopPlay = function () {
-        playButton.classList.remove('pk_act');
+        playButton.classList.remove('pk_active');
         playButton.innerText = 'Play Track';
       };
       DidPlay = function () {
-        playButton.classList.add('pk_act');
+        playButton.classList.add('pk_active');
         playButton.innerText = 'Stop Track';
       };
       tool.app.listenFor('DidStopPlay', DidStopPlay);
@@ -494,17 +494,17 @@ export function openTempoTools(app) {
         '<div class="pk_row pk_pgeq_els">' +
         '<span>Average BPM</span>' +
         '<input style="margin-left:2px;min-width:64px;max-width:64px" ' +
-        'type="text" class="pk_val pk_gain" value="-">' +
+        'type="text" class="pk_value pk_gain" value="-">' +
         '</div>' +
         '<div class="pk_row pk_pgeq_els">' +
         '<span>Nearest BPM</span>' +
         '<input style="margin-left:2px;min-width:64px;max-width:64px" ' +
-        'type="text" class="pk_val pk_gain" value="-">' +
+        'type="text" class="pk_value pk_gain" value="-">' +
         '</div>' +
         '<div class="pk_row pk_pgeq_els">' +
         '<span>Timing Taps</span>' +
         '<input style="margin-left:2px;min-width:64px;max-width:64px" ' +
-        'type="text" class="pk_val pk_gain" value="-">' +
+        'type="text" class="pk_value pk_gain" value="-">' +
         '<a class="pk_modal_a_bottom" style="display:inline-block;float:none">Reset</a>' +
         '<a class="pk_modal_a_bottom" style="display:inline-block;float:none">Play Track</a>' +
         '<a class="pk_modal_a_bottom" style="display:inline-block;float:none">Loop</a>' +
@@ -547,7 +547,7 @@ export function openTempoTools(app) {
       canvasContext.imageSmoothingEnabled = true;
       tempContext.imageSmoothingEnabled = true;
 
-      const valueElements = tool.body.getElementsByClassName('pk_val');
+      const valueElements = tool.body.getElementsByClassName('pk_value');
       const tapMessage = tapGraph.getElementsByClassName('pk_obj2');
       const tapMessageSecondary = tapArea.getElementsByTagName('span')[0];
 
@@ -580,9 +580,9 @@ export function openTempoTools(app) {
 
             tapMessage[0].style.opacity = '0.5';
             if (!force) {
-              resetButton.className += ' pk_act';
+              resetButton.className += ' pk_active';
               setTimeout(function () {
-                resetButton.classList.remove('pk_act');
+                resetButton.classList.remove('pk_active');
               }, 140);
             }
 
@@ -631,21 +631,21 @@ export function openTempoTools(app) {
       };
 
       if (!app.engine.wavesurfer.isReady) {
-        playButton.className += ' pk_inact';
-        loopButton.className += ' pk_inact';
+        playButton.className += ' pk_inactive';
+        loopButton.className += ' pk_inactive';
       }
       if (app.engine.wavesurfer.isPlaying()) {
-        playButton.className += ' pk_act';
+        playButton.className += ' pk_active';
       }
 
       DidStopPlay = function () {
         isPlaying = false;
-        playButton.classList.remove('pk_act');
+        playButton.classList.remove('pk_active');
         playButton.innerText = 'Play Track';
       };
       DidPlay = function () {
         isPlaying = true;
-        playButton.classList.add('pk_act');
+        playButton.classList.add('pk_active');
         playButton.innerText = 'Stop Track';
       };
 
@@ -813,14 +813,14 @@ export function openTempoTools(app) {
       tool.app.listenFor('DidAudioProcess', DidAudioProcess);
 
       if (app.engine.wavesurfer.regions.list[0]) {
-        if (app.engine.wavesurfer.regions.list[0].loop) loopButton.className += ' pk_act';
+        if (app.engine.wavesurfer.regions.list[0].loop) loopButton.className += ' pk_active';
       }
       loopButton.onclick = function () {
         tool.app.fireEvent('RequestSetLoop');
       };
 
       DidSetLoop = function (value) {
-        value ? loopButton.classList.add('pk_act') : loopButton.classList.remove('pk_act');
+        value ? loopButton.classList.add('pk_active') : loopButton.classList.remove('pk_active');
       };
       tool.app.listenFor('DidSetLoop', DidSetLoop);
 
@@ -885,13 +885,13 @@ export function openTempoTools(app) {
         }
         ++stepsCount;
 
-        tapArea.classList.add('pk_act');
+        tapArea.classList.add('pk_active');
 
         requestAnimationFrame(function () {
           step.style.transform = 'translate3d(-10%,0,0)';
 
           setTimeout(function () {
-            tapArea.classList.remove('pk_act');
+            tapArea.classList.remove('pk_active');
           }, 56);
         });
 
@@ -1188,7 +1188,7 @@ export function openTempoTools(app) {
 
       body:
         '<div class="pk_toolbar_section">' +
-        '<a class="pk_toolbar_action pk_inact">Tempo Estimation</a>' +
+        '<a class="pk_toolbar_action pk_inactive">Tempo Estimation</a>' +
         '<a class="pk_toolbar_action">Tempo Tap</a>' +
         '<a class="pk_toolbar_action">Metronome</a></div>',
 
@@ -1207,21 +1207,21 @@ export function openTempoTools(app) {
           if (activeTool) {
             activeTool.Destroy();
             activeTool = null;
-            toplinks[activeIndex].classList.remove('pk_act');
+            toplinks[activeIndex].classList.remove('pk_active');
           }
         };
 
         const activate = function () {
           // get the active state
           if (activeIndex === 0) {
-            // toplinks[0].className += ' pk_act';
+            // toplinks[0].className += ' pk_active';
             // activeTool = new TempoEstimation ( app, modal );
             return;
           } else if (activeIndex === 1) {
-            toplinks[1].className += ' pk_act';
+            toplinks[1].className += ' pk_active';
             activeTool = new TempoTap(app, modal);
           } else if (activeIndex === 2) {
-            toplinks[2].className += ' pk_act';
+            toplinks[2].className += ' pk_active';
             activeTool = new TempoMetro(app, modal);
           }
 

@@ -137,7 +137,7 @@ export function AudioEffectModal(config, app) {
     toolbar = [
       {
         title: 'ON',
-        className: 'pk_inact',
+        className: 'pk_inactive',
         callback: function () {
           app.fireEvent('RequestActionFX_TOGGLE');
         },
@@ -203,12 +203,12 @@ export function AudioEffectModal(config, app) {
       );
 
       modal._evstart = function () {
-        modal.elements.toolbar[0].classList.remove('pk_inact');
-        modal.elements.toolbar[1].classList.add('pk_act');
+        modal.elements.toolbar[0].classList.remove('pk_inactive');
+        modal.elements.toolbar[1].classList.add('pk_active');
       };
       modal._evstop = function () {
-        modal.elements.toolbar[0].classList.add('pk_inact');
-        modal.elements.toolbar[1].classList.remove('pk_act');
+        modal.elements.toolbar[0].classList.add('pk_inactive');
+        modal.elements.toolbar[1].classList.remove('pk_active');
       };
 
       modal._evtoggle = function (isOn) {

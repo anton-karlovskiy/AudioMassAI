@@ -206,8 +206,8 @@ export function registerEffectsUI(app) {
         ],
         body:
           '<div class="pk_row" style="border:none"><label>Gain percentage</label>' +
-          '<input type="range" class="pk_horiz" min="0.0" max="2.5" step="0.01" value="1.0" />' +
-          '<span class="pk_val">100%</span></div>' +
+          '<input type="range" class="pk_horizontal" min="0.0" max="2.5" step="0.01" value="1.0" />' +
+          '<span class="pk_value">100%</span></div>' +
           '<div class="pk_row" style="border:none;padding:0">',
 
         setup: function (modal) {
@@ -281,8 +281,8 @@ export function registerEffectsUI(app) {
         ],
         body:
           '<div class="pk_row" style="border:none"><label>Playback Rate</label>' +
-          '<input type="range" class="pk_horiz" min="0.2" max="2.0" step="0.05" value="1.0" />' +
-          '<span class="pk_val">1.0</span></div>',
+          '<input type="range" class="pk_horizontal" min="0.2" max="2.0" step="0.05" value="1.0" />' +
+          '<span class="pk_value">1.0</span></div>',
         setup: function (modal) {
           const range = modal.bodyElement.getElementsByTagName('input')[0];
           const span = modal.bodyElement.getElementsByTagName('span')[0];
@@ -355,8 +355,8 @@ export function registerEffectsUI(app) {
         ],
         body:
           '<div class="pk_row" style="border:none"><label>Playback Rate</label>' +
-          '<input type="range" class="pk_horiz" min="0.2" max="2.0" step="0.05" value="1.0" />' +
-          '<span class="pk_val">1.0</span></div>',
+          '<input type="range" class="pk_horizontal" min="0.2" max="2.0" step="0.05" value="1.0" />' +
+          '<span class="pk_value">1.0</span></div>',
         setup: function (modal) {
           const range = modal.bodyElement.getElementsByTagName('input')[0];
           const span = modal.bodyElement.getElementsByTagName('span')[0];
@@ -442,9 +442,9 @@ export function registerEffectsUI(app) {
           '<label for="xmm">Make Mono</label></div>' +
           '<div class="pk_row" style="padding-left:30px">' +
           '<input type="radio" class="pk_check pk_c_c" id="kf6" name="chnl" value="left">' +
-          '<label class="pk_dis" for="kf6">Left Channel</label>' +
+          '<label class="pk_disabled" for="kf6">Left Channel</label>' +
           '<input type="radio" class="pk_check pk_c_c" id="kf7" name="chnl" value="right">' +
-          '<label class="pk_dis" for="kf7">Right Channel</label>' +
+          '<label class="pk_disabled" for="kf7">Right Channel</label>' +
           '</div>' +
           '<div class="pk_row"><input type="checkbox" class="pk_check pk_c_fl" id="xfc" name="flipChn">' +
           '<label for="xfc">Flip Channels</label></div>' +
@@ -463,7 +463,7 @@ export function registerEffectsUI(app) {
             const mono = main.getElementsByClassName('pk_c_mm')[0];
             const flip = main.getElementsByClassName('pk_c_fl')[0];
             const channelCount = main.getElementsByClassName('pk_c_c');
-            const tmp = main.getElementsByClassName('pk_dis');
+            const tmp = main.getElementsByClassName('pk_disabled');
             const lbls = [tmp[0], tmp[1]];
 
             mono.onchange = function (e) {
@@ -475,8 +475,8 @@ export function registerEffectsUI(app) {
               } else {
                 channelCount[0].checked = false;
                 channelCount[1].checked = false;
-                lbls[0].className = 'pk_dis';
-                lbls[1].className = 'pk_dis';
+                lbls[0].className = 'pk_disabled';
+                lbls[1].className = 'pk_disabled';
               }
             };
 
@@ -524,7 +524,7 @@ export function registerEffectsUI(app) {
           title: 'Insert Silence',
           className: 'pk_modal_a_accpt',
           callback: function (modal) {
-            const input = modal.bodyElement.getElementsByClassName('pk_horiz')[0];
+            const input = modal.bodyElement.getElementsByClassName('pk_horizontal')[0];
             const value = input.value.trim() / 1;
 
             const radios = modal.bodyElement.getElementsByClassName('pk_check');
@@ -543,14 +543,14 @@ export function registerEffectsUI(app) {
         '<input type="radio" class="pk_check"  id="vgdja" name="rdslnc" checked value="cursor">' +
         '<label for="vgdja">Insert silence at current cursor (<span class="pkcdpk"></span>)</label></div>' +
         '<div class="pk_row"><label>Silence in seconds</label>' +
-        '<input type="range" min="0.0" max="30.0" class="pk_horiz" step="0.01" value="5.0" />' +
-        '<span class="pk_val">5s</span></div>',
+        '<input type="range" min="0.0" max="30.0" class="pk_horizontal" step="0.01" value="5.0" />' +
+        '<span class="pk_value">5s</span></div>',
       setup: function (modal) {
         const cursorPositionElement = modal.bodyElement.getElementsByClassName('pkcdpk')[0];
         cursorPositionElement.innerHTML = app.engine.wavesurfer.getCurrentTime().toFixed(2) + 's';
 
-        const range = modal.bodyElement.getElementsByClassName('pk_horiz')[0];
-        const span = modal.bodyElement.getElementsByClassName('pk_val')[0];
+        const range = modal.bodyElement.getElementsByClassName('pk_horizontal')[0];
+        const span = modal.bodyElement.getElementsByClassName('pk_value')[0];
 
         range.oninput = function () {
           span.innerHTML = (range.value / 1).toFixed(2) + 's';
@@ -638,20 +638,20 @@ export function registerEffectsUI(app) {
         ],
         body:
           '<div class="pk_row"><label class="pk_line">Threshold</label>' +
-          '<input class="pk_horiz" type="range" min="-100" max="0" step="0.1" value="-24.0" />' +
-          '<span class="pk_val">-24.0</span></div>' +
+          '<input class="pk_horizontal" type="range" min="-100" max="0" step="0.1" value="-24.0" />' +
+          '<span class="pk_value">-24.0</span></div>' +
           '<div class="pk_row"><label class="pk_line">Knee</label>' +
-          '<input class="pk_horiz" type="range" min="0.0" max="40.0" step="0.01" value="30.0" />' +
-          '<span class="pk_val">30.0</span></div>' +
+          '<input class="pk_horizontal" type="range" min="0.0" max="40.0" step="0.01" value="30.0" />' +
+          '<span class="pk_value">30.0</span></div>' +
           '<div class="pk_row"><label class="pk_line">Ratio</label>' +
-          '<input class="pk_horiz" type="range" min="1.0" max="20.0" step="0.01" value="12.0" />' +
-          '<span class="pk_val">12.0</span></div>' +
+          '<input class="pk_horizontal" type="range" min="1.0" max="20.0" step="0.01" value="12.0" />' +
+          '<span class="pk_value">12.0</span></div>' +
           '<div class="pk_row"><label class="pk_line">Attack</label>' +
-          '<input class="pk_horiz" type="range" min="0.0" max="1.0" step="0.001" value="0.003" />' +
-          '<span class="pk_val">0.003</span></div>' +
+          '<input class="pk_horizontal" type="range" min="0.0" max="1.0" step="0.001" value="0.003" />' +
+          '<span class="pk_value">0.003</span></div>' +
           '<div class="pk_row" style="border:none"><label class="pk_line">Release</label>' +
-          '<input class="pk_horiz" type="range" min="0.0" max="1.0" step="0.001" value="0.25" />' +
-          '<span class="pk_val">0.25</span></div>',
+          '<input class="pk_horizontal" type="range" min="0.0" max="1.0" step="0.001" value="0.25" />' +
+          '<span class="pk_value">0.25</span></div>',
         setup: function (modal) {
           const inputs = modal.bodyElement.getElementsByTagName('input');
           for (let i = 0; i < inputs.length; ++i) {
@@ -702,7 +702,7 @@ export function registerEffectsUI(app) {
           title: 'Normalize Audio',
           className: 'pk_modal_a_accpt',
           callback: function (modal) {
-            const input = modal.bodyElement.getElementsByClassName('pk_horiz')[0];
+            const input = modal.bodyElement.getElementsByClassName('pk_horizontal')[0];
             const value = input.value / 1;
 
             const toggle = modal.bodyElement.getElementsByClassName('pk_check')[0].checked;
@@ -716,11 +716,11 @@ export function registerEffectsUI(app) {
         '<input type="checkbox" id="vhcjgs" class="pk_check" name="normEqually">' +
         '<label for="vhcjgs">Normalize L/R Equally</label></div>' +
         '<div class="pk_row" style="border:none"><label>Normalize to</label>' +
-        '<input type="range" min="0.0" max="2.0" class="pk_horiz" step="0.01" value="1.0" />' +
-        '<span class="pk_val">100%</span></div>',
+        '<input type="range" min="0.0" max="2.0" class="pk_horizontal" step="0.01" value="1.0" />' +
+        '<span class="pk_value">100%</span></div>',
       setup: function (modal) {
-        const range = modal.bodyElement.getElementsByClassName('pk_horiz')[0];
-        const span = modal.bodyElement.getElementsByClassName('pk_val')[0];
+        const range = modal.bodyElement.getElementsByClassName('pk_horizontal')[0];
+        const span = modal.bodyElement.getElementsByClassName('pk_value')[0];
 
         range.oninput = function () {
           span.innerHTML = (((range.value / 1) * 100) >> 0) + '%';
@@ -780,44 +780,44 @@ export function registerEffectsUI(app) {
     };
 
     let bandsHtml =
-      '<div class="pk_col"><span class="pk_val">0 db</span>' +
-      '<input class="pk_vert" data-freq="32" data-type="lowshelf" ' +
+      '<div class="pk_column"><span class="pk_value">0 db</span>' +
+      '<input class="pk_vertical" data-freq="32" data-type="lowshelf" ' +
       'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
       '<span class="pk_btm">< 32hz</span></div>' +
-      '<div class="pk_col"><span class="pk_val">0 db</span>' +
-      '<input class="pk_vert" data-freq="64" data-type="peaking" ' +
+      '<div class="pk_column"><span class="pk_value">0 db</span>' +
+      '<input class="pk_vertical" data-freq="64" data-type="peaking" ' +
       'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
       '<span class="pk_btm">64hz</span></div>' +
-      '<div class="pk_col"><span class="pk_val">0 db</span>' +
-      '<input class="pk_vert" data-freq="125" data-type="peaking" ' +
+      '<div class="pk_column"><span class="pk_value">0 db</span>' +
+      '<input class="pk_vertical" data-freq="125" data-type="peaking" ' +
       'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
       '<span class="pk_btm">125hz</span></div>' +
-      '<div class="pk_col"><span class="pk_val">0 db</span>' +
-      '<input class="pk_vert" data-freq="250" data-type="peaking" ' +
+      '<div class="pk_column"><span class="pk_value">0 db</span>' +
+      '<input class="pk_vertical" data-freq="250" data-type="peaking" ' +
       'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
       '<span class="pk_btm">250hz</span></div>' +
-      '<div class="pk_col"><span class="pk_val">0 db</span>' +
-      '<input class="pk_vert" data-freq="500" data-type="peaking" ' +
+      '<div class="pk_column"><span class="pk_value">0 db</span>' +
+      '<input class="pk_vertical" data-freq="500" data-type="peaking" ' +
       'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
       '<span class="pk_btm">500hz</span></div>' +
-      '<div class="pk_col"><span class="pk_val">0 db</span>' +
-      '<input class="pk_vert" data-freq="1000" data-type="peaking" ' +
+      '<div class="pk_column"><span class="pk_value">0 db</span>' +
+      '<input class="pk_vertical" data-freq="1000" data-type="peaking" ' +
       'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
       '<span class="pk_btm">1000hz</span></div>' +
-      '<div class="pk_col"><span class="pk_val">0 db</span>' +
-      '<input class="pk_vert" data-freq="2000" data-type="peaking" ' +
+      '<div class="pk_column"><span class="pk_value">0 db</span>' +
+      '<input class="pk_vertical" data-freq="2000" data-type="peaking" ' +
       'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
       '<span class="pk_btm">2000hz</span></div>' +
-      '<div class="pk_col"><span class="pk_val">0 db</span>' +
-      '<input class="pk_vert" data-freq="4000" data-type="peaking" ' +
+      '<div class="pk_column"><span class="pk_value">0 db</span>' +
+      '<input class="pk_vertical" data-freq="4000" data-type="peaking" ' +
       'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
       '<span class="pk_btm">4000hz</span></div>' +
-      '<div class="pk_col"><span class="pk_val">0 db</span>' +
-      '<input class="pk_vert" data-freq="8000" data-type="peaking" ' +
+      '<div class="pk_column"><span class="pk_value">0 db</span>' +
+      '<input class="pk_vertical" data-freq="8000" data-type="peaking" ' +
       'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
       '<span class="pk_btm">8000hz</span></div>' +
-      '<div class="pk_col"><span class="pk_val">0 db</span>' +
-      '<input class="pk_vert" data-freq="16000" data-type="highshelf" ' +
+      '<div class="pk_column"><span class="pk_value">0 db</span>' +
+      '<input class="pk_vertical" data-freq="16000" data-type="highshelf" ' +
       'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
       '<span class="pk_btm"> >16000hz</span></div>';
     let presets = [
@@ -832,84 +832,84 @@ export function registerEffectsUI(app) {
       presets = null; // maybe add presets?
       bandQ = 10.2;
       bandsHtml =
-        '<div class="pk_col"><span class="pk_val">0 db</span>' +
-        '<input class="pk_vert" data-freq="31" data-type="lowshelf" ' +
+        '<div class="pk_column"><span class="pk_value">0 db</span>' +
+        '<input class="pk_vertical" data-freq="31" data-type="lowshelf" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
         '<span class="pk_btm">< 31hz</span></div>' +
-        '<div class="pk_col"><span class="pk_val">0 db</span>' +
-        '<input class="pk_vert" data-freq="44" data-type="peaking" ' +
+        '<div class="pk_column"><span class="pk_value">0 db</span>' +
+        '<input class="pk_vertical" data-freq="44" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
         '<span class="pk_btm">44hz</span></div>' +
-        '<div class="pk_col"><span class="pk_val">0 db</span>' +
-        '<input class="pk_vert" data-freq="63" data-type="peaking" ' +
+        '<div class="pk_column"><span class="pk_value">0 db</span>' +
+        '<input class="pk_vertical" data-freq="63" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
         '<span class="pk_btm">63hz</span></div>' +
-        '<div class="pk_col"><span class="pk_val">0 db</span>' +
-        '<input class="pk_vert" data-freq="88" data-type="peaking" ' +
+        '<div class="pk_column"><span class="pk_value">0 db</span>' +
+        '<input class="pk_vertical" data-freq="88" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
         '<span class="pk_btm">88hz</span></div>' +
-        '<div class="pk_col"><span class="pk_val">0 db</span>' +
-        '<input class="pk_vert" data-freq="125" data-type="peaking" ' +
+        '<div class="pk_column"><span class="pk_value">0 db</span>' +
+        '<input class="pk_vertical" data-freq="125" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
         '<span class="pk_btm">125hz</span></div>' +
-        '<div class="pk_col"><span class="pk_val">0 db</span>' +
-        '<input class="pk_vert" data-freq="180" data-type="peaking" ' +
+        '<div class="pk_column"><span class="pk_value">0 db</span>' +
+        '<input class="pk_vertical" data-freq="180" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
         '<span class="pk_btm">180hz</span></div>' +
-        '<div class="pk_col"><span class="pk_val">0 db</span>' +
-        '<input class="pk_vert" data-freq="250" data-type="peaking" ' +
+        '<div class="pk_column"><span class="pk_value">0 db</span>' +
+        '<input class="pk_vertical" data-freq="250" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
         '<span class="pk_btm">250hz</span></div>' +
-        '<div class="pk_col"><span class="pk_val">0 db</span>' +
-        '<input class="pk_vert" data-freq="335" data-type="peaking" ' +
+        '<div class="pk_column"><span class="pk_value">0 db</span>' +
+        '<input class="pk_vertical" data-freq="335" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
         '<span class="pk_btm">335hz</span></div>' +
-        '<div class="pk_col"><span class="pk_val">0 db</span>' +
-        '<input class="pk_vert" data-freq="500" data-type="peaking" ' +
+        '<div class="pk_column"><span class="pk_value">0 db</span>' +
+        '<input class="pk_vertical" data-freq="500" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
         '<span class="pk_btm">500hz</span></div>' +
-        '<div class="pk_col"><span class="pk_val">0 db</span>' +
-        '<input class="pk_vert" data-freq="710" data-type="peaking" ' +
+        '<div class="pk_column"><span class="pk_value">0 db</span>' +
+        '<input class="pk_vertical" data-freq="710" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
         '<span class="pk_btm">710hz</span></div>' +
-        '<div class="pk_col"><span class="pk_val">0 db</span>' +
-        '<input class="pk_vert" data-freq="1000" data-type="peaking" ' +
+        '<div class="pk_column"><span class="pk_value">0 db</span>' +
+        '<input class="pk_vertical" data-freq="1000" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
         '<span class="pk_btm">1khz</span></div>' +
-        '<div class="pk_col"><span class="pk_val">0 db</span>' +
-        '<input class="pk_vert" data-freq="1400" data-type="peaking" ' +
+        '<div class="pk_column"><span class="pk_value">0 db</span>' +
+        '<input class="pk_vertical" data-freq="1400" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
         '<span class="pk_btm">1.4khz</span></div>' +
-        '<div class="pk_col"><span class="pk_val">0 db</span>' +
-        '<input class="pk_vert" data-freq="2000" data-type="peaking" ' +
+        '<div class="pk_column"><span class="pk_value">0 db</span>' +
+        '<input class="pk_vertical" data-freq="2000" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
         '<span class="pk_btm">2khz</span></div>' +
-        '<div class="pk_col"><span class="pk_val">0 db</span>' +
-        '<input class="pk_vert" data-freq="2800" data-type="peaking" ' +
+        '<div class="pk_column"><span class="pk_value">0 db</span>' +
+        '<input class="pk_vertical" data-freq="2800" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
         '<span class="pk_btm">2.8khz</span></div>' +
-        '<div class="pk_col"><span class="pk_val">0 db</span>' +
-        '<input class="pk_vert" data-freq="4000" data-type="peaking" ' +
+        '<div class="pk_column"><span class="pk_value">0 db</span>' +
+        '<input class="pk_vertical" data-freq="4000" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
         '<span class="pk_btm">4khz</span></div>' +
-        '<div class="pk_col"><span class="pk_val">0 db</span>' +
-        '<input class="pk_vert" data-freq="5600" data-type="peaking" ' +
+        '<div class="pk_column"><span class="pk_value">0 db</span>' +
+        '<input class="pk_vertical" data-freq="5600" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
         '<span class="pk_btm">5.6khz</span></div>' +
-        '<div class="pk_col"><span class="pk_val">0 db</span>' +
-        '<input class="pk_vert" data-freq="8000" data-type="peaking" ' +
+        '<div class="pk_column"><span class="pk_value">0 db</span>' +
+        '<input class="pk_vertical" data-freq="8000" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
         '<span class="pk_btm">8khz</span></div>' +
-        '<div class="pk_col"><span class="pk_val">0 db</span>' +
-        '<input class="pk_vert" data-freq="11300" data-type="peaking" ' +
+        '<div class="pk_column"><span class="pk_value">0 db</span>' +
+        '<input class="pk_vertical" data-freq="11300" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
         '<span class="pk_btm">11.3khz</span></div>' +
-        '<div class="pk_col"><span class="pk_val">0 db</span>' +
-        '<input class="pk_vert" data-freq="16000" data-type="peaking" ' +
+        '<div class="pk_column"><span class="pk_value">0 db</span>' +
+        '<input class="pk_vertical" data-freq="16000" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
         '<span class="pk_btm">16k</span></div>' +
-        '<div class="pk_col"><span class="pk_val">0 db</span>' +
-        '<input class="pk_vert" data-freq="22000" data-type="highshelf" ' +
+        '<div class="pk_column"><span class="pk_value">0 db</span>' +
+        '<input class="pk_vertical" data-freq="22000" data-type="highshelf" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
         '<span class="pk_btm"> >22khz</span></div>';
     }
@@ -944,7 +944,7 @@ export function registerEffectsUI(app) {
           },
         ],
         presets: presets,
-        body: '<div class="pk_h200">' + bandsHtml + '<div style="clear:both;"></div></div>',
+        body: '<div class="pk_height_200">' + bandsHtml + '<div style="clear:both;"></div></div>',
         setup: function (modal) {
           const ranges = modal.bodyElement.getElementsByTagName('input');
           const length = ranges.length;
@@ -1009,17 +1009,17 @@ export function registerEffectsUI(app) {
           '<div class="pk_row"><input type="checkbox" class="pk_check" id="xighs" name="normEqually">' +
           '<label for="xighs">Hard Limiting</label></div>' +
           '<div class="pk_row"><label>Limit to</label>' +
-          '<input type="range" min="0.1" max="1.0" class="pk_horiz pk_w180" step="0.01" value="0.99" />' +
-          '<span class="pk_val">99%</span></div>' +
+          '<input type="range" min="0.1" max="1.0" class="pk_horizontal pk_width_180" step="0.01" value="0.99" />' +
+          '<span class="pk_value">99%</span></div>' +
           '<div class="pk_row"><label>Ratio between lows and highs</label>' +
-          '<input type="range" min="0.0" max="1.0" class="pk_horiz pk_w180" step="0.01" value="0.0" />' +
-          '<span class="pk_val">Ratio 0%</span></div>' +
+          '<input type="range" min="0.0" max="1.0" class="pk_horizontal pk_width_180" step="0.01" value="0.0" />' +
+          '<span class="pk_value">Ratio 0%</span></div>' +
           '<div class="pk_row"><label>Look Ahead (ms)</label>' +
-          '<input type="range" min="1.0" max="500.0" class="pk_horiz pk_w180" step="0.01" value="10.0" />' +
-          '<span class="pk_val">10 ms</span></div>',
+          '<input type="range" min="1.0" max="500.0" class="pk_horizontal pk_width_180" step="0.01" value="10.0" />' +
+          '<span class="pk_value">10 ms</span></div>',
         updateFilter: function (modal) {
           const value = [modal.bodyElement.getElementsByClassName('pk_check')[0].checked];
-          const ranges = modal.bodyElement.getElementsByClassName('pk_horiz');
+          const ranges = modal.bodyElement.getElementsByClassName('pk_horizontal');
 
           for (let i = 0; i < ranges.length; ++i) {
             const range = ranges[i];
@@ -1028,7 +1028,7 @@ export function registerEffectsUI(app) {
           return value;
         },
         setup: function (modal) {
-          const ranges = modal.bodyElement.getElementsByClassName('pk_horiz');
+          const ranges = modal.bodyElement.getElementsByClassName('pk_horizontal');
 
           ranges[0].oninput = function () {
             const span = this.parentNode.getElementsByTagName('span')[0];
@@ -1123,14 +1123,14 @@ export function registerEffectsUI(app) {
         ],
         body:
           '<div class="pk_row"><label class="pk_line">Delay Time</label>' +
-          '<input class="pk_horiz" type="range" min="0.0" max="6.0" step="0.01" value="0.28" />' +
-          '<span class="pk_val">0.28</span></div>' +
+          '<input class="pk_horizontal" type="range" min="0.0" max="6.0" step="0.01" value="0.28" />' +
+          '<span class="pk_value">0.28</span></div>' +
           '<div class="pk_row"><label class="pk_line">Feedback</label>' +
-          '<input class="pk_horiz" type="range" min="0.0" max="1.0" step="0.01" value="0.5" />' +
-          '<span class="pk_val">0.5</span></div>' +
+          '<input class="pk_horizontal" type="range" min="0.0" max="1.0" step="0.01" value="0.5" />' +
+          '<span class="pk_value">0.5</span></div>' +
           '<div class="pk_row"><label class="pk_line">Wet</label>' +
-          '<input class="pk_horiz" type="range" min="0.0" max="1.0" step="0.01" value="0.4" />' +
-          '<span class="pk_val">0.4</span></div>',
+          '<input class="pk_horizontal" type="range" min="0.0" max="1.0" step="0.01" value="0.4" />' +
+          '<span class="pk_value">0.4</span></div>',
         setup: function (modal) {
           const inputs = modal.bodyElement.getElementsByTagName('input');
           for (let i = 0; i < inputs.length; ++i) {
@@ -1213,8 +1213,8 @@ export function registerEffectsUI(app) {
         ],
         body:
           '<div class="pk_row"><label class="pk_line">Gain</label>' +
-          '<input class="pk_horiz" type="range" min="0.0" max="2.0" step="0.01" value="0.5" />' +
-          '<span class="pk_val">0.5</span></div>',
+          '<input class="pk_horizontal" type="range" min="0.0" max="2.0" step="0.01" value="0.5" />' +
+          '<span class="pk_value">0.5</span></div>',
 
         setup: function (modal) {
           const inputs = modal.bodyElement.getElementsByTagName('input');
@@ -1301,14 +1301,14 @@ export function registerEffectsUI(app) {
         ],
         body:
           '<div class="pk_row"><label class="pk_line">Time</label>' +
-          '<input class="pk_horiz" type="range" min="0.0" max="3.0" step="0.01" value="0.3" />' +
-          '<span class="pk_val">0.3</span></div>' +
+          '<input class="pk_horizontal" type="range" min="0.0" max="3.0" step="0.01" value="0.3" />' +
+          '<span class="pk_value">0.3</span></div>' +
           '<div class="pk_row"><label class="pk_line">Decay</label>' +
-          '<input class="pk_horiz" type="range" min="0.0" max="3.0" step="0.01" value="0.05" />' +
-          '<span class="pk_val">0.05</span></div>' +
+          '<input class="pk_horizontal" type="range" min="0.0" max="3.0" step="0.01" value="0.05" />' +
+          '<span class="pk_value">0.05</span></div>' +
           '<div class="pk_row"><label class="pk_line">Wet</label>' +
-          '<input class="pk_horiz" type="range" min="0.0" max="1.0" step="0.01" value="0.6" />' +
-          '<span class="pk_val">0.6</span></div>',
+          '<input class="pk_horizontal" type="range" min="0.0" max="1.0" step="0.01" value="0.6" />' +
+          '<span class="pk_value">0.6</span></div>',
         setup: function (modal) {
           const inputs = modal.bodyElement.getElementsByTagName('input');
           for (let i = 0; i < inputs.length; ++i) {
@@ -1615,7 +1615,7 @@ export function registerEffectsUI(app) {
           '<label for="k07">Preset Name</label>' +
           '<input style="min-width:340px" maxlength="16" placeholder="Please type a name, eg: My Preset" ' +
           defaultText +
-          ' class="pk_txt" type="text" id="k07" />',
+          ' class="pk_text" type="text" id="k07" />',
         setup: function (modal) {
           // app.fireEvent ('RequestPause');
 
