@@ -198,7 +198,19 @@ function captureScene(properties) {
   const walk = (element, path) => {
     const computed = getComputedStyle(element);
     const styles = {};
+
+    // No author rule sets `color` on a range input, so its computed value comes
+    // straight from the UA stylesheet, which the host OS themes: #101010 on
+    // Windows, #9d968e on the Linux CI runner. `border-top-color` defaults to
+    // currentColor and follows it. Neither paints anything -- a range control's
+    // track and thumb are drawn from its appearance, and main.css styles those
+    // through ::-webkit-slider-thumb and friends, which this walk never visits.
+    // Recording them only pins the baseline to the machine that wrote it.
+    const isRangeInput = element.tagName === 'INPUT' && element.type === 'range';
+
     for (const property of properties) {
+      if (isRangeInput && (property === 'color' || property === 'border-top-color')) continue;
+
       // Skip anything the element sets inline. Those values come from JS state
       // -- live audio meters, wavesurfer's canvas positioning -- and vary run
       // to run. Skipping them costs no detection power: an inline declaration
