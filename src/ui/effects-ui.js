@@ -784,43 +784,43 @@ export function registerEffectsUI(app) {
       '<div class="pk_column"><span class="pk_value">0 db</span>' +
       '<input class="pk_vertical" data-freq="32" data-type="lowshelf" ' +
       'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-      '<span class="pk_btm">< 32hz</span></div>' +
+      '<span class="pk_bottom_label">< 32hz</span></div>' +
       '<div class="pk_column"><span class="pk_value">0 db</span>' +
       '<input class="pk_vertical" data-freq="64" data-type="peaking" ' +
       'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-      '<span class="pk_btm">64hz</span></div>' +
+      '<span class="pk_bottom_label">64hz</span></div>' +
       '<div class="pk_column"><span class="pk_value">0 db</span>' +
       '<input class="pk_vertical" data-freq="125" data-type="peaking" ' +
       'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-      '<span class="pk_btm">125hz</span></div>' +
+      '<span class="pk_bottom_label">125hz</span></div>' +
       '<div class="pk_column"><span class="pk_value">0 db</span>' +
       '<input class="pk_vertical" data-freq="250" data-type="peaking" ' +
       'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-      '<span class="pk_btm">250hz</span></div>' +
+      '<span class="pk_bottom_label">250hz</span></div>' +
       '<div class="pk_column"><span class="pk_value">0 db</span>' +
       '<input class="pk_vertical" data-freq="500" data-type="peaking" ' +
       'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-      '<span class="pk_btm">500hz</span></div>' +
+      '<span class="pk_bottom_label">500hz</span></div>' +
       '<div class="pk_column"><span class="pk_value">0 db</span>' +
       '<input class="pk_vertical" data-freq="1000" data-type="peaking" ' +
       'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-      '<span class="pk_btm">1000hz</span></div>' +
+      '<span class="pk_bottom_label">1000hz</span></div>' +
       '<div class="pk_column"><span class="pk_value">0 db</span>' +
       '<input class="pk_vertical" data-freq="2000" data-type="peaking" ' +
       'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-      '<span class="pk_btm">2000hz</span></div>' +
+      '<span class="pk_bottom_label">2000hz</span></div>' +
       '<div class="pk_column"><span class="pk_value">0 db</span>' +
       '<input class="pk_vertical" data-freq="4000" data-type="peaking" ' +
       'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-      '<span class="pk_btm">4000hz</span></div>' +
+      '<span class="pk_bottom_label">4000hz</span></div>' +
       '<div class="pk_column"><span class="pk_value">0 db</span>' +
       '<input class="pk_vertical" data-freq="8000" data-type="peaking" ' +
       'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-      '<span class="pk_btm">8000hz</span></div>' +
+      '<span class="pk_bottom_label">8000hz</span></div>' +
       '<div class="pk_column"><span class="pk_value">0 db</span>' +
       '<input class="pk_vertical" data-freq="16000" data-type="highshelf" ' +
       'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-      '<span class="pk_btm"> >16000hz</span></div>';
+      '<span class="pk_bottom_label"> >16000hz</span></div>';
     let presets = [
       { name: 'Reset', val: '0,0,0,0,0,0,0,0,0,0' },
       { name: 'Old Radio', val: '-25,-22,-20,-18,-9,0,8,10,-8,-25' },
@@ -836,83 +836,83 @@ export function registerEffectsUI(app) {
         '<div class="pk_column"><span class="pk_value">0 db</span>' +
         '<input class="pk_vertical" data-freq="31" data-type="lowshelf" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-        '<span class="pk_btm">< 31hz</span></div>' +
+        '<span class="pk_bottom_label">< 31hz</span></div>' +
         '<div class="pk_column"><span class="pk_value">0 db</span>' +
         '<input class="pk_vertical" data-freq="44" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-        '<span class="pk_btm">44hz</span></div>' +
+        '<span class="pk_bottom_label">44hz</span></div>' +
         '<div class="pk_column"><span class="pk_value">0 db</span>' +
         '<input class="pk_vertical" data-freq="63" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-        '<span class="pk_btm">63hz</span></div>' +
+        '<span class="pk_bottom_label">63hz</span></div>' +
         '<div class="pk_column"><span class="pk_value">0 db</span>' +
         '<input class="pk_vertical" data-freq="88" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-        '<span class="pk_btm">88hz</span></div>' +
+        '<span class="pk_bottom_label">88hz</span></div>' +
         '<div class="pk_column"><span class="pk_value">0 db</span>' +
         '<input class="pk_vertical" data-freq="125" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-        '<span class="pk_btm">125hz</span></div>' +
+        '<span class="pk_bottom_label">125hz</span></div>' +
         '<div class="pk_column"><span class="pk_value">0 db</span>' +
         '<input class="pk_vertical" data-freq="180" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-        '<span class="pk_btm">180hz</span></div>' +
+        '<span class="pk_bottom_label">180hz</span></div>' +
         '<div class="pk_column"><span class="pk_value">0 db</span>' +
         '<input class="pk_vertical" data-freq="250" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-        '<span class="pk_btm">250hz</span></div>' +
+        '<span class="pk_bottom_label">250hz</span></div>' +
         '<div class="pk_column"><span class="pk_value">0 db</span>' +
         '<input class="pk_vertical" data-freq="335" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-        '<span class="pk_btm">335hz</span></div>' +
+        '<span class="pk_bottom_label">335hz</span></div>' +
         '<div class="pk_column"><span class="pk_value">0 db</span>' +
         '<input class="pk_vertical" data-freq="500" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-        '<span class="pk_btm">500hz</span></div>' +
+        '<span class="pk_bottom_label">500hz</span></div>' +
         '<div class="pk_column"><span class="pk_value">0 db</span>' +
         '<input class="pk_vertical" data-freq="710" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-        '<span class="pk_btm">710hz</span></div>' +
+        '<span class="pk_bottom_label">710hz</span></div>' +
         '<div class="pk_column"><span class="pk_value">0 db</span>' +
         '<input class="pk_vertical" data-freq="1000" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-        '<span class="pk_btm">1khz</span></div>' +
+        '<span class="pk_bottom_label">1khz</span></div>' +
         '<div class="pk_column"><span class="pk_value">0 db</span>' +
         '<input class="pk_vertical" data-freq="1400" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-        '<span class="pk_btm">1.4khz</span></div>' +
+        '<span class="pk_bottom_label">1.4khz</span></div>' +
         '<div class="pk_column"><span class="pk_value">0 db</span>' +
         '<input class="pk_vertical" data-freq="2000" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-        '<span class="pk_btm">2khz</span></div>' +
+        '<span class="pk_bottom_label">2khz</span></div>' +
         '<div class="pk_column"><span class="pk_value">0 db</span>' +
         '<input class="pk_vertical" data-freq="2800" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-        '<span class="pk_btm">2.8khz</span></div>' +
+        '<span class="pk_bottom_label">2.8khz</span></div>' +
         '<div class="pk_column"><span class="pk_value">0 db</span>' +
         '<input class="pk_vertical" data-freq="4000" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-        '<span class="pk_btm">4khz</span></div>' +
+        '<span class="pk_bottom_label">4khz</span></div>' +
         '<div class="pk_column"><span class="pk_value">0 db</span>' +
         '<input class="pk_vertical" data-freq="5600" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-        '<span class="pk_btm">5.6khz</span></div>' +
+        '<span class="pk_bottom_label">5.6khz</span></div>' +
         '<div class="pk_column"><span class="pk_value">0 db</span>' +
         '<input class="pk_vertical" data-freq="8000" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-        '<span class="pk_btm">8khz</span></div>' +
+        '<span class="pk_bottom_label">8khz</span></div>' +
         '<div class="pk_column"><span class="pk_value">0 db</span>' +
         '<input class="pk_vertical" data-freq="11300" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-        '<span class="pk_btm">11.3khz</span></div>' +
+        '<span class="pk_bottom_label">11.3khz</span></div>' +
         '<div class="pk_column"><span class="pk_value">0 db</span>' +
         '<input class="pk_vertical" data-freq="16000" data-type="peaking" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-        '<span class="pk_btm">16k</span></div>' +
+        '<span class="pk_bottom_label">16k</span></div>' +
         '<div class="pk_column"><span class="pk_value">0 db</span>' +
         '<input class="pk_vertical" data-freq="22000" data-type="highshelf" ' +
         'type="range" min="-25.0" max="25.0" step="0.01" value="0.0" />' +
-        '<span class="pk_btm"> >22khz</span></div>';
+        '<span class="pk_bottom_label"> >22khz</span></div>';
     }
 
     const fxModal = AudioEffectModal(
@@ -1899,7 +1899,7 @@ export function registerEffectsUI(app) {
     } else if (type === 1) {
       let iframe = document.createElement('iframe');
       iframe.className = 'pk_frequency_analyzer';
-      iframe.id = 'pk_fr' + url;
+      iframe.id = 'pk_frame' + url;
 
       if (app.ui.BarBtm.on) {
         const ch = app.ui.BarBtm.element.childNodes;
