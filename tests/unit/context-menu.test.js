@@ -37,7 +37,7 @@ describe('ContextMenu', () => {
 
     menu.open(fakeOpenEvent(host));
 
-    const rendered = document.querySelector('.pk_contextMenu');
+    const rendered = document.querySelector('.pk_context_menu');
     expect(rendered).not.toBeNull();
 
     const action = rendered.querySelector('.pk_ctx_action');
@@ -46,7 +46,7 @@ describe('ContextMenu', () => {
     action.click();
     expect(onCopy).toHaveBeenCalledTimes(1);
     // choosing an option closes the menu
-    expect(document.querySelector('.pk_contextMenu')).toBeNull();
+    expect(document.querySelector('.pk_context_menu')).toBeNull();
   });
 
   it('renders raw HTML entries', () => {
@@ -54,7 +54,7 @@ describe('ContextMenu', () => {
     menu.addOption('ignored', null, '<b>custom</b>');
 
     menu.open(fakeOpenEvent(host));
-    expect(document.querySelector('.pk_contextMenu b').textContent).toBe('custom');
+    expect(document.querySelector('.pk_context_menu b').textContent).toBe('custom');
   });
 
   it('closes on outside mousedown', () => {
@@ -63,7 +63,7 @@ describe('ContextMenu', () => {
     menu.open(fakeOpenEvent(host));
 
     clickOutside();
-    expect(document.querySelector('.pk_contextMenu')).toBeNull();
+    expect(document.querySelector('.pk_context_menu')).toBeNull();
   });
 
   it('opens via the custom pk_ctxmn event on the bound element', () => {
@@ -71,6 +71,6 @@ describe('ContextMenu', () => {
     menu.addOption('Paste', () => {});
 
     host.dispatchEvent(new Event('pk_ctxmn'));
-    expect(document.querySelector('.pk_contextMenu')).not.toBeNull();
+    expect(document.querySelector('.pk_context_menu')).not.toBeNull();
   });
 });

@@ -248,7 +248,7 @@ function confirmAndSummarizeWithWorker(app, text, modalBody) {
       buttons: [
         {
           title: 'Yes',
-          className: 'pk_modal_a_accpt',
+          className: 'pk_modal_action_accept',
           callback: async function (modal) {
             isConfirmed = true;
             modal.Destroy();
@@ -393,17 +393,17 @@ function showTranscriptModal(app, transcript) {
     buttons: [
       {
         title: 'Export',
-        className: 'pk_modal_a_accpt',
+        className: 'pk_modal_action_accept',
         callback: exportTranscript,
       },
       {
         title: LABEL_SUMMARIZE,
-        className: 'pk_modal_a_accpt',
+        className: 'pk_modal_action_accept',
         callback: (modal) => handleSummarizeClick(app, modal),
       },
       {
         title: 'Close',
-        className: 'pk_modal_a_accpt',
+        className: 'pk_modal_action_accept',
         callback: function (modal) {
           modal.Destroy();
         },

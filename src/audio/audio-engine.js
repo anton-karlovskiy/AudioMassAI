@@ -589,7 +589,7 @@ export function AudioEngine(app) {
       if (app.ui.InteractionHandler.on) return;
 
       // fire event to open the save menu
-      document.querySelector('.pk_opt[data-id="dl"]').click();
+      document.querySelector('.pk_option[data-id="dl"]').click();
     },
     [16, 83]
   );

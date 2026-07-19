@@ -296,9 +296,9 @@ export function openTempoTools(app) {
         '<input type="checkbox" id="xxcjgs" class="pk_check" checked name="metroAccent">' +
         '<label for="xxcjgs">Accentuate metronome click</label></div>' +
         '<div class="pk_row">' +
-        '<a class="pk_modal_a_bottom" style="display:inline-block;float:none">Metronome</a>' +
-        '<a class="pk_modal_a_bottom" style="display:inline-block;float:none">Play Track</a>' +
-        '<a class="pk_modal_a_bottom" style="display:inline-block;float:none">Play Both</a>' +
+        '<a class="pk_modal_action_bottom" style="display:inline-block;float:none">Metronome</a>' +
+        '<a class="pk_modal_action_bottom" style="display:inline-block;float:none">Play Track</a>' +
+        '<a class="pk_modal_action_bottom" style="display:inline-block;float:none">Play Both</a>' +
         '</div>';
 
       tool.body = drawerElement;
@@ -332,9 +332,9 @@ export function openTempoTools(app) {
         accentuate = checkbox.checked;
       };
 
-      const metronomeButton = tool.body.getElementsByClassName('pk_modal_a_bottom')[0];
-      const playButton = tool.body.getElementsByClassName('pk_modal_a_bottom')[1];
-      const bothButton = tool.body.getElementsByClassName('pk_modal_a_bottom')[2];
+      const metronomeButton = tool.body.getElementsByClassName('pk_modal_action_bottom')[0];
+      const playButton = tool.body.getElementsByClassName('pk_modal_action_bottom')[1];
+      const bothButton = tool.body.getElementsByClassName('pk_modal_action_bottom')[2];
 
       metronomeButton.onclick = function () {
         if (tick) {
@@ -505,9 +505,9 @@ export function openTempoTools(app) {
         '<span>Timing Taps</span>' +
         '<input style="margin-left:2px;min-width:64px;max-width:64px" ' +
         'type="text" class="pk_value pk_gain" value="-">' +
-        '<a class="pk_modal_a_bottom" style="display:inline-block;float:none">Reset</a>' +
-        '<a class="pk_modal_a_bottom" style="display:inline-block;float:none">Play Track</a>' +
-        '<a class="pk_modal_a_bottom" style="display:inline-block;float:none">Loop</a>' +
+        '<a class="pk_modal_action_bottom" style="display:inline-block;float:none">Reset</a>' +
+        '<a class="pk_modal_action_bottom" style="display:inline-block;float:none">Play Track</a>' +
+        '<a class="pk_modal_action_bottom" style="display:inline-block;float:none">Loop</a>' +
         '</div>' +
         '<div><div id="pk_tmp_tap">' +
         '<span style="opacity:0" class="pk_obj2">CLEARED...</span>' +
@@ -532,9 +532,9 @@ export function openTempoTools(app) {
     function _make_evs(tool) {
       const tapGraph = tool.body.querySelectorAll('#pk_tmp_tap')[0];
       const tapArea = tool.body.querySelectorAll('#pk_tmp_tap3')[0];
-      const resetButton = tool.body.getElementsByClassName('pk_modal_a_bottom')[0];
-      const playButton = tool.body.getElementsByClassName('pk_modal_a_bottom')[1];
-      const loopButton = tool.body.getElementsByClassName('pk_modal_a_bottom')[2];
+      const resetButton = tool.body.getElementsByClassName('pk_modal_action_bottom')[0];
+      const playButton = tool.body.getElementsByClassName('pk_modal_action_bottom')[1];
+      const loopButton = tool.body.getElementsByClassName('pk_modal_action_bottom')[2];
 
       const canvas = tool.body.getElementsByTagName('canvas')[0];
       const canvasContext = canvas.getContext('2d', { alpha: false, antialias: false });
@@ -1154,7 +1154,7 @@ export function openTempoTools(app) {
         '<input type="radio" class="pk_check" id="tt5" name="xport" value="sel">' +
         '<label class="pk_lblmp3" for="tt5">Estimate for Selection Only</label></div>' +
         '<div class="pk_row">' +
-        '<a class="pk_modal_a_bottom" style="margin:0;float:left">Estimate</a>' +
+        '<a class="pk_modal_action_bottom" style="margin:0;float:left">Estimate</a>' +
         '</div>';
 
       tool.body = drawerElement;
@@ -1194,7 +1194,7 @@ export function openTempoTools(app) {
 
       //			buttons: [{
       //				title:'Apply EQ',
-      //				className:'pk_modal_a_accpt',
+      //				className:'pk_modal_action_accept',
       //				callback: function( modal ) {
       //					modal.Destroy ();
       //				}

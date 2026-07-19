@@ -34,7 +34,7 @@ export class SimpleModal {
 
     // Wrapper used to center the modal.
     const centerer = document.createElement('div');
-    centerer.className = 'pk_modal_cnt';
+    centerer.className = 'pk_modal_centerer';
     this.centererElement = centerer;
 
     // Title bar.
@@ -56,7 +56,7 @@ export class SimpleModal {
 
     const cancelButton = document.createElement('a');
     cancelButton.innerHTML = 'CANCEL';
-    cancelButton.className = 'pk_modal_cancel pk_modal_a_bottom';
+    cancelButton.className = 'pk_modal_cancel pk_modal_action_bottom';
     cancelButton.onclick = function () {
       modal.Destroy();
     };
@@ -69,7 +69,7 @@ export class SimpleModal {
         const button = document.createElement('a');
         button.innerHTML = buttonConfig.title;
         button.className =
-          'pk_modal_a_bottom ' + (buttonConfig.className ? buttonConfig.className : '');
+          'pk_modal_action_bottom ' + (buttonConfig.className ? buttonConfig.className : '');
         button.onclick = () => buttonConfig.callback(modal);
 
         this.elements.bottom.push(button);
@@ -85,7 +85,8 @@ export class SimpleModal {
 
         const link = document.createElement('a');
         link.innerHTML = toolConfig.title;
-        link.className = 'pk_modal_a_top ' + (toolConfig.className ? toolConfig.className : '');
+        link.className =
+          'pk_modal_action_top ' + (toolConfig.className ? toolConfig.className : '');
         titleBar.appendChild(link);
 
         link.onclick = function () {
@@ -220,7 +221,7 @@ export function AudioEffectModal(config, app) {
       modal._updpreview = function (mode) {
         const selectedOption =
           modal.presetSelectElement.options[modal.presetSelectElement.selectedIndex];
-        const editButton = modal.element.getElementsByClassName('pk_sel_edt')[0];
+        const editButton = modal.element.getElementsByClassName('pk_select_edit')[0];
 
         if (mode === 't') {
           if (selectedOption && selectedOption.getAttribute('data-custom')) {
@@ -270,7 +271,7 @@ export function AudioEffectModal(config, app) {
           return;
         }
 
-        let presetSelect = modal.element.getElementsByClassName('pk_sel');
+        let presetSelect = modal.element.getElementsByClassName('pk_select');
 
         // If a preset dropdown already exists, refresh its custom entries.
         if (presetSelect.length > 0) {
@@ -305,7 +306,7 @@ export function AudioEffectModal(config, app) {
           return;
         } else {
           presetSelect = document.createElement('select');
-          presetSelect.className = 'pk_sel';
+          presetSelect.className = 'pk_select';
         }
 
         if (presets.length === 0) return;
@@ -358,7 +359,7 @@ export function AudioEffectModal(config, app) {
 
         // "Save or modify preset" button next to the dropdown.
         const editPresetsButton = document.createElement('a');
-        editPresetsButton.className = 'pk_sel_edt';
+        editPresetsButton.className = 'pk_select_edit';
         editPresetsButton.innerHTML = '...<span>Save or Modify preset</span>';
         editPresetsButton.onclick = function () {
           app.fireEvent('RequestSavePreset');

@@ -194,7 +194,7 @@ export function registerEffectsUI(app) {
         buttons: [
           {
             title: 'Apply Gain',
-            className: 'pk_modal_a_accpt',
+            className: 'pk_modal_action_accept',
             callback: function (modal) {
               const value = getvalue(modal);
 
@@ -268,7 +268,7 @@ export function registerEffectsUI(app) {
         buttons: [
           {
             title: 'Apply Rate',
-            className: 'pk_modal_a_accpt',
+            className: 'pk_modal_action_accept',
             callback: function (modal) {
               const input = modal.bodyElement.getElementsByTagName('input')[0];
               const value = input.value.trim() / 1;
@@ -342,7 +342,7 @@ export function registerEffectsUI(app) {
         buttons: [
           {
             title: 'Apply Rate',
-            className: 'pk_modal_a_accpt',
+            className: 'pk_modal_action_accept',
             callback: function (modal) {
               const input = modal.bodyElement.getElementsByTagName('input')[0];
               const value = input.value.trim() / 1;
@@ -405,7 +405,7 @@ export function registerEffectsUI(app) {
         buttons: [
           {
             title: 'Apply Changes',
-            className: 'pk_modal_a_accpt',
+            className: 'pk_modal_action_accept',
             callback: function (modal) {
               if (mode === 1) {
                 // check if we are doing force mono, or force flip
@@ -522,7 +522,7 @@ export function registerEffectsUI(app) {
       buttons: [
         {
           title: 'Insert Silence',
-          className: 'pk_modal_a_accpt',
+          className: 'pk_modal_action_accept',
           callback: function (modal) {
             const input = modal.bodyElement.getElementsByClassName('pk_horizontal')[0];
             const value = input.value.trim() / 1;
@@ -625,7 +625,7 @@ export function registerEffectsUI(app) {
         buttons: [
           {
             title: 'Apply',
-            className: 'pk_modal_a_accpt',
+            className: 'pk_modal_action_accept',
             callback: function (modal) {
               const inputs = modal.bodyElement.getElementsByTagName('input');
               const value = getvalue(modal);
@@ -700,7 +700,7 @@ export function registerEffectsUI(app) {
       buttons: [
         {
           title: 'Normalize Audio',
-          className: 'pk_modal_a_accpt',
+          className: 'pk_modal_action_accept',
           callback: function (modal) {
             const input = modal.bodyElement.getElementsByClassName('pk_horizontal')[0];
             const value = input.value / 1;
@@ -934,7 +934,7 @@ export function registerEffectsUI(app) {
         buttons: [
           {
             title: 'Apply EQ',
-            className: 'pk_modal_a_accpt',
+            className: 'pk_modal_action_accept',
             callback: function (modal) {
               const ranges = modal.bodyElement.getElementsByTagName('input');
               app.fireEvent('RequestActionFX_PARAMEQ', getvalue(ranges));
@@ -995,7 +995,7 @@ export function registerEffectsUI(app) {
         buttons: [
           {
             title: 'Hard Limiting',
-            className: 'pk_modal_a_accpt',
+            className: 'pk_modal_action_accept',
             callback: function (modal) {
               app.fireEvent('RequestActionFX_HardLimit', modal.updateFilter(modal));
               modal.Destroy();
@@ -1111,7 +1111,7 @@ export function registerEffectsUI(app) {
         buttons: [
           {
             title: 'Apply',
-            className: 'pk_modal_a_accpt',
+            className: 'pk_modal_action_accept',
             callback: function (modal) {
               const value = getvalue(modal);
 
@@ -1202,7 +1202,7 @@ export function registerEffectsUI(app) {
         buttons: [
           {
             title: 'Apply',
-            className: 'pk_modal_a_accpt',
+            className: 'pk_modal_action_accept',
             callback: function (modal) {
               const value = getvalue(modal);
               app.fireEvent('RequestActionFX_DISTORT', value);
@@ -1284,7 +1284,7 @@ export function registerEffectsUI(app) {
         buttons: [
           {
             title: 'Apply',
-            className: 'pk_modal_a_accpt',
+            className: 'pk_modal_action_accept',
             callback: function (modal) {
               const inputs = modal.bodyElement.getElementsByTagName('input');
               const value = {
@@ -1520,7 +1520,7 @@ export function registerEffectsUI(app) {
 
         buttonDelete = {
           title: 'Delete',
-          className: 'pk_modal_a_red',
+          className: 'pk_modal_action_danger',
           callback: function (modal) {
             showToast('Successfully deleted preset!', 1400);
 
@@ -1582,7 +1582,7 @@ export function registerEffectsUI(app) {
         buttons: [
           {
             title: isNew ? 'Save' : 'Save As New',
-            className: 'pk_modal_a_accpt',
+            className: 'pk_modal_action_accept',
             callback: function (modal) {
               const input = modal.bodyElement.getElementsByTagName('input')[0];
               let value = input.value.trim();

@@ -17,7 +17,9 @@ describe('SimpleModal', () => {
     expect(document.querySelector('.pk_modal_title').textContent).toContain('Export');
     expect(document.querySelector('.pk_modal_main').innerHTML).toContain('Pick a format');
 
-    const buttons = [...document.querySelectorAll('.pk_modal_a_bottom')].map((b) => b.textContent);
+    const buttons = [...document.querySelectorAll('.pk_modal_action_bottom')].map(
+      (b) => b.textContent
+    );
     expect(buttons).toEqual(['CANCEL', 'OK']);
   });
 
@@ -57,7 +59,9 @@ describe('SimpleModal', () => {
       buttons: [{ title: 'No callback' }, {}, { title: 'Valid', callback: () => {} }],
     }).Show();
 
-    const labels = [...document.querySelectorAll('.pk_modal_a_bottom')].map((b) => b.textContent);
+    const labels = [...document.querySelectorAll('.pk_modal_action_bottom')].map(
+      (b) => b.textContent
+    );
     expect(labels).toEqual(['CANCEL', 'Valid']);
   });
 });

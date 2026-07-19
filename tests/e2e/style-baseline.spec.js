@@ -179,7 +179,7 @@ const SCENES = [
     name: 'export-modal',
     async setup(page) {
       await loadSample(page);
-      await page.evaluate(() => document.querySelector('.pk_opt[data-id="dl"]').click());
+      await page.evaluate(() => document.querySelector('.pk_option[data-id="dl"]').click());
       await page.waitForSelector('.pk_modal');
       await page.waitForTimeout(300);
     },
@@ -251,7 +251,7 @@ const SCENES = [
       await page.keyboard.press('Escape');
       await page.waitForTimeout(200);
       await page.evaluate(() => {
-        const entry = [...document.querySelectorAll('.pk_opt')].find(
+        const entry = [...document.querySelectorAll('.pk_option')].find(
           (option) => option.textContent.trim() === 'Open Local Drafts'
         );
         entry.click();

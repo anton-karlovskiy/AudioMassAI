@@ -150,7 +150,7 @@ function _topbarConfig(app, ui) {
               buttons: [
                 {
                   title: 'Export',
-                  className: 'pk_modal_a_accpt',
+                  className: 'pk_modal_action_accept',
                   callback: function (modal) {
                     const input = modal.bodyElement.getElementsByTagName('input')[0];
                     const value = input.value.trim();
@@ -343,7 +343,7 @@ function _topbarConfig(app, ui) {
               buttons: [
                 {
                   title: 'Load Asset',
-                  className: 'pk_modal_a_accpt',
+                  className: 'pk_modal_action_accept',
                   callback: function (modal) {
                     const input = modal.bodyElement.getElementsByTagName('input')[0];
                     const value = input.value.trim();
@@ -457,7 +457,7 @@ function _topbarConfig(app, ui) {
               buttons: [
                 {
                   title: 'Save',
-                  className: 'pk_modal_a_accpt',
+                  className: 'pk_modal_action_accept',
                   callback: function (modal) {
                     let type = 'whole';
                     const input = modal.bodyElement.getElementsByTagName('input');
@@ -886,7 +886,7 @@ function _topbarConfig(app, ui) {
                     buttons: [
                       {
                         title: 'OPEN',
-                        className: 'pk_modal_a_accpt',
+                        className: 'pk_modal_action_accept',
                         callback: function (modal) {
                           overwrite();
 
@@ -895,7 +895,7 @@ function _topbarConfig(app, ui) {
                       },
                       {
                         title: 'OPEN IN NEW',
-                        className: 'pk_modal_a_accpt',
+                        className: 'pk_modal_action_accept',
                         callback: function (modal) {
                           window.open(window.location.pathname + '?local=' + name);
                           modal.Destroy();
@@ -1361,9 +1361,9 @@ function _makeUITopHeader(menuTree, UI) {
         button.innerHTML = currentOption.name;
         buttonContainer.appendChild(button);
       } else {
-        buttonContainer.className = 'pk_menu_el';
+        buttonContainer.className = 'pk_menu_element';
         const button = document.createElement('button');
-        button.className = 'pk_opt ' + (currentOption.className ? currentOption.className : '');
+        button.className = 'pk_option ' + (currentOption.className ? currentOption.className : '');
         button.setAttribute('tab-index', '-1');
         button.setAttribute('data-index', i);
         button.innerHTML = currentOption.name;
@@ -1492,7 +1492,7 @@ function _makeUITopHeader(menuTree, UI) {
       _name + 4,
       function (key, m, e) {
         if (!targetOption) {
-          const elements = targetElement.parentNode.getElementsByClassName('pk_opt');
+          const elements = targetElement.parentNode.getElementsByClassName('pk_option');
           if (elements[0]) {
             targetOption = elements[0];
             targetOption.classList.add('pk_active');
@@ -1501,7 +1501,7 @@ function _makeUITopHeader(menuTree, UI) {
           const ind = targetOption.getAttribute('data-index') / 1;
           targetOption.classList.remove('pk_active');
 
-          targetOption = targetElement.parentNode.getElementsByClassName('pk_opt');
+          targetOption = targetElement.parentNode.getElementsByClassName('pk_option');
           if (ind - 1 < 0) {
             targetOption = targetOption[targetOption.length - 1];
           } else {
@@ -1516,7 +1516,7 @@ function _makeUITopHeader(menuTree, UI) {
       _name + 5,
       function (key, m, e) {
         if (!targetOption) {
-          const elements = targetElement.parentNode.getElementsByClassName('pk_opt');
+          const elements = targetElement.parentNode.getElementsByClassName('pk_option');
           if (elements[0]) {
             targetOption = elements[0];
             targetOption.classList.add('pk_active');
@@ -1525,7 +1525,7 @@ function _makeUITopHeader(menuTree, UI) {
           const ind = targetOption.getAttribute('data-index') / 1;
           targetOption.classList.remove('pk_active');
 
-          targetOption = targetElement.parentNode.getElementsByClassName('pk_opt');
+          targetOption = targetElement.parentNode.getElementsByClassName('pk_option');
           if (targetOption.length <= ind + 1) {
             targetOption = targetOption[0];
           } else {
@@ -1582,7 +1582,7 @@ function _makeUITopHeader(menuTree, UI) {
     if (targetElement || (UI.InteractionHandler.on && UI.InteractionHandler.by === _name)) {
       const x = e.target || e.srcElement;
 
-      if (x.className.indexOf('pk_opt') >= 0) {
+      if (x.className.indexOf('pk_option') >= 0) {
         if (targetOption) targetOption.classList.remove('pk_active');
 
         targetOption = x;
@@ -2066,7 +2066,7 @@ function _makeUIMainView(UI, app) {
   const ttmp2 = document.createElement('div');
   ttmp2.className = 'pk_tmpMsg2';
   ttmp2.innerHTML =
-    '<span>Please Wait...</span><div class="pk_mload"><div></div></div>' +
+    '<span>Please Wait...</span><div class="pk_modal_loading"><div></div></div>' +
     '<div class="pk_prc"><span>0%</span>' +
     '<button tabIndex="-1" class="pk_button" ' +
     'onclick="PKAudioEditor.fireEvent(\'RequestCancelModal\');">cancel</button></div>';
@@ -2896,7 +2896,7 @@ function _makeUIToolbar(UI) {
   const selection = document.createElement('div');
   selection.className = 'pk_selection';
   selection.innerHTML =
-    '<div class="pk_sellist">' +
+    '<div class="pk_select_list">' +
     '<span class="pk_title">Selection:</span>' +
     '<div><span class="title">Start:</span><span class="s_s pk_dat">-</span></div>' +
     '<div><span class="title">End:</span><span class="s_e pk_dat">-</span></div>' +
@@ -2915,7 +2915,7 @@ function _makeUIToolbar(UI) {
     buttonClearSelection.classList.remove('pk_inactive');
 
     if (region) {
-      if (!selectedSpans[0]) selectedSpans = document.querySelectorAll('.pk_sellist .pk_dat');
+      if (!selectedSpans[0]) selectedSpans = document.querySelectorAll('.pk_select_list .pk_dat');
       selectedSpans[0].textContent = region.start.toFixed(3);
       selectedSpans[1].textContent = region.end.toFixed(3);
       selectedSpans[2].textContent = (region.end - region.start).toFixed(3);
@@ -2926,7 +2926,7 @@ function _makeUIToolbar(UI) {
     cutButton.classList.add('pk_inactive');
     buttonClearSelection.classList.add('pk_inactive');
 
-    if (!selectedSpans[0]) selectedSpans = document.querySelectorAll('.pk_sellist .pk_dat');
+    if (!selectedSpans[0]) selectedSpans = document.querySelectorAll('.pk_select_list .pk_dat');
     selectedSpans[0].textContent = '-';
     selectedSpans[1].textContent = '-';
     selectedSpans[2].textContent = '-';

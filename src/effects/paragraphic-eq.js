@@ -1200,7 +1200,7 @@ export function openParagraphicEQ(app, customPresets) {
       buttons: [
         {
           title: 'Apply EQ',
-          className: 'pk_modal_a_accpt',
+          className: 'pk_modal_action_accept',
           callback: function (modal) {
             app.fireEvent('RequestActionFX_PARAMEQ', updateFilter());
             modal.Destroy();

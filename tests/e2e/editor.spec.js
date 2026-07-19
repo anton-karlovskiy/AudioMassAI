@@ -269,7 +269,7 @@ test('saves a local session and reloads it, old records included', async ({ page
   // The drafts menu reaches storage through the app instance; this is the
   // path that silently broke when `app.fls` was renamed.
   await page.evaluate(() => {
-    const entry = [...document.querySelectorAll('.pk_opt')].find(
+    const entry = [...document.querySelectorAll('.pk_option')].find(
       (option) => option.textContent.trim() === 'Open Local Drafts'
     );
     entry.click();
@@ -344,7 +344,7 @@ test('export dialog opens with format options', async ({ page }) => {
   await bootApp(page);
   await loadSample(page);
 
-  await page.evaluate(() => document.querySelector('.pk_opt[data-id="dl"]').click());
+  await page.evaluate(() => document.querySelector('.pk_option[data-id="dl"]').click());
   await expect(page.locator('.pk_modal')).toBeVisible();
   await expect(page.locator('.pk_modal input[value="mp3"]')).toHaveCount(1);
   await expect(page.locator('.pk_modal input[value="flac"]')).toHaveCount(1);

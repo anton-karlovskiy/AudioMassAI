@@ -16,7 +16,7 @@ const EXIT_DURATION_MS = 330;
 export function showToast(message, visibleMs, extraClass) {
   const toast = document.createElement('div');
 
-  let className = 'pk_oneup pk_noselect';
+  let className = 'pk_toast pk_noselect';
   if (extraClass) className += ' ' + extraClass;
 
   toast.style.cssText = 'margin-top:20px;opacity:0';

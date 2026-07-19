@@ -49,7 +49,7 @@ function openMenuAt(menu, x, y) {
   const left = x - marginOffset;
   const top = y - marginOffset;
 
-  container.className = 'pk_contextMenu ' + menu.menuClass;
+  container.className = 'pk_context_menu ' + menu.menuClass;
   container.id = menu.token;
 
   for (let i = 0, optionCount = options.length; i < optionCount; ++i) {

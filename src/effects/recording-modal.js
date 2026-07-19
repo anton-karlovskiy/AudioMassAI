@@ -85,7 +85,7 @@ export function openRecordingModal(app) {
 
       //			buttons: [{
       //				title:'Apply EQ',
-      //				className:'pk_modal_a_accpt',
+      //				className:'pk_modal_action_accept',
       //				callback: function( modal ) {
       //					modal.Destroy ();
       //				}
