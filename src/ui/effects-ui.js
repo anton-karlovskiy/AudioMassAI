@@ -27,13 +27,13 @@ function FxPresetStore() {
     }
 
     presetList.push(preset);
-    localStorage.setItem('pk_presetfx', JSON.stringify(presets));
+    localStorage.setItem('pk_preset_fx', JSON.stringify(presets));
 
     return presetList;
   };
 
   this.Save = function () {
-    localStorage.setItem('pk_presetfx', JSON.stringify(presets));
+    localStorage.setItem('pk_preset_fx', JSON.stringify(presets));
   };
 
   this.Get = function (filterId) {
@@ -75,7 +75,7 @@ function FxPresetStore() {
       }
     }
 
-    if (found) localStorage.setItem('pk_presetfx', JSON.stringify(presets));
+    if (found) localStorage.setItem('pk_preset_fx', JSON.stringify(presets));
 
     return presetList;
   };
@@ -86,7 +86,7 @@ function FxPresetStore() {
     return;
   }
 
-  const json = window.localStorage.getItem('pk_presetfx');
+  const json = window.localStorage.getItem('pk_preset_fx');
   let tmp = null;
 
   if (!json) return;

@@ -131,49 +131,7 @@ test('effect dialogs open and close', async ({ page }) => {
   }
 });
 
-/**
- * Rewrites a stored session back into the pre-rename key shape, straight
- * through IndexedDB, so the next read exercises the real upgrade path.
- */
-async function downgradeStoredSession(page, id) {
-  return page.evaluate((sessionId) => {
-    const legacyKeys = {
-      channelData: 'data',
-      channelByteLengths: 'data2',
-      duration: 'durr',
-      channelCount: 'chans',
-      compression: 'comp',
-      sampleRate: 'samplerate',
-      thumbnail: 'thumb',
-    };
-
-    return new Promise((resolve, reject) => {
-      const open = indexedDB.open('audiomass');
-      open.onerror = () => reject(new Error('could not open db'));
-      open.onsuccess = () => {
-        const transaction = open.result.transaction(['sessions'], 'readwrite');
-        const store = transaction.objectStore('sessions');
-
-        store.get(sessionId).onsuccess = (event) => {
-          const record = event.target.result;
-          delete record.schemaVersion;
-
-          for (const currentKey in legacyKeys) {
-            record[legacyKeys[currentKey]] = record[currentKey];
-            delete record[currentKey];
-          }
-
-          store.put(record);
-        };
-
-        transaction.oncomplete = () => resolve(true);
-        transaction.onerror = () => reject(new Error('could not rewrite record'));
-      };
-    });
-  }, id);
-}
-
-test('saves a local session and reloads it, old records included', async ({ page }) => {
+test('saves a local session and reloads it', async ({ page }) => {
   const consoleErrors = await bootApp(page);
   await loadSample(page);
 
@@ -214,39 +172,13 @@ test('saves a local session and reloads it, old records included', async ({ page
     sessionId
   );
 
-  expect(saved.schemaVersion).toBe(2);
+  expect(saved.schemaVersion).toBe(1);
   expect(saved.channelCount).toBeGreaterThan(0);
   expect(saved.sampleRate).toBeGreaterThan(0);
   expect(saved.duration).toBeCloseTo(originalDuration, 1);
   expect(saved.channels).toBe(saved.channelCount);
 
-  // A record written by an older build reads back in the current shape.
-  await downgradeStoredSession(page, sessionId);
-
-  const upgraded = await page.evaluate(
-    (id) =>
-      new Promise((resolve) => {
-        window.PKAudioEditor.sessions.GetSession(id, (record) =>
-          resolve({
-            schemaVersion: record.schemaVersion,
-            channelCount: record.channelCount,
-            sampleRate: record.sampleRate,
-            duration: record.duration,
-            channels: record.channelData.length,
-            hasLegacyKeys: 'durr' in record || 'chans' in record || 'data' in record,
-          })
-        );
-      }),
-    sessionId
-  );
-
-  expect(upgraded.hasLegacyKeys).toBe(false);
-  expect(upgraded.schemaVersion).toBe(2);
-  expect(upgraded.channelCount).toBe(saved.channelCount);
-  expect(upgraded.sampleRate).toBe(saved.sampleRate);
-  expect(upgraded.duration).toBeCloseTo(originalDuration, 1);
-
-  // And the upgraded record actually loads back into the editor.
+  // The stored record loads back into the editor.
   await page.evaluate(
     (id) =>
       new Promise((resolve) => {

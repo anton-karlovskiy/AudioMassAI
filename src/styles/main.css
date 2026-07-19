@@ -16,15 +16,19 @@
  * regression, not a cleanup, and no amount of test coverage makes it safe.
  *
  * The stems behind the prefix have been expanded, so names read as words
- * rather than abbreviations. Five names are deliberately still short:
+ * rather than abbreviations. Four names are deliberately still short:
  *
  *   - `pk_wave_cursor` and `pk_prgwv` are written by the vendored wavesurfer
  *     fork, which we do not edit.
  *   - `pk_ctxmn` is a custom DOM event the vendored regions plugin dispatches,
  *     not a class at all.
- *   - `pk_presetfx` is a localStorage key. Renaming it orphans saved presets.
  *   - `pk_q` is the band Q-factor: standard filter notation, and a serialized
  *     preset field.
+ *
+ * `pk_preset_fx` is a localStorage key rather than a class. It was renamed
+ * because nothing has written the old key yet -- the app is not deployed. Once
+ * it ships, changing that string orphans every saved preset, so treat it as
+ * fixed from the first release onward.
  *
  * `pk_aut`, `pk_aut_active`, `pk_dens` and `pk_r` were left alone for a duller
  * reason -- nothing in src/ references them, so there was no call site to read

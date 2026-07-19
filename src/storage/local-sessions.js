@@ -10,41 +10,11 @@ const DB_NAME = 'audiomass';
 const DB_VERSION = 1;
 
 /**
- * Version of the *record* shape, independent of DB_VERSION (the object store
- * itself has not changed). Version 1 records are the abbreviated keys the
- * editor was originally ported with; version 2 renames them. Records are
- * upgraded on read, so sessions saved by older builds keep loading.
+ * Version of the *record* shape, independent of DB_VERSION (which versions the
+ * object store). Stamped on every record so a future shape change has a number
+ * to branch on instead of having to sniff for a key. Nothing reads it yet.
  */
-const SCHEMA_VERSION = 2;
-
-/** Version 1 key -> version 2 key. */
-const LEGACY_KEYS = {
-  data: 'channelData',
-  data2: 'channelByteLengths',
-  durr: 'duration',
-  chans: 'channelCount',
-  comp: 'compression',
-  samplerate: 'sampleRate',
-  thumb: 'thumbnail',
-};
-
-/**
- * Bring a record read from IndexedDB up to the current schema, in memory.
- * Untouched if it was already written at the current version.
- */
-export function upgradeRecord(record) {
-  if (!record || record.schemaVersion === SCHEMA_VERSION) return record;
-
-  for (const legacyKey in LEGACY_KEYS) {
-    if (legacyKey in record) {
-      record[LEGACY_KEYS[legacyKey]] = record[legacyKey];
-      delete record[legacyKey];
-    }
-  }
-
-  record.schemaVersion = SCHEMA_VERSION;
-  return record;
-}
+const SCHEMA_VERSION = 1;
 
 let db;
 
@@ -200,7 +170,7 @@ export class LocalSessions {
     const request = transaction.objectStore('sessions').get(id);
 
     request.onsuccess = function (event) {
-      const record = upgradeRecord(event.target.result);
+      const record = event.target.result;
 
       const decompressRecord = function (codec) {
         const channelBuffers = [];
@@ -260,7 +230,7 @@ export class LocalSessions {
     request.onsuccess = function (event) {
       const cursor = event.target.result;
       if (cursor) {
-        results.push(upgradeRecord(cursor.value));
+        results.push(cursor.value);
         cursor.continue();
       } else {
         results.sort(function (a, b) {
