@@ -104,8 +104,6 @@ function ParagraphicEqGraph() {
   };
 
   this.Render = function () {
-    const graph = this;
-
     if (_is_render_scheduled) return;
     _is_render_scheduled = true;
 
@@ -138,7 +136,6 @@ function ParagraphicEqGraph() {
     // canvasContext.fillRect (0, 0, canvasWidth, canvasHeight);
     canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
 
-    const bufferLength = 512; // 256
     const maxBars = 117 * 2;
     const barWidth = (canvasWidth / maxBars).toFixed(1) / 1;
     let barHeight = 0;
@@ -369,12 +366,10 @@ function ParagraphicEqGraph() {
 
   function _range_update(graph, range, newRange, computeCoordinates) {
     let modified = false;
-    let oldValue = null;
 
     for (const key in newRange) {
       if (range[key] !== newRange[key]) {
         modified = true;
-        oldValue = range[key];
         range[key] = newRange[key];
 
         if (key === '_on') {
@@ -416,7 +411,6 @@ function ParagraphicEqGraph() {
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
 
-        const tempX = 0;
         if (range.freq <= 5000) {
           range._coords.x = ((range.freq / 5000) * (canvasWidth / 2)).toFixed(1) / 1;
         } else {
@@ -619,7 +613,6 @@ function ParagraphicEqGraph() {
   }
 
   function _make_evs(graph) {
-    const canvasContext = graph.ui.equalizerContext;
     const canvas = graph.ui.canvasEqualizer;
 
     let clickTime = 0;
@@ -694,8 +687,6 @@ function ParagraphicEqGraph() {
       }
 
       const bounds = canvas.getBoundingClientRect();
-      const canvasWidth = canvas.width;
-      const canvasHeight = canvas.height;
 
       const posx = e.clientX - bounds.left;
       const posy = e.clientY - bounds.top;

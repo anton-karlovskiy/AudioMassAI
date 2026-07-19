@@ -104,7 +104,6 @@ export function openRecordingModal(app) {
         const buttonAdd = mainbtns[3];
         const timeSpan = modal.bodyElement.getElementsByTagName('span')[0];
         const devicesSelect = modal.bodyElement.getElementsByTagName('select')[0];
-        const devices = [];
         const volcanvas = modal.bodyElement.getElementsByTagName('canvas')[0];
         const volumeContext = volcanvas.getContext('2d', { alpha: false, antialias: false });
 
@@ -116,16 +115,13 @@ export function openRecordingModal(app) {
         const tempContext = tempCanvas.getContext('2d', { alpha: false, antialias: false });
 
         let firstSkip = 12;
-        let currentOffset = 0;
         let tempBufferIndex = -1;
         let volume = 0;
         let currtime = 0;
         let hasDevices = false;
 
-        const oldLeftTime = -999999;
         let oldRightTime = -999999;
         let peaks = [];
-        const skipp = false;
         let remaining = 0;
         let debounce = false;
 
@@ -158,7 +154,6 @@ export function openRecordingModal(app) {
             return;
           }
 
-          currentOffset += ev.inputBuffer.duration * sampleRate;
           const floatArray = ev.inputBuffer.getChannelData(0).slice(0);
           tempBuffers[++tempBufferIndex] = floatArray;
 

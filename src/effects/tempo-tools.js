@@ -23,15 +23,6 @@ function getOfflineAudioContext(channels, sampleRate, duration) {
     sampleRate
   );
 }
-function _normalize_array(data) {
-  const newArray = [];
-  for (let i = 0; i < data.length; ++i) {
-    newArray.push(Math.abs(Math.round((data[i + 1] - data[i]) * 1000)));
-  }
-
-  return newArray;
-}
-
 function _normalize_array2(data) {
   const newArray = [];
   for (let i = 0; i < data.length; ++i) {
@@ -59,12 +50,6 @@ function _group_rhythm(data, diffArray) {
 
   diffMedian /= diffArray.length;
   if (diffMedian > 1) diffMedian -= diffMedian * 0.2;
-
-  let existing = 0;
-  for (let i = 0; i < diffArray.length; ++i) {
-    if (diffArray[i] <= diffMedian) continue;
-    ++existing;
-  }
 
   // console.log (" DIFF MEDIAN IS ", diffMedian, "    and total beats: ", existing, "  out of: ", diffArray.length);
   // clean-up the drums array - based on the median.
@@ -95,12 +80,10 @@ function _group_rhythm(data, diffArray) {
   // now count distance between peaks
   const distances = {};
   const uniqueDistances = [];
-  let firstFound = 0;
   let isFirst = true;
   for (let i = 0; i < data.length - 1; ++i) // #### do not litter the last data
   {
     if (data[i] === 0) {
-      ++firstFound;
       continue;
     }
 
@@ -111,8 +94,6 @@ function _group_rhythm(data, diffArray) {
     if (isFirst) {
       isFirst = false;
     }
-
-    firstFound = 0;
 
     const own = [];
     uniqueDistances.push(own);
@@ -182,7 +163,6 @@ function _group_rhythm(data, diffArray) {
 
   const max = getmax(data);
   const min = getmin(data);
-  const count = 0;
   const threshold = Math.round((max - min) * 0.3);
 
   const velocities = [];
@@ -549,7 +529,6 @@ export function openTempoTools(app) {
 
       const valueElements = tool.body.getElementsByClassName('pk_value');
       const tapMessage = tapGraph.getElementsByClassName('pk_tempo_tap_message');
-      const tapMessageSecondary = tapArea.getElementsByTagName('span')[0];
 
       const bpmElement = valueElements[0];
       const bpmElementRound = valueElements[1];
@@ -652,10 +631,8 @@ export function openTempoTools(app) {
       tool.app.listenFor('DidStopPlay', DidStopPlay);
       tool.app.listenFor('DidPlay', DidPlay);
 
-      const oldLeftTime = -999999;
       let oldRightTime = -999999;
       let peaks = [];
-      const skipp = false;
       let remaining = 0;
 
       DidAudioProcess = function () {
