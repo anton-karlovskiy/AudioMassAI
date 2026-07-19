@@ -1,0 +1,43 @@
+{
+  "styledButUnreferenced": [
+    "pk_aut",
+    "pk_aut_act",
+    "pk_wave_cursor"
+  ],
+  "referencedButUnstyled": [
+    "pk_av_",
+    "pk_back_jump",
+    "pk_c_c",
+    "pk_c_fl",
+    "pk_c_mm",
+    "pk_c_ms",
+    "pk_ctx_action",
+    "pk_ctxmn",
+    "pk_fr",
+    "pk_freq",
+    "pk_front_jump",
+    "pk_lblmp3",
+    "pk_lblsel",
+    "pk_lblsel2",
+    "pk_mm",
+    "pk_ms",
+    "pk_open",
+    "pk_opt",
+    "pk_pause",
+    "pk_presetfx",
+    "pk_q",
+    "pk_r",
+    "pk_rec",
+    "pk_stereo",
+    "pk_stop",
+    "pk_timingctx",
+    "pk_timingnum",
+    "pk_tmp_tap",
+    "pk_tmp_tap2",
+    "pk_tmp_tap3",
+    "pk_ttx",
+    "pk_zoom_in_h",
+    "pk_zoom_out_h",
+    "pk_zoom_reset"
+  ]
+}
