@@ -427,22 +427,22 @@ function _topbarConfig(app, ui) {
               if (type === 'copy') buff = app.engine.GetCopyBuff();
               else if (type === 'sel') buff = app.engine.GetSel();
 
-              const func = function (fls) {
+              const func = function (sessions) {
                 const rr = Math.random().toString(36).substring(7);
 
-                fls.SaveSession(buff, rr, name);
+                sessions.SaveSession(buff, rr, name);
                 app.stopListeningFor('DidOpenDB', func);
               };
 
               app.listenFor('DidOpenDB', func);
 
-              if (!app.fls.on)
-                app.fls.Init(function (err) {
+              if (!app.sessions.on)
+                app.sessions.Init(function (err) {
                   if (err) {
                     alert('db error');
                   }
                 });
-              else app.fireEvent('DidOpenDB', app.fls);
+              else app.fireEvent('DidOpenDB', app.sessions);
             };
 
             // modal that asks for - full file, selection, copy buffer
@@ -620,8 +620,8 @@ function _topbarConfig(app, ui) {
               if (2592031 <= a)
                 return ((a = Math.floor(a / 2592e3)), a + ' month' + (1 < a ? 's' : '') + ' ago');
             };
-            const func = function (fls) {
-              fls.ListSessions(function (ret) {
+            const func = function (sessions) {
+              sessions.ListSessions(function (ret) {
                 let message = '';
                 if (ret.length === 0) {
                   message += 'No drafts found...';
@@ -760,13 +760,13 @@ function _topbarConfig(app, ui) {
 
             app.listenFor('DidOpenDB', func);
 
-            if (!app.fls.on)
-              app.fls.Init(function (err) {
+            if (!app.sessions.on)
+              app.sessions.Init(function (err) {
                 if (err) {
                   alert('db error');
                 }
               });
-            else app.fireEvent('DidOpenDB', app.fls);
+            else app.fireEvent('DidOpenDB', app.sessions);
           },
           setup: function () {
             let source = {};
@@ -782,7 +782,7 @@ function _topbarConfig(app, ui) {
             });
 
             app.listenFor('LoadDraft', function (name, append) {
-              app.fls.Init(function (err) {
+              app.sessions.Init(function (err) {
                 if (err) return;
 
                 if (append === 2) {
@@ -795,7 +795,7 @@ function _topbarConfig(app, ui) {
                     source = {};
                   }
 
-                  app.fls.DelSession(name, function (name) {
+                  app.sessions.DelSession(name, function (name) {
                     const id = 'pk_' + name;
                     let element = document.getElementById(id);
 
@@ -834,7 +834,7 @@ function _topbarConfig(app, ui) {
                     providedAudioContext.resume && providedAudioContext.resume();
                   }
 
-                  app.fls.GetSession(name, function (e) {
+                  app.sessions.GetSession(name, function (e) {
                     if (e && e.id === name) {
                       source.id = e.id;
                       source.aud = providedAudioContext;
@@ -869,7 +869,7 @@ function _topbarConfig(app, ui) {
 
                 let overwrite = (function (app, name, append) {
                   return function () {
-                    app.fls.GetSession(name, function (e) {
+                    app.sessions.GetSession(name, function (e) {
                       if (e && e.id === name) {
                         app.engine.wavesurfer.backend._add = append ? 1 : 0;
                         app.engine.LoadDB(e);
