@@ -1388,7 +1388,6 @@ function _makeUITopHeader(menuTree, UI) {
       if (level === 0) topElements[i] = buttonContainer.childNodes[0];
 
       if (currentOption.children) {
-        const ch = currentOption.children;
         const list = document.createElement('div');
         list.className = 'pk_menu';
 
@@ -2992,7 +2991,6 @@ function _makeMobileScroll(UI) {
     const screenHeight = window.screen.height;
     const screenWidth = window.screen.width;
 
-    const iw = window.innerWidth;
     const ih = window.innerHeight;
 
     let barsVisible = false;

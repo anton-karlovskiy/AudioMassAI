@@ -618,7 +618,6 @@ export function registerEffectsUI(app) {
         ],
         customPresetList: customPresets.Get(filterId),
         preview: function (modal) {
-          const inputs = modal.bodyElement.getElementsByTagName('input');
           const value = getvalue(modal);
           app.fireEvent('RequestActionFX_PREVIEW_COMPRESSOR', value);
         },
@@ -628,7 +627,6 @@ export function registerEffectsUI(app) {
             title: 'Apply',
             className: 'pk_modal_action_accept',
             callback: function (modal) {
-              const inputs = modal.bodyElement.getElementsByTagName('input');
               const value = getvalue(modal);
 
               app.fireEvent('RequestActionFX_Compressor', value);
@@ -927,7 +925,6 @@ export function registerEffectsUI(app) {
         },
         preview: function (modal) {
           const ranges = modal.bodyElement.getElementsByTagName('input');
-          const length = ranges.length;
 
           app.fireEvent('RequestActionFX_PREVIEW_PARAMEQ', getvalue(ranges));
         },

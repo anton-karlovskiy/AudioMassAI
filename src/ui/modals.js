@@ -217,7 +217,6 @@ export function AudioEffectModal(config, app) {
         toggleLink.innerHTML = isOn ? 'ON' : 'OFF';
       };
 
-      let stoppedListening = false;
       modal._updpreview = function (mode) {
         const selectedOption =
           modal.presetSelectElement.options[modal.presetSelectElement.selectedIndex];
@@ -237,14 +236,12 @@ export function AudioEffectModal(config, app) {
             setTimeout(function () {
               app.listenFor('RequestActionFX_UPDATE_PREVIEW', modal._updpreview);
             }, 100);
-            stoppedListening = false;
           }
           return;
         }
 
         editButton.style.visibility = 'visible';
         editButton.style.opacity = '1';
-        stoppedListening = true;
         app.stopListeningFor('RequestActionFX_UPDATE_PREVIEW', modal._updpreview);
       };
 
