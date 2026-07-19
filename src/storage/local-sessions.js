@@ -9,6 +9,43 @@
 const DB_NAME = 'audiomass';
 const DB_VERSION = 1;
 
+/**
+ * Version of the *record* shape, independent of DB_VERSION (the object store
+ * itself has not changed). Version 1 records are the abbreviated keys the
+ * editor was originally ported with; version 2 renames them. Records are
+ * upgraded on read, so sessions saved by older builds keep loading.
+ */
+const SCHEMA_VERSION = 2;
+
+/** Version 1 key -> version 2 key. */
+const LEGACY_KEYS = {
+  data: 'channelData',
+  data2: 'channelByteLengths',
+  durr: 'duration',
+  chans: 'channelCount',
+  comp: 'compression',
+  samplerate: 'sampleRate',
+  thumb: 'thumbnail',
+};
+
+/**
+ * Bring a record read from IndexedDB up to the current schema, in memory.
+ * Untouched if it was already written at the current version.
+ */
+export function upgradeRecord(record) {
+  if (!record || record.schemaVersion === SCHEMA_VERSION) return record;
+
+  for (const legacyKey in LEGACY_KEYS) {
+    if (legacyKey in record) {
+      record[LEGACY_KEYS[legacyKey]] = record[legacyKey];
+      delete record[legacyKey];
+    }
+  }
+
+  record.schemaVersion = SCHEMA_VERSION;
+  return record;
+}
+
 let db;
 
 const compressors = {
@@ -129,16 +166,17 @@ export class LocalSessions {
     }
 
     const record = {
+      schemaVersion: SCHEMA_VERSION,
       id: id,
       name: name,
       created: new Date().getTime(),
-      data: compressedChannels,
-      data2: originalByteLengths,
-      durr: buffer.duration.toFixed(3) / 1,
-      chans: channelCount,
-      comp: ACTIVE_COMPRESSION,
-      thumb: app.engine.GetWave(buffer),
-      samplerate: buffer.sampleRate,
+      channelData: compressedChannels,
+      channelByteLengths: originalByteLengths,
+      duration: buffer.duration.toFixed(3) / 1,
+      channelCount: channelCount,
+      compression: ACTIVE_COMPRESSION,
+      thumbnail: app.engine.GetWave(buffer),
+      sampleRate: buffer.sampleRate,
     };
 
     const transaction = db.transaction(['sessions'], 'readwrite');
@@ -162,13 +200,17 @@ export class LocalSessions {
     const request = transaction.objectStore('sessions').get(id);
 
     request.onsuccess = function (event) {
-      const record = event.target.result;
+      const record = upgradeRecord(event.target.result);
 
       const decompressRecord = function (codec) {
         const channelBuffers = [];
 
-        for (let i = 0; i < record.data.length; ++i) {
-          const decompressed = codec.decompress(record.data[i], 0, record.data2[i]);
+        for (let i = 0; i < record.channelData.length; ++i) {
+          const decompressed = codec.decompress(
+            record.channelData[i],
+            0,
+            record.channelByteLengths[i]
+          );
           channelBuffers.push(
             decompressed.buffer.slice(
               decompressed.byteOffset,
@@ -177,10 +219,10 @@ export class LocalSessions {
           );
         }
 
-        record.data = channelBuffers;
+        record.channelData = channelBuffers;
       };
 
-      if (record && record.comp) {
+      if (record && record.compression) {
         const codec = compressors[ACTIVE_COMPRESSION];
         if (!codec.loading && !codec.ready) {
           codec.init(function () {
@@ -218,7 +260,7 @@ export class LocalSessions {
     request.onsuccess = function (event) {
       const cursor = event.target.result;
       if (cursor) {
-        results.push(cursor.value);
+        results.push(upgradeRecord(cursor.value));
         cursor.continue();
       } else {
         results.sort(function (a, b) {

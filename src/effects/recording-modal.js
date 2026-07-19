@@ -480,8 +480,8 @@ export function openRecordingModal(app) {
 
           app.engine.wavesurfer.backend._add = 0;
           app.engine.LoadDB({
-            samplerate: sampleRate,
-            data: [newbuff.buffer],
+            sampleRate: sampleRate,
+            channelData: [newbuff.buffer],
           });
 
           // ----
@@ -500,8 +500,8 @@ export function openRecordingModal(app) {
 
           app.engine.wavesurfer.backend._add = 1;
           app.engine.LoadDB({
-            samplerate: sampleRate,
-            data: [newbuff.buffer],
+            sampleRate: sampleRate,
+            channelData: [newbuff.buffer],
           });
 
           // ----

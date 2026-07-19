@@ -129,13 +129,13 @@ export function AudioEngine(app) {
 
   this.LoadDB = function (e) {
     const newBuffer = wavesurfer.backend.ac.createBuffer(
-      e.data.length,
-      e.data[0].byteLength / 4,
-      e.samplerate
+      e.channelData.length,
+      e.channelData[0].byteLength / 4,
+      e.sampleRate
     );
 
-    for (let i = 0; i < e.data.length; ++i) {
-      const channelSamples = new Float32Array(e.data[i]);
+    for (let i = 0; i < e.channelData.length; ++i) {
+      const channelSamples = new Float32Array(e.channelData[i]);
 
       if (newBuffer.copyToChannel) {
         newBuffer.copyToChannel(channelSamples, i, 0);

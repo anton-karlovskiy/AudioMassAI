@@ -556,14 +556,14 @@ function _topbarConfig(app, ui) {
                 name +
                 '</div>' +
                 '<div style="padding:2px 0"><span>durr: ' +
-                storedSession.durr +
+                storedSession.duration +
                 's</span>' +
                 '&nbsp;&nbsp;&nbsp;' +
                 '<span>chan: ' +
-                (storedSession.chans === 1 ? 'mono' : 'stereo') +
+                (storedSession.channelCount === 1 ? 'mono' : 'stereo') +
                 '</span></div>' +
                 '<div style="padding:2px 0"><img src="' +
-                storedSession.thumb +
+                storedSession.thumbnail +
                 '" /></div>';
 
               new SimpleModal({
@@ -644,9 +644,9 @@ function _topbarConfig(app, ui) {
                       date.getSeconds();
                     const agostr = timeAgo(date);
                     const filename = current.name || '-';
-                    const duration = current.durr;
-                    const thumb = current.thumb;
-                    const chns = current.chans === 1 ? 'mono' : 'stereo';
+                    const duration = current.duration;
+                    const thumbnail = current.thumbnail;
+                    const chns = current.channelCount === 1 ? 'mono' : 'stereo';
 
                     message +=
                       '<div id="pk_' +
@@ -669,7 +669,7 @@ function _topbarConfig(app, ui) {
                       duration +
                       's</span></div><div>' +
                       '<img class="pk_lcli" src="' +
-                      thumb +
+                      thumbnail +
                       '" />' +
                       '<a class="pk_lcla2" onclick="PKAudioEditor.fireEvent(\'LoadDraft\',\'' +
                       current.id +
@@ -839,9 +839,9 @@ function _topbarConfig(app, ui) {
                       source.id = e.id;
                       source.aud = providedAudioContext;
                       source.src = app.engine.PlayBuff(
-                        e.data,
-                        e.chans,
-                        e.samplerate,
+                        e.channelData,
+                        e.channelCount,
+                        e.sampleRate,
                         providedAudioContext
                       );
                       if (!source.src) {
