@@ -1,26 +1,28 @@
 /*
  * Editor styles.
  *
- * On the `pk_` prefix: it is inherited from the original AudioMass and every
- * class here carries it. The naming refactor left these alone. If you pick the
- * rename up later, the shape of the job is:
+ * KEEP the `pk_` prefix. It is a CSS namespace, not a leftover abbreviation.
  *
- *   - Scale. 118 distinct `.pk_*` selectors here, 157 distinct `pk_*` tokens
- *     across the tree, and 172 `className` sites in src/ that mention one.
- *     Nearly all of those are plain string literals, so they are mechanically
- *     replaceable -- the work is broad rather than hard.
- *   - No visual regression coverage. This is the real obstacle: a missed
- *     reference loses styling without failing a single test. Screenshot
- *     baselines first, then rename.
- *   - Six sites build a `pk_`-prefixed *element id* out of runtime data
- *     (`'pk_' + name` in editor-ui.js, `'pk_av_' + app.id` in audio-engine.js,
- *     `'pk_fr' + url` in effects-ui.js). No literal ever holds the full id, so
- *     searching for a finished name will not surface them.
- *   - Two names are written by the vendored wavesurfer fork, which we do not
- *     edit: the `pk_wave_cursor` class and the `pk_prgwv` id. Those two keep
- *     the prefix regardless. (`pk_ctxmn` is a custom event name rather than a
- *     class, and `pk_wavepoint` is set by our own editor-ui.js -- it appears in
- *     vendor only on a commented-out line.)
+ * The editor mounts into an element the host page owns (`editor.init('app')`)
+ * and is built to support more than one instance per page -- AudioEditor
+ * assigns `this.id = ++nextEditorId` and namespaces its DOM ids and key
+ * handlers with it. So these styles are applied inside a document whose other
+ * stylesheets we do not control.
+ *
+ * That is what the prefix buys. Strip it and the class list becomes `row`,
+ * `btn`, `col`, `check`, `line`, `menu`, `title`, `modal`, `progress`,
+ * `selection`, `act`, `app` -- names that collide with almost any host
+ * stylesheet, in both directions. Dropping the prefix would be a correctness
+ * regression, not a cleanup, and no amount of test coverage makes it safe.
+ *
+ * Expanding the cryptic *stems* while keeping the namespace is a different
+ * question and remains open: `pk_inact` -> `pk_inactive`, `pk_btm` ->
+ * `pk_bottom`, `pk_tbsa` -> `pk_toolbar_action`. That is safe in principle but
+ * touches 118 selectors here and 172 `className` sites in src/, with no visual
+ * regression coverage to catch a missed reference -- so it wants screenshot
+ * baselines first. Two names would be unrenamable either way: the
+ * `pk_wave_cursor` class and `pk_prgwv` id are written by the vendored
+ * wavesurfer fork.
  */
 
 @font-face {
