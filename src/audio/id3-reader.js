@@ -326,11 +326,6 @@ const getLongAt = function (data, iOffset, bBigEndian) {
   if (iLong < 0) iLong += 4294967296;
   return iLong;
 };
-const getSLongAt = function (data, iOffset, bBigEndian) {
-  const iULong = getLongAt(data, iOffset, bBigEndian);
-  if (iULong > 2147483647) return iULong - 4294967296;
-  else return iULong;
-};
 const getShortAt = function (data, iOffset, bBigEndian) {
   let iShort = bBigEndian
     ? (data.getUint8(iOffset) << 8) + data.getUint8(iOffset + 1)
@@ -415,7 +410,6 @@ const getFrameData = function (frames, ids) {
 };
 const readFrames = function (offset, end, data, id3header, tags) {
   const frames = {};
-  let frameDataSize;
   const major = id3header['major'];
 
   tags = getTagsFromShortcuts(tags || _defaultShortcuts);
@@ -470,7 +464,6 @@ const readFrames = function (offset, end, data, id3header, tags) {
     // the first 4 bytes are the real data size
     // (after unsynchronisation && encryption)
     if (flags && flags.format.dataLengthIndicator) {
-      frameDataSize = readSynchsafeInteger32At(frameDataOffset, frameData);
       frameDataOffset += 4;
       frameSize -= 4;
     }
@@ -535,26 +528,6 @@ function getTextEncoding(bite) {
   }
 
   return charset;
-}
-
-function getTime(duration) {
-  duration = duration / 1000;
-  const seconds = Math.floor(duration) % 60,
-    minutes = Math.floor(duration / 60) % 60,
-    hours = Math.floor(duration / 3600);
-
-  return {
-    seconds: seconds,
-    minutes: minutes,
-    hours: hours,
-  };
-}
-
-function formatTime(time) {
-  const seconds = time.seconds < 10 ? '0' + time.seconds : time.seconds;
-  const minutes = time.hours > 0 && time.minutes < 10 ? '0' + time.minutes : time.minutes;
-
-  return (time.hours > 0 ? time.hours + ':' : '') + minutes + ':' + seconds;
 }
 
 ID3v2.readFrameData['APIC'] = function readPictureFrame(offset, length, data, flags, v) {
@@ -767,8 +740,7 @@ function loadAtom(data, offset, length, callback) {
     // });
   } else {
     // Value atoms
-    const readAtom = atomName in ID4.atom;
-    // data.loadRange([offset+(readAtom?0:atomSize), offset+atomSize + 8], function() {
+    // data.loadRange([offset+(atomName in ID4.atom?0:atomSize), offset+atomSize + 8], function() {
     loadAtom(data, offset + atomSize, length, callback);
     // });
   }
