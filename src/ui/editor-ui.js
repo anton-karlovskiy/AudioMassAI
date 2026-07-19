@@ -1337,10 +1337,10 @@ function _topbarConfig(app, ui) {
 //
 function _makeUITopHeader(menuTree, UI) {
   const header = document.createElement('div');
-  header.className = 'pk_hdr pk_noselect';
+  header.className = 'pk_header pk_noselect';
 
   const _name = 'TopHeader',
-    _default_class = 'pk_btn pk_noselect';
+    _default_class = 'pk_button pk_noselect';
 
   let targetIndex = -1;
   let targetElement = null;
@@ -1657,7 +1657,7 @@ function _makeUIBarBottom(UI, app) {
   const bar = this;
 
   const barBottomElement = document.createElement('div');
-  barBottomElement.className = 'pk_dck';
+  barBottomElement.className = 'pk_dock';
   UI.element.appendChild(barBottomElement);
 
   bar.element = barBottomElement;
@@ -1682,16 +1682,16 @@ function _makeUIMainView(UI, app) {
   const view = this;
 
   const audioContainer = document.createElement('div');
-  audioContainer.className = 'pk_av_cont';
+  audioContainer.className = 'pk_audio_view_container';
   UI.element.appendChild(audioContainer);
 
   const mainAudioView = document.createElement('div');
-  mainAudioView.className = 'pk_av pk_noselect';
-  mainAudioView.id = 'pk_av_' + app.id;
+  mainAudioView.className = 'pk_audio_view pk_noselect';
+  mainAudioView.id = 'pk_audio_view_' + app.id;
   audioContainer.appendChild(mainAudioView);
 
   const footer = document.createElement('div');
-  footer.className = 'pk_ftr pk_noselect';
+  footer.className = 'pk_footer pk_noselect';
   UI.element.appendChild(footer);
 
   // make panner buttons
@@ -1707,8 +1707,8 @@ function _makeUIMainView(UI, app) {
   const buttonPannerRight = document.createElement('button');
   buttonPannerLeft.setAttribute('tabIndex', -1);
   buttonPannerRight.setAttribute('tabIndex', -1);
-  buttonPannerLeft.className = 'pk_pan_btn';
-  buttonPannerRight.className = 'pk_pan_btn';
+  buttonPannerLeft.className = 'pk_pan_button';
+  buttonPannerRight.className = 'pk_pan_button';
 
   buttonPannerLeft.innerHTML = '<strong>L</strong> ON';
   buttonPannerRight.innerHTML = '<strong>R</strong> ON';
@@ -1749,10 +1749,10 @@ function _makeUIMainView(UI, app) {
 
   // zoom btns
   const buttonZoomContainer = document.createElement('div');
-  buttonZoomContainer.className = 'pk_zoombtn';
+  buttonZoomContainer.className = 'pk_zoom_buttons';
 
   const buttonZoomInHorizontal = document.createElement('button');
-  buttonZoomInHorizontal.className = 'pk_btn pk_zoom_in_h';
+  buttonZoomInHorizontal.className = 'pk_button pk_zoom_in_h';
   buttonZoomInHorizontal.innerHTML = '+<span>Zoom In Horiz (+)</span>';
   buttonZoomInHorizontal.setAttribute('tabIndex', -1);
   buttonZoomInHorizontal.onclick = function () {
@@ -1761,7 +1761,7 @@ function _makeUIMainView(UI, app) {
   };
 
   const buttonZoomOutHorizontal = document.createElement('button');
-  buttonZoomOutHorizontal.className = 'pk_btn pk_zoom_out_h pk_inact';
+  buttonZoomOutHorizontal.className = 'pk_button pk_zoom_out_h pk_inact';
   buttonZoomOutHorizontal.innerHTML = '&ndash;<span>Zoom Out Horiz (-)</span>';
   buttonZoomOutHorizontal.setAttribute('tabIndex', -1);
   buttonZoomOutHorizontal.onclick = function () {
@@ -1770,7 +1770,7 @@ function _makeUIMainView(UI, app) {
   };
 
   const buttonZoomReset = document.createElement('button');
-  buttonZoomReset.className = 'pk_btn pk_zoom_reset pk_inact';
+  buttonZoomReset.className = 'pk_button pk_zoom_reset pk_inact';
   buttonZoomReset.innerHTML = '[R] <span>Reset Zoom (0)</span>';
   buttonZoomReset.setAttribute('tabIndex', -1);
   buttonZoomReset.onclick = function () {
@@ -1804,7 +1804,7 @@ function _makeUIMainView(UI, app) {
   );
 
   const buttonZoomInVertical = document.createElement('button');
-  buttonZoomInVertical.className = 'pk_btn pk_zoom_in_v';
+  buttonZoomInVertical.className = 'pk_button pk_zoom_in_v';
   buttonZoomInVertical.innerHTML = '&#x2195; +<span>Zoom In Vertically</span>';
   buttonZoomInVertical.setAttribute('tabIndex', -1);
   buttonZoomInVertical.onclick = function () {
@@ -1813,7 +1813,7 @@ function _makeUIMainView(UI, app) {
   };
 
   const buttonZoomOutVertical = document.createElement('button');
-  buttonZoomOutVertical.className = 'pk_btn pk_zoom_out_v';
+  buttonZoomOutVertical.className = 'pk_button pk_zoom_out_v';
   buttonZoomOutVertical.innerHTML = '&#x2195; &ndash;<span>Zoom Out Vertically</span>';
   buttonZoomOutVertical.setAttribute('tabIndex', -1);
   buttonZoomOutVertical.onclick = function () {
@@ -1831,20 +1831,20 @@ function _makeUIMainView(UI, app) {
   // end of zoom btns
 
   const wavezoom = document.createElement('div');
-  wavezoom.className = 'pk_wavescroll';
+  wavezoom.className = 'pk_wave_scroll';
 
   let wavePointVisible = false;
   const wavepoint = document.createElement('div');
-  wavepoint.className = 'pk_wavepoint';
+  wavepoint.className = 'pk_wave_point';
 
   const wavedrag = document.createElement('div');
   const waveDragStyle = wavedrag.style;
-  wavedrag.className = 'pk_wavedrag pk_inact';
+  wavedrag.className = 'pk_wave_drag pk_inact';
 
   const waveDragLeft = document.createElement('div');
-  waveDragLeft.className = 'pk_wavedrag_l';
+  waveDragLeft.className = 'pk_wave_drag_left';
   const waveDragRight = document.createElement('div');
-  waveDragRight.className = 'pk_wavedrag_r';
+  waveDragRight.className = 'pk_wave_drag_right';
 
   wavezoom.appendChild(wavepoint);
   wavedrag.appendChild(waveDragLeft);
@@ -2019,10 +2019,10 @@ function _makeUIMainView(UI, app) {
 
   const volumeParent = document.createElement('div');
 
-  this.volumeGauge.className = 'pk_volpar';
-  this.volumeGauge2.className = 'pk_volpar';
-  this.volumeGaugeInner.className = 'pk_vol';
-  this.volumeGaugeInner2.className = 'pk_vol';
+  this.volumeGauge.className = 'pk_volume_bar';
+  this.volumeGauge2.className = 'pk_volume_bar';
+  this.volumeGaugeInner.className = 'pk_volume';
+  this.volumeGaugeInner2.className = 'pk_volume';
   this.volumeGaugePeaker.className = 'pk_peaker';
   this.volumeGaugePeaker2.className = 'pk_peaker';
 
@@ -2068,7 +2068,7 @@ function _makeUIMainView(UI, app) {
   ttmp2.innerHTML =
     '<span>Please Wait...</span><div class="pk_mload"><div></div></div>' +
     '<div class="pk_prc"><span>0%</span>' +
-    '<button tabIndex="-1" class="pk_btn" ' +
+    '<button tabIndex="-1" class="pk_button" ' +
     'onclick="PKAudioEditor.fireEvent(\'RequestCancelModal\');">cancel</button></div>';
 
   document.body.appendChild(ttmp2);
@@ -2089,13 +2089,13 @@ function _makeUIMainView(UI, app) {
 
 function _makeUIToolbar(UI) {
   const container = document.createElement('div');
-  container.className = 'pk_tbc';
+  container.className = 'pk_toolbar_container';
 
   const toolbar = document.createElement('div');
-  toolbar.className = 'pk_tb pk_noselect';
+  toolbar.className = 'pk_toolbar pk_noselect';
 
   const buttonGroups = document.createElement('div');
-  buttonGroups.className = 'pk_btngroup';
+  buttonGroups.className = 'pk_button_group';
 
   const transport = document.createElement('div');
   transport.className = 'pk_transport';
@@ -2104,7 +2104,7 @@ function _makeUIToolbar(UI) {
   const buttonStop = document.createElement('button');
   buttonStop.setAttribute('tabIndex', -1);
   buttonStop.innerHTML = '<span>Stop Playback (Space)</span>';
-  buttonStop.className = 'pk_btn pk_stop icon-stop2';
+  buttonStop.className = 'pk_button pk_stop icon-stop2';
   buttonStop.onclick = function () {
     UI.fireEvent('RequestStop');
   };
@@ -2112,7 +2112,7 @@ function _makeUIToolbar(UI) {
 
   const buttonPlay = document.createElement('button');
   buttonPlay.setAttribute('tabIndex', -1);
-  buttonPlay.className = 'pk_btn pk_play icon-play3';
+  buttonPlay.className = 'pk_button pk_play icon-play3';
   buttonPlay.innerHTML = '<span>Play (Space)</span>';
   transport.appendChild(buttonPlay);
   buttonPlay.onclick = function () {
@@ -2128,7 +2128,7 @@ function _makeUIToolbar(UI) {
 
   const buttonPause = document.createElement('button');
   buttonPause.setAttribute('tabIndex', -1);
-  buttonPause.className = 'pk_btn pk_pause icon-pause2';
+  buttonPause.className = 'pk_button pk_pause icon-pause2';
   buttonPause.innerHTML = '<span>Pause (Shift+Space)</span>';
   transport.appendChild(buttonPause);
   buttonPause.onclick = function () {
@@ -2138,7 +2138,7 @@ function _makeUIToolbar(UI) {
 
   const buttonLoop = document.createElement('button');
   buttonLoop.setAttribute('tabIndex', -1);
-  buttonLoop.className = 'pk_btn pk_loop icon-loop';
+  buttonLoop.className = 'pk_button pk_loop icon-loop';
   buttonLoop.innerHTML = '<span>Toggle Loop (L)</span>';
   transport.appendChild(buttonLoop);
   buttonLoop.onclick = function () {
@@ -2151,7 +2151,7 @@ function _makeUIToolbar(UI) {
 
   const buttonBackJump = document.createElement('button');
   buttonBackJump.setAttribute('tabIndex', -1);
-  buttonBackJump.className = 'pk_btn pk_back_jump icon-backward2';
+  buttonBackJump.className = 'pk_button pk_back_jump icon-backward2';
   buttonBackJump.innerHTML = '<span>Seek (left arrow)</span>';
   transport.appendChild(buttonBackJump);
 
@@ -2227,7 +2227,7 @@ function _makeUIToolbar(UI) {
 
   const buttonFrontJump = document.createElement('button');
   buttonFrontJump.setAttribute('tabIndex', -1);
-  buttonFrontJump.className = 'pk_btn pk_front_jump icon-forward3';
+  buttonFrontJump.className = 'pk_button pk_front_jump icon-forward3';
   buttonFrontJump.innerHTML = '<span>Seek (right arrow)</span>';
   transport.appendChild(buttonFrontJump);
 
@@ -2436,7 +2436,7 @@ function _makeUIToolbar(UI) {
 
   const buttonBackTotal = document.createElement('button');
   buttonBackTotal.setAttribute('tabIndex', -1);
-  buttonBackTotal.className = 'pk_btn icon-previous2';
+  buttonBackTotal.className = 'pk_button icon-previous2';
   buttonBackTotal.innerHTML = '<span>Seek Start (Shift + left arrow)</span>';
   transport.appendChild(buttonBackTotal);
   buttonBackTotal.onclick = function () {
@@ -2447,7 +2447,7 @@ function _makeUIToolbar(UI) {
 
   const buttonFrontTotal = document.createElement('button');
   buttonFrontTotal.setAttribute('tabIndex', -1);
-  buttonFrontTotal.className = 'pk_btn icon-next2';
+  buttonFrontTotal.className = 'pk_button icon-next2';
   buttonFrontTotal.innerHTML = '<span>Seek End (Shift + right arrow)</span>';
   buttonFrontTotal.onclick = function () {
     UI.fireEvent('RequestRegionClear');
@@ -2458,7 +2458,7 @@ function _makeUIToolbar(UI) {
 
   const buttonRecord = document.createElement('button');
   buttonRecord.setAttribute('tabIndex', -1);
-  buttonRecord.className = 'pk_btn icon-rec';
+  buttonRecord.className = 'pk_button icon-rec';
   buttonRecord.innerHTML = '<span>Record (R)</span>';
   buttonRecord.onclick = function () {
     if (this.getAttribute('disabled') === 'disabled') {
@@ -2504,7 +2504,7 @@ function _makeUIToolbar(UI) {
 
   const isChrome = !!window.chrome;
   const timing = document.createElement('div');
-  timing.className = 'pk_timecontainer';
+  timing.className = 'pk_time_container';
 
   const timingspan = document.createElement('span');
 
@@ -2515,18 +2515,18 @@ function _makeUIToolbar(UI) {
   }
 
   /////
-  const pk_timingcnv = document.createElement('canvas');
-  pk_timingcnv.className = 'pk_timingcnv';
-  pk_timingcnv.width = 150;
-  pk_timingcnv.height = 40;
-  let pk_timingnum = '00:00:000';
-  const pk_timingctx = pk_timingcnv.getContext('2d', { alpha: false });
+  const pk_timing_canvas = document.createElement('canvas');
+  pk_timing_canvas.className = 'pk_timing_canvas';
+  pk_timing_canvas.width = 150;
+  pk_timing_canvas.height = 40;
+  let pk_timing_number = '00:00:000';
+  const pk_timing_context = pk_timing_canvas.getContext('2d', { alpha: false });
   const timingCaches = {};
 
   if (isChrome) {
-    timing.appendChild(pk_timingcnv);
-    pk_timingctx.fillStyle = '#000';
-    pk_timingctx.fillRect(0, 0, 150, 40);
+    timing.appendChild(pk_timing_canvas);
+    pk_timing_context.fillStyle = '#000';
+    pk_timing_context.fillRect(0, 0, 150, 40);
 
     for (let ii = 0; ii < 11; ++ii) {
       const currentCache = document.createElement('canvas');
@@ -2551,23 +2551,23 @@ function _makeUIToolbar(UI) {
       // document.body.appendChild( currentCache );
     }
 
-    (function (pk_timingctx, timingCaches) {
+    (function (pk_timing_context, timingCaches) {
       const ttm = '00:00:000';
       for (let jk = 0; jk < ttm.length; ++jk) {
-        pk_timingctx.drawImage(timingCaches[ttm[jk]], jk * 16, 10);
+        pk_timing_context.drawImage(timingCaches[ttm[jk]], jk * 16, 10);
       }
-    })(pk_timingctx, timingCaches);
+    })(pk_timing_context, timingCaches);
   }
   /////
 
   const totalDuration = document.createElement('span');
   totalDuration.textContent = '00:00:000';
-  totalDuration.className = 'pk_total_dur';
+  totalDuration.className = 'pk_total_duration';
   timing.appendChild(totalDuration);
 
   const hoverDuration = document.createElement('span');
   hoverDuration.textContent = '00:00:000';
-  hoverDuration.className = 'pk_hover_dur';
+  hoverDuration.className = 'pk_hover_duration';
   timing.appendChild(hoverDuration);
 
   setTimeout(function () {
@@ -2583,7 +2583,7 @@ function _makeUIToolbar(UI) {
 
     let oldRefresh = 0;
 
-    const avv = document.getElementsByClassName('pk_av')[0];
+    const avv = document.getElementsByClassName('pk_audio_view')[0];
     avv.addEventListener(
       'mousemove',
       function (e) {
@@ -2720,7 +2720,7 @@ function _makeUIToolbar(UI) {
   let volume1 = 0;
   let volume2 = 0;
   let oldRefresh = 0;
-  let wvpnt = document.querySelector('.pk_wavepoint');
+  let wvpnt = document.querySelector('.pk_wave_point');
 
   UI.listenFor('DidAudioProcess', function (value) {
     const time = value[0];
@@ -2743,23 +2743,23 @@ function _makeUIToolbar(UI) {
 
         for (let jk = 0; jk < ttm.length; ++jk) {
           if (!exit) {
-            if (ttm[jk] === pk_timingnum[jk]) {
+            if (ttm[jk] === pk_timing_number[jk]) {
               continue;
             } else {
-              // pk_timingctx.clearRect ((jk * 16), 10, (9 - jk) * 16, 35);
+              // pk_timing_context.clearRect ((jk * 16), 10, (9 - jk) * 16, 35);
               exit = true;
             }
           }
 
-          pk_timingctx.drawImage(timingCaches[ttm[jk]], jk * 16, 10);
+          pk_timing_context.drawImage(timingCaches[ttm[jk]], jk * 16, 10);
         }
-        pk_timingnum = ttm;
+        pk_timing_number = ttm;
       }
 
       if (UI.app.engine.wavesurfer.ZoomFactor > 1) {
         const perc = time / UI.app.engine.wavesurfer.getDuration();
 
-        if (!wvpnt) wvpnt = document.querySelector('.pk_wavepoint');
+        if (!wvpnt) wvpnt = document.querySelector('.pk_wave_point');
         wvpnt.style.left = ((perc * 10000) >> 0) / 100 + '%';
         // wvpnt.style.left = ((perc * 100).toFixed(2)/1) + '%';
       }
@@ -2836,7 +2836,7 @@ function _makeUIToolbar(UI) {
 
   const copyButton = document.createElement('button');
   copyButton.setAttribute('tabIndex', -1);
-  copyButton.className = 'pk_btn icon-files-empty pk_inact';
+  copyButton.className = 'pk_button icon-files-empty pk_inact';
   copyButton.innerHTML = '<span>Copy Selection (Shift + C)</span>';
   actions.appendChild(copyButton);
 
@@ -2852,7 +2852,7 @@ function _makeUIToolbar(UI) {
 
   const pasteButton = document.createElement('button');
   pasteButton.setAttribute('focusable', 'false');
-  pasteButton.className = 'pk_btn icon-file-text2 pk_inact';
+  pasteButton.className = 'pk_button icon-file-text2 pk_inact';
   pasteButton.innerHTML = '<span>Paste Selection (Shift + V)</span>';
   actions.appendChild(pasteButton);
 
@@ -2863,7 +2863,7 @@ function _makeUIToolbar(UI) {
 
   const cutButton = document.createElement('button');
   cutButton.setAttribute('tabIndex', -1);
-  cutButton.className = 'pk_btn icon-scissors pk_inact';
+  cutButton.className = 'pk_button icon-scissors pk_inact';
   cutButton.innerHTML = '<span>Cut Selection (Shift + X)</span>';
   actions.appendChild(cutButton);
 
@@ -2874,7 +2874,7 @@ function _makeUIToolbar(UI) {
 
   const silenceButton = document.createElement('button');
   silenceButton.setAttribute('tabIndex', -1);
-  silenceButton.className = 'pk_btn icon-silence';
+  silenceButton.className = 'pk_button icon-silence';
   silenceButton.innerHTML = '<span>Insert Silence (Shift + N)</span>';
   actions.appendChild(silenceButton);
 
@@ -2905,7 +2905,7 @@ function _makeUIToolbar(UI) {
 
   const buttonClearSelection = document.createElement('button');
   buttonClearSelection.setAttribute('tabIndex', -1);
-  buttonClearSelection.className = 'pk_btn icon-clearsel pk_inact';
+  buttonClearSelection.className = 'pk_button icon-clearsel pk_inact';
   buttonClearSelection.innerHTML = '<span>Clear Selection (Q key)</span>';
 
   let selectedSpans = selection.getElementsByClassName('pk_dat');

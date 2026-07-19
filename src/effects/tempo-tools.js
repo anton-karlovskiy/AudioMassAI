@@ -1187,10 +1187,10 @@ export function openTempoTools(app) {
       },
 
       body:
-        '<div class="pk_tbs">' +
-        '<a class="pk_tbsa pk_inact">Tempo Estimation</a>' +
-        '<a class="pk_tbsa">Tempo Tap</a>' +
-        '<a class="pk_tbsa">Metronome</a></div>',
+        '<div class="pk_toolbar_section">' +
+        '<a class="pk_toolbar_action pk_inact">Tempo Estimation</a>' +
+        '<a class="pk_toolbar_action">Tempo Tap</a>' +
+        '<a class="pk_toolbar_action">Metronome</a></div>',
 
       //			buttons: [{
       //				title:'Apply EQ',
@@ -1201,7 +1201,7 @@ export function openTempoTools(app) {
       //			}],
 
       setup: function (modal) {
-        const toplinks = modal.bodyElement.getElementsByClassName('pk_tbsa');
+        const toplinks = modal.bodyElement.getElementsByClassName('pk_toolbar_action');
 
         const destroy = function () {
           if (activeTool) {

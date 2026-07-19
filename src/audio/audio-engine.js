@@ -21,7 +21,7 @@ export function AudioEngine(app) {
   const engine = this;
 
   const wavesurfer = WaveSurfer.create({
-    container: '#' + 'pk_av_' + app.id,
+    container: '#' + 'pk_audio_view_' + app.id,
     scrollParent: false,
     hideScrollbar: true,
     partialRender: false,

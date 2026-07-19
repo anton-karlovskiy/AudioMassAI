@@ -5,7 +5,7 @@
     "pk_wave_cursor"
   ],
   "referencedButUnstyled": [
-    "pk_av_",
+    "pk_audio_view_",
     "pk_back_jump",
     "pk_c_c",
     "pk_c_fl",
@@ -30,8 +30,8 @@
     "pk_rec",
     "pk_stereo",
     "pk_stop",
-    "pk_timingctx",
-    "pk_timingnum",
+    "pk_timing_context",
+    "pk_timing_number",
     "pk_tmp_tap",
     "pk_tmp_tap2",
     "pk_tmp_tap3",

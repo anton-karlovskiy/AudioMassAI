@@ -74,12 +74,12 @@ export function openRecordingModal(app) {
         '<div><label>Waveform</label><canvas width="1000" height="200" style="image-rendering:pixelated;width:500px;height:100px;display:block;background:#000"></canvas></div>' +
         '</div>' +
         '<div class="pk_row">' +
-        '<a class="pk_tbsa pk_inact" style="text-align: center;">START RECORDING</a>' +
-        '<a class="pk_tbsa pk_inact" style="margin-left: 24px; text-align: center;">PAUSE</a>' +
+        '<a class="pk_toolbar_action pk_inact" style="text-align: center;">START RECORDING</a>' +
+        '<a class="pk_toolbar_action pk_inact" style="margin-left: 24px; text-align: center;">PAUSE</a>' +
         '</div>' +
         '<div class="pk_row">' +
-        '<a class="pk_tbsa" style="float:left;display:none;text-align:center;box-shadow:0 0 7px #3a6b79 inset;">OPEN RECORDING</a>' +
-        '<a class="pk_tbsa" style="float:left;display:none;margin-left: 24px; text-align: center;">APPEND TO EXISTING</a>' +
+        '<a class="pk_toolbar_action" style="float:left;display:none;text-align:center;box-shadow:0 0 7px #3a6b79 inset;">OPEN RECORDING</a>' +
+        '<a class="pk_toolbar_action" style="float:left;display:none;margin-left: 24px; text-align: center;">APPEND TO EXISTING</a>' +
         '</div>' +
         '</div>',
 
@@ -97,7 +97,7 @@ export function openRecordingModal(app) {
         let isPaused = false;
         let hasRecorded = false;
 
-        const mainbtns = modal.bodyElement.getElementsByClassName('pk_tbsa');
+        const mainbtns = modal.bodyElement.getElementsByClassName('pk_toolbar_action');
         const buttonStart = mainbtns[0];
         const buttonPause = mainbtns[1];
         const buttonOpen = mainbtns[2];
