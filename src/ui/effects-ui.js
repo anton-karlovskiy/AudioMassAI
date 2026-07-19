@@ -115,12 +115,10 @@ export function registerEffectsUI(app) {
   });
 
   app.listenFor('RequestFXUI_SELCUT', function () {
-    const eng = app.engine;
-    const wv = eng.wavesurfer;
-    const bk = wv.backend;
-    const rate = bk.buffer.sampleRate;
+    const wavesurfer = app.engine.wavesurfer;
+    const rate = wavesurfer.backend.buffer.sampleRate;
 
-    const region = wv.regions.list[0];
+    const region = wavesurfer.regions.list[0];
     if (!region) return false;
 
     app.fireEvent('RequestPause');
@@ -139,16 +137,16 @@ export function registerEffectsUI(app) {
       },
     };
 
-    wv.backend.reg = reg;
+    wavesurfer.backend.reg = reg;
 
     const updateRegion = function (region) {
       reg.pos.start = (region.start * rate) >> 0;
       reg.pos.end = (region.end * rate) >> 0;
 
-      wv.drawBuffer(true);
+      wavesurfer.drawBuffer(true);
     };
 
-    wv.on('region-updated', updateRegion);
+    wavesurfer.on('region-updated', updateRegion);
     // -- now make sure we resize it if needed be
   });
 

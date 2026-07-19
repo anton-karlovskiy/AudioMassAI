@@ -227,17 +227,17 @@ function _topbarConfig(app, ui) {
                 '<label class="pk_lblmp3" for="k5">Export Selection Only</label></div>',
 
               setup: function (modal) {
-                const wv = app.engine.wavesurfer;
+                const wavesurfer = app.engine.wavesurfer;
                 //console.log( document.getElementById('frmtex') );
 
                 // if no region
-                const region = wv.regions.list[0];
+                const region = wavesurfer.regions.list[0];
                 if (!region) {
                   const lbl = modal.bodyElement.getElementsByClassName('pk_lblmp3')[0];
                   lbl.className = 'pk_dis';
                 }
 
-                const channelNumber = wv.backend.buffer.numberOfChannels;
+                const channelNumber = wavesurfer.backend.buffer.numberOfChannels;
                 if (channelNumber === 2) {
                   modal.bodyElement.getElementsByClassName('pk_stereo')[0].checked = true;
                 }
@@ -499,10 +499,10 @@ function _topbarConfig(app, ui) {
 
               setup: function (modal) {
                 // check if selection
-                const wv = app.engine.wavesurfer;
+                const wavesurfer = app.engine.wavesurfer;
 
                 // if no region
-                const region = wv.regions.list[0];
+                const region = wavesurfer.regions.list[0];
                 const lblr = modal.bodyElement.getElementsByClassName('pk_lblsel')[0];
                 if (!region) {
                   lblr.className = 'pk_dis';

@@ -2503,65 +2503,63 @@ export function AudioEngine(app) {
   };
 
   app.listenFor('RequestZoom', function (diff, mode) {
-    const wv = wavesurfer;
-
     // compute new ZoomFactor...
-    diff *= wv.ZoomFactor;
+    diff *= wavesurfer.ZoomFactor;
 
     // compute availabel left ZoomFactor
     if (mode === -1) {
-      const width = wv.drawer.width;
-      const availablePixels = width - width / wv.ZoomFactor;
-      const target = wv.ZoomFactor - 1;
+      const width = wavesurfer.drawer.width;
+      const availablePixels = width - width / wavesurfer.ZoomFactor;
+      const target = wavesurfer.ZoomFactor - 1;
       if (target <= 0) return;
 
-      const oldZoomFactor = wv.ZoomFactor;
-      wv.ZoomFactor += (diff * target) / availablePixels;
-      if (wv.ZoomFactor < 1) wv.ZoomFactor = 1;
+      const oldZoomFactor = wavesurfer.ZoomFactor;
+      wavesurfer.ZoomFactor += (diff * target) / availablePixels;
+      if (wavesurfer.ZoomFactor < 1) wavesurfer.ZoomFactor = 1;
 
-      const newVisibleDuration = wv.getDuration() / wv.ZoomFactor;
+      const newVisibleDuration = wavesurfer.getDuration() / wavesurfer.ZoomFactor;
 
       if (newVisibleDuration <= 0.5) {
-        wv.ZoomFactor = oldZoomFactor;
+        wavesurfer.ZoomFactor = oldZoomFactor;
         return;
       }
 
-      wv.VisibleDuration = newVisibleDuration;
+      wavesurfer.VisibleDuration = newVisibleDuration;
 
-      const timeMoved = wv.VisibleDuration * (diff / wv.drawer.width);
-      wv.LeftProgress += timeMoved;
+      const timeMoved = wavesurfer.VisibleDuration * (diff / wavesurfer.drawer.width);
+      wavesurfer.LeftProgress += timeMoved;
 
-      if (wv.LeftProgress + wv.VisibleDuration >= wv.getDuration()) {
-        wv.LeftProgress = wv.getDuration() - wv.VisibleDuration;
-      } else if (wv.LeftProgress < 0) {
-        wv.LeftProgress = 0;
+      if (wavesurfer.LeftProgress + wavesurfer.VisibleDuration >= wavesurfer.getDuration()) {
+        wavesurfer.LeftProgress = wavesurfer.getDuration() - wavesurfer.VisibleDuration;
+      } else if (wavesurfer.LeftProgress < 0) {
+        wavesurfer.LeftProgress = 0;
       }
     } else if (mode === 1) {
-      const width = wv.drawer.width;
-      const availablePixels = width - width / wv.ZoomFactor;
-      const target = wv.ZoomFactor - 1;
+      const width = wavesurfer.drawer.width;
+      const availablePixels = width - width / wavesurfer.ZoomFactor;
+      const target = wavesurfer.ZoomFactor - 1;
       if (target <= 0) return;
 
-      const oldFactor = wv.ZoomFactor;
-      wv.ZoomFactor -= (diff * target) / availablePixels;
-      if (wv.ZoomFactor < 1) wv.ZoomFactor = 1;
-      const temp = wv.getDuration() / wv.ZoomFactor;
-      if (temp + wv.LeftProgress > wv.getDuration()) {
-        wv.ZoomFactor = oldFactor;
+      const oldFactor = wavesurfer.ZoomFactor;
+      wavesurfer.ZoomFactor -= (diff * target) / availablePixels;
+      if (wavesurfer.ZoomFactor < 1) wavesurfer.ZoomFactor = 1;
+      const temp = wavesurfer.getDuration() / wavesurfer.ZoomFactor;
+      if (temp + wavesurfer.LeftProgress > wavesurfer.getDuration()) {
+        wavesurfer.ZoomFactor = oldFactor;
       } else {
         if (temp <= 0.5) {
-          wv.ZoomFactor = oldFactor;
+          wavesurfer.ZoomFactor = oldFactor;
           return;
         }
 
-        wv.VisibleDuration = temp;
+        wavesurfer.VisibleDuration = temp;
       }
       // -
     }
 
-    // wv.ZoomFactor -= Math.abs (diff / (wv.drawer.width / 2));
-    // console.log( diff + " BLAH " + wv.ZoomFactor + '   ' +  (diff / wv.drawer.width) );
-    wv.ForceDraw();
+    // wavesurfer.ZoomFactor -= Math.abs (diff / (wavesurfer.drawer.width / 2));
+    // console.log( diff + " BLAH " + wavesurfer.ZoomFactor + '   ' +  (diff / wavesurfer.drawer.width) );
+    wavesurfer.ForceDraw();
     app.fireEvent('DidZoom', [
       wavesurfer.ZoomFactor,
       (wavesurfer.LeftProgress / wavesurfer.getDuration()) * 100,
@@ -2570,14 +2568,12 @@ export function AudioEngine(app) {
   });
 
   app.listenFor('RequestPan', function (diff, mode) {
-    const wv = wavesurfer;
-
-    if (mode === 1) diff *= wv.ZoomFactor;
+    if (mode === 1) diff *= wavesurfer.ZoomFactor;
     else if (mode === 2) {
-      const timeMoved = wv.getDuration() * (diff / wv.drawer.width);
-      wv.LeftProgress = timeMoved;
+      const timeMoved = wavesurfer.getDuration() * (diff / wavesurfer.drawer.width);
+      wavesurfer.LeftProgress = timeMoved;
 
-      wv.ForceDraw();
+      wavesurfer.ForceDraw();
       app.fireEvent('DidZoom', [
         wavesurfer.ZoomFactor,
         (wavesurfer.LeftProgress / wavesurfer.getDuration()) * 100,
@@ -2587,18 +2583,18 @@ export function AudioEngine(app) {
       return;
     }
 
-    if (wv.ZoomFactor > 0) {
+    if (wavesurfer.ZoomFactor > 0) {
       // drag and draw by X pixels...
-      const timeMoved = wv.VisibleDuration * (diff / wv.drawer.width);
-      wv.LeftProgress += timeMoved;
+      const timeMoved = wavesurfer.VisibleDuration * (diff / wavesurfer.drawer.width);
+      wavesurfer.LeftProgress += timeMoved;
 
-      if (wv.LeftProgress + wv.VisibleDuration >= wv.getDuration()) {
-        wv.LeftProgress = wv.getDuration() - wv.VisibleDuration;
-      } else if (wv.LeftProgress < 0) {
-        wv.LeftProgress = 0;
+      if (wavesurfer.LeftProgress + wavesurfer.VisibleDuration >= wavesurfer.getDuration()) {
+        wavesurfer.LeftProgress = wavesurfer.getDuration() - wavesurfer.VisibleDuration;
+      } else if (wavesurfer.LeftProgress < 0) {
+        wavesurfer.LeftProgress = 0;
       }
 
-      wv.ForceDraw();
+      wavesurfer.ForceDraw();
       app.fireEvent('DidZoom', [
         wavesurfer.ZoomFactor,
         (wavesurfer.LeftProgress / wavesurfer.getDuration()) * 100,

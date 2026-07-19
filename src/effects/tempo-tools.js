@@ -665,12 +665,12 @@ export function openTempoTools(app) {
         //}
         //skipp = true;
 
-        const wv = app.engine.wavesurfer;
-        const buffer = wv.backend.buffer;
+        const wavesurfer = app.engine.wavesurfer;
+        const buffer = wavesurfer.backend.buffer;
         const channelData = buffer.getChannelData(0);
         const sample_rate = buffer.sampleRate;
 
-        const currentTime = wv.getCurrentTime();
+        const currentTime = wavesurfer.getCurrentTime();
         const width = 500;
         const height = 100;
         const halfHeight = (height / 2) * 2;
