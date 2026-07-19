@@ -211,8 +211,8 @@ export function openTempoTools(app) {
 
   // ------
   const TempoMetro = function (app, modal) {
-    const q = this;
-    q.app = app;
+    const tool = this;
+    tool.app = app;
 
     let bpm = 120;
     let tick = null;
@@ -230,20 +230,20 @@ export function openTempoTools(app) {
     let MetronomeAct = null;
     let MetronomeInAct = null;
 
-    q.Init = function (container) {
-      const q = this;
+    tool.Init = function (container) {
+      const tool = this;
 
-      q.element = container;
+      tool.element = container;
 
-      _make_ui(q);
-      _make_evs(q);
+      _make_ui(tool);
+      _make_evs(tool);
     };
 
-    q.Destroy = function () {
-      q.app.stopListeningFor('DidStopPlay', DidStopPlay);
-      q.app.stopListeningFor('DidPlay', DidPlay);
-      q.app.stopListeningFor('DidStartMetro', MetronomeAct);
-      q.app.stopListeningFor('DidStopMetro', MetronomeInAct);
+    tool.Destroy = function () {
+      tool.app.stopListeningFor('DidStopPlay', DidStopPlay);
+      tool.app.stopListeningFor('DidPlay', DidPlay);
+      tool.app.stopListeningFor('DidStartMetro', MetronomeAct);
+      tool.app.stopListeningFor('DidStopMetro', MetronomeInAct);
 
       DidStopPlay = null;
       DidPlay = null;
@@ -269,15 +269,15 @@ export function openTempoTools(app) {
         }
       }
 
-      if (q.body) {
-        q.body.parentNode.removeChild(q.body);
-        q.body = null;
+      if (tool.body) {
+        tool.body.parentNode.removeChild(tool.body);
+        tool.body = null;
       }
 
-      q.app = null;
+      tool.app = null;
     };
 
-    function _make_ui(q) {
+    function _make_ui(tool) {
       const drawerElement = document.createElement('div');
       drawerElement.className = 'pk_row';
 
@@ -301,18 +301,18 @@ export function openTempoTools(app) {
         '<a class="pk_modal_a_bottom" style="display:inline-block;float:none">Play Both</a>' +
         '</div>';
 
-      q.body = drawerElement;
-      q.element.appendChild(drawerElement);
+      tool.body = drawerElement;
+      tool.element.appendChild(drawerElement);
     }
 
-    function _make_evs(q) {
-      const range = q.body.getElementsByClassName('pk_horiz')[0];
-      const span = q.body.getElementsByClassName('pk_val')[0];
+    function _make_evs(tool) {
+      const range = tool.body.getElementsByClassName('pk_horiz')[0];
+      const span = tool.body.getElementsByClassName('pk_val')[0];
 
-      const range2 = q.body.getElementsByClassName('pk_horiz')[1];
-      const span2 = q.body.getElementsByClassName('pk_val')[1];
+      const range2 = tool.body.getElementsByClassName('pk_horiz')[1];
+      const span2 = tool.body.getElementsByClassName('pk_val')[1];
 
-      const checkbox = q.body.getElementsByClassName('pk_check')[0];
+      const checkbox = tool.body.getElementsByClassName('pk_check')[0];
 
       range.oninput = function () {
         bpm = range.value / 1;
@@ -332,9 +332,9 @@ export function openTempoTools(app) {
         accentuate = checkbox.checked;
       };
 
-      const metronomeButton = q.body.getElementsByClassName('pk_modal_a_bottom')[0];
-      const playButton = q.body.getElementsByClassName('pk_modal_a_bottom')[1];
-      const bothButton = q.body.getElementsByClassName('pk_modal_a_bottom')[2];
+      const metronomeButton = tool.body.getElementsByClassName('pk_modal_a_bottom')[0];
+      const playButton = tool.body.getElementsByClassName('pk_modal_a_bottom')[1];
+      const bothButton = tool.body.getElementsByClassName('pk_modal_a_bottom')[2];
 
       metronomeButton.onclick = function () {
         if (tick) {
@@ -342,7 +342,7 @@ export function openTempoTools(app) {
           tick = null;
           count = 0;
 
-          q.app.fireEvent('DidStopMetro');
+          tool.app.fireEvent('DidStopMetro');
           return;
         }
 
@@ -360,7 +360,7 @@ export function openTempoTools(app) {
         count = 0;
         if (!ready) _prepare();
 
-        q.app.fireEvent('DidStartMetro');
+        tool.app.fireEvent('DidStartMetro');
 
         _metronome(1);
         play();
@@ -372,14 +372,14 @@ export function openTempoTools(app) {
       MetronomeAct = function () {
         metronomeButton.classList.add('pk_act');
       };
-      q.app.listenFor('DidStartMetro', MetronomeAct);
-      q.app.listenFor('DidStopMetro', MetronomeInAct);
+      tool.app.listenFor('DidStartMetro', MetronomeAct);
+      tool.app.listenFor('DidStopMetro', MetronomeInAct);
 
       playButton.onclick = function () {
         if (app.engine.wavesurfer.isPlaying()) {
-          q.app.fireEvent('RequestStop');
+          tool.app.fireEvent('RequestStop');
         } else {
-          q.app.fireEvent('RequestPlay');
+          tool.app.fireEvent('RequestPlay');
         }
       };
       if (!app.engine.wavesurfer.isReady) {
@@ -399,8 +399,8 @@ export function openTempoTools(app) {
         playButton.classList.add('pk_act');
         playButton.innerText = 'Stop Track';
       };
-      q.app.listenFor('DidStopPlay', DidStopPlay);
-      q.app.listenFor('DidPlay', DidPlay);
+      tool.app.listenFor('DidStopPlay', DidStopPlay);
+      tool.app.listenFor('DidPlay', DidPlay);
 
       bothButton.onclick = function () {
         if (tick) metronomeButton.onclick();
@@ -447,45 +447,45 @@ export function openTempoTools(app) {
   };
 
   const TempoTap = function (app, modal) {
-    const q = this;
-    q.app = app;
+    const tool = this;
+    tool.app = app;
 
     let DidStopPlay = null;
     let DidPlay = null;
     let DidSetLoop = null;
     let DidAudioProcess = null;
 
-    q.Init = function (container) {
-      const q = this;
+    tool.Init = function (container) {
+      const tool = this;
 
-      q.element = container;
+      tool.element = container;
 
-      _make_ui(q);
-      _make_evs(q);
+      _make_ui(tool);
+      _make_evs(tool);
     };
 
-    q.Destroy = function () {
-      q.app.stopListeningFor('DidStopPlay', DidStopPlay);
-      q.app.stopListeningFor('DidPlay', DidPlay);
-      q.app.stopListeningFor('DidSetLoop', DidSetLoop);
-      q.app.stopListeningFor('DidAudioProcess', DidAudioProcess);
+    tool.Destroy = function () {
+      tool.app.stopListeningFor('DidStopPlay', DidStopPlay);
+      tool.app.stopListeningFor('DidPlay', DidPlay);
+      tool.app.stopListeningFor('DidSetLoop', DidSetLoop);
+      tool.app.stopListeningFor('DidAudioProcess', DidAudioProcess);
 
       DidStopPlay = null;
       DidPlay = null;
       DidSetLoop = null;
       DidAudioProcess = null;
 
-      q.app.ui.KeyHandler.removeCallback('tmpTap');
+      tool.app.ui.KeyHandler.removeCallback('tmpTap');
 
-      if (q.body) {
-        q.body.parentNode.removeChild(q.body);
-        q.body = null;
+      if (tool.body) {
+        tool.body.parentNode.removeChild(tool.body);
+        tool.body = null;
       }
 
-      q.app = null;
+      tool.app = null;
     };
 
-    function _make_ui(q) {
+    function _make_ui(tool) {
       const drawerElement = document.createElement('div');
       drawerElement.className = 'pk_row';
 
@@ -525,18 +525,18 @@ export function openTempoTools(app) {
         '</span>' +
         '</div>';
 
-      q.body = drawerElement;
-      q.element.appendChild(drawerElement);
+      tool.body = drawerElement;
+      tool.element.appendChild(drawerElement);
     }
 
-    function _make_evs(q) {
-      const tapGraph = q.body.querySelectorAll('#pk_tmp_tap')[0];
-      const tapArea = q.body.querySelectorAll('#pk_tmp_tap3')[0];
-      const resetButton = q.body.getElementsByClassName('pk_modal_a_bottom')[0];
-      const playButton = q.body.getElementsByClassName('pk_modal_a_bottom')[1];
-      const loopButton = q.body.getElementsByClassName('pk_modal_a_bottom')[2];
+    function _make_evs(tool) {
+      const tapGraph = tool.body.querySelectorAll('#pk_tmp_tap')[0];
+      const tapArea = tool.body.querySelectorAll('#pk_tmp_tap3')[0];
+      const resetButton = tool.body.getElementsByClassName('pk_modal_a_bottom')[0];
+      const playButton = tool.body.getElementsByClassName('pk_modal_a_bottom')[1];
+      const loopButton = tool.body.getElementsByClassName('pk_modal_a_bottom')[2];
 
-      const canvas = q.body.getElementsByTagName('canvas')[0];
+      const canvas = tool.body.getElementsByTagName('canvas')[0];
       const canvasContext = canvas.getContext('2d', { alpha: false, antialias: false });
 
       const tempCanvas = document.createElement('canvas');
@@ -547,7 +547,7 @@ export function openTempoTools(app) {
       canvasContext.imageSmoothingEnabled = true;
       tempContext.imageSmoothingEnabled = true;
 
-      const valueElements = q.body.getElementsByClassName('pk_val');
+      const valueElements = tool.body.getElementsByClassName('pk_val');
       const tapMessage = tapGraph.getElementsByClassName('pk_obj2');
       const tapMessageSecondary = tapArea.getElementsByTagName('span')[0];
 
@@ -624,9 +624,9 @@ export function openTempoTools(app) {
 
       playButton.onclick = function () {
         if (app.engine.wavesurfer.isPlaying()) {
-          q.app.fireEvent('RequestStop');
+          tool.app.fireEvent('RequestStop');
         } else {
-          q.app.fireEvent('RequestPlay');
+          tool.app.fireEvent('RequestPlay');
         }
       };
 
@@ -649,8 +649,8 @@ export function openTempoTools(app) {
         playButton.innerText = 'Stop Track';
       };
 
-      q.app.listenFor('DidStopPlay', DidStopPlay);
-      q.app.listenFor('DidPlay', DidPlay);
+      tool.app.listenFor('DidStopPlay', DidStopPlay);
+      tool.app.listenFor('DidPlay', DidPlay);
 
       const oldLeftTime = -999999;
       let oldRightTime = -999999;
@@ -810,19 +810,19 @@ export function openTempoTools(app) {
         //console.log( peaks );
       };
 
-      q.app.listenFor('DidAudioProcess', DidAudioProcess);
+      tool.app.listenFor('DidAudioProcess', DidAudioProcess);
 
       if (app.engine.wavesurfer.regions.list[0]) {
         if (app.engine.wavesurfer.regions.list[0].loop) loopButton.className += ' pk_act';
       }
       loopButton.onclick = function () {
-        q.app.fireEvent('RequestSetLoop');
+        tool.app.fireEvent('RequestSetLoop');
       };
 
       DidSetLoop = function (value) {
         value ? loopButton.classList.add('pk_act') : loopButton.classList.remove('pk_act');
       };
-      q.app.listenFor('DidSetLoop', DidSetLoop);
+      tool.app.listenFor('DidSetLoop', DidSetLoop);
 
       tapGraph.parentNode.addEventListener('transitionend', function (e) {
         if (!tapGraph) return;
@@ -917,31 +917,31 @@ export function openTempoTools(app) {
 
   // events
   const TempoEstimation = function (app, modal) {
-    const q = this;
-    q.app = app;
+    const tool = this;
+    tool.app = app;
 
-    q.Init = function (container) {
-      const q = this;
+    tool.Init = function (container) {
+      const tool = this;
 
-      q.element = container;
+      tool.element = container;
 
-      _make_ui(q);
-      _make_evs(q);
+      _make_ui(tool);
+      _make_evs(tool);
     };
 
-    q.Destroy = function () {
-      if (q.body) {
-        q.body.parentNode.removeChild(q.body);
-        q.body = null;
+    tool.Destroy = function () {
+      if (tool.body) {
+        tool.body.parentNode.removeChild(tool.body);
+        tool.body = null;
       }
 
-      q.app = null;
+      tool.app = null;
     };
 
-    q.Est = function (selection) {
-      const q = this;
+    tool.Est = function (selection) {
+      const tool = this;
 
-      const wavesurfer = q.app.engine.wavesurfer;
+      const wavesurfer = tool.app.engine.wavesurfer;
       const buffer = wavesurfer.backend.buffer;
 
       const startingTime = 20.375;
@@ -1142,7 +1142,7 @@ export function openTempoTools(app) {
         };
     };
 
-    function _make_ui(q) {
+    function _make_ui(tool) {
       const drawerElement = document.createElement('div');
       drawerElement.className = 'pk_row';
 
@@ -1157,17 +1157,17 @@ export function openTempoTools(app) {
         '<a class="pk_modal_a_bottom" style="margin:0;float:left">Estimate</a>' +
         '</div>';
 
-      q.body = drawerElement;
-      q.element.appendChild(drawerElement);
+      tool.body = drawerElement;
+      tool.element.appendChild(drawerElement);
     }
 
-    function _make_evs(q) {
-      const buttonEstimate = q.body.getElementsByTagName('a')[0];
+    function _make_evs(tool) {
+      const buttonEstimate = tool.body.getElementsByTagName('a')[0];
       if (!buttonEstimate) return;
 
       buttonEstimate.onclick = function () {
-        q.Est && q.Est(1);
-        // q.app && q.app.fireEvent ('ReqEst', 1);
+        tool.Est && tool.Est(1);
+        // tool.app && tool.app.fireEvent ('ReqEst', 1);
       };
     }
   };
@@ -1177,7 +1177,7 @@ export function openTempoTools(app) {
       id: filterId,
       title: 'Tempo & Rhythm Tools',
 
-      ondestroy: function (q) {
+      ondestroy: function (modal) {
         app.ui.InteractionHandler.on = false;
         app.ui.KeyHandler.removeCallback(modalEscapeKey);
         activeTool.Destroy();
@@ -1195,13 +1195,13 @@ export function openTempoTools(app) {
       //			buttons: [{
       //				title:'Apply EQ',
       //				className:'pk_modal_a_accpt',
-      //				callback: function( q ) {
-      //					q.Destroy ();
+      //				callback: function( modal ) {
+      //					modal.Destroy ();
       //				}
       //			}],
 
-      setup: function (q) {
-        const toplinks = q.bodyElement.getElementsByClassName('pk_tbsa');
+      setup: function (modal) {
+        const toplinks = modal.bodyElement.getElementsByClassName('pk_tbsa');
 
         const destroy = function () {
           if (activeTool) {
@@ -1215,17 +1215,17 @@ export function openTempoTools(app) {
           // get the active state
           if (activeIndex === 0) {
             // toplinks[0].className += ' pk_act';
-            // activeTool = new TempoEstimation ( app, q );
+            // activeTool = new TempoEstimation ( app, modal );
             return;
           } else if (activeIndex === 1) {
             toplinks[1].className += ' pk_act';
-            activeTool = new TempoTap(app, q);
+            activeTool = new TempoTap(app, modal);
           } else if (activeIndex === 2) {
             toplinks[2].className += ' pk_act';
-            activeTool = new TempoMetro(app, q);
+            activeTool = new TempoMetro(app, modal);
           }
 
-          activeTool && activeTool.Init(q.bodyElement);
+          activeTool && activeTool.Init(modal.bodyElement);
         };
 
         //toplinks[0].onclick = function() {
@@ -1257,7 +1257,7 @@ export function openTempoTools(app) {
           modalEscapeKey,
           function (e) {
             if (!app.ui.InteractionHandler.check(modalName)) return;
-            q.Destroy();
+            modal.Destroy();
           },
           [27]
         );

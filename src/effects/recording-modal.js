@@ -46,7 +46,7 @@ export function openRecordingModal(app) {
       id: filterId,
       title: 'New Recording',
 
-      ondestroy: function (q) {
+      ondestroy: function (modal) {
         // destroy audio...
         stopAudio();
 
@@ -86,29 +86,29 @@ export function openRecordingModal(app) {
       //			buttons: [{
       //				title:'Apply EQ',
       //				className:'pk_modal_a_accpt',
-      //				callback: function( q ) {
-      //					q.Destroy ();
+      //				callback: function( modal ) {
+      //					modal.Destroy ();
       //				}
       //			}],
 
-      setup: function (q) {
+      setup: function (modal) {
         let isReady = false;
         let isActive = false;
         let isPaused = false;
         let hasRecorded = false;
 
-        const mainbtns = q.bodyElement.getElementsByClassName('pk_tbsa');
+        const mainbtns = modal.bodyElement.getElementsByClassName('pk_tbsa');
         const buttonStart = mainbtns[0];
         const buttonPause = mainbtns[1];
         const buttonOpen = mainbtns[2];
         const buttonAdd = mainbtns[3];
-        const timeSpan = q.bodyElement.getElementsByTagName('span')[0];
-        const devicesSelect = q.bodyElement.getElementsByTagName('select')[0];
+        const timeSpan = modal.bodyElement.getElementsByTagName('span')[0];
+        const devicesSelect = modal.bodyElement.getElementsByTagName('select')[0];
         const devices = [];
-        const volcanvas = q.bodyElement.getElementsByTagName('canvas')[0];
+        const volcanvas = modal.bodyElement.getElementsByTagName('canvas')[0];
         const volumeContext = volcanvas.getContext('2d', { alpha: false, antialias: false });
 
-        const freqcanvas = q.bodyElement.getElementsByTagName('canvas')[1];
+        const freqcanvas = modal.bodyElement.getElementsByTagName('canvas')[1];
         const frequencyContext = freqcanvas.getContext('2d', { alpha: false, antialias: false });
         const tempCanvas = document.createElement('canvas');
         tempCanvas.width = 500 * 2;
@@ -485,7 +485,7 @@ export function openRecordingModal(app) {
           });
 
           // ----
-          q.Destroy();
+          modal.Destroy();
         };
 
         buttonAdd.onclick = function () {
@@ -505,7 +505,7 @@ export function openRecordingModal(app) {
           });
 
           // ----
-          q.Destroy();
+          modal.Destroy();
         };
 
         // ---
@@ -515,7 +515,7 @@ export function openRecordingModal(app) {
           modalEscapeKey,
           function (e) {
             if (!app.ui.InteractionHandler.check(modalName)) return;
-            q.Destroy();
+            modal.Destroy();
           },
           [27]
         );

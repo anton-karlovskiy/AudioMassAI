@@ -13,30 +13,30 @@ const modalEscapeKey = modalName + 'esc';
 const maxDecibelValue = 35;
 
 function ParagraphicEqGraph() {
-  const q = this;
+  const graph = this;
   let _id = 0;
 
   let _is_render_scheduled = false;
   let _is_render_scheduled2 = false;
 
-  q.act = null;
-  q.ranges = [];
-  q.ui = {};
+  graph.act = null;
+  graph.ranges = [];
+  graph.ui = {};
 
   this.Callback = function () {};
 
   this.Init = function (container) {
-    const q = this;
+    const graph = this;
 
-    q.element = container;
-    _make_ui(q);
-    _make_evs(q);
+    graph.element = container;
+    _make_ui(graph);
+    _make_evs(graph);
 
-    q.Render();
+    graph.Render();
   };
 
   this.Add = function (type, isOn, freq, gain, qval, coordinateX, coordinateY) {
-    const q = this;
+    const graph = this;
 
     const newRange = {
       id: ++_id,
@@ -56,31 +56,31 @@ function ParagraphicEqGraph() {
       _curve: [],
     };
 
-    q.ranges.push(newRange);
-    q.ranges.sort(_compare);
+    graph.ranges.push(newRange);
+    graph.ranges.sort(_compare);
 
-    if (q.act) {
-      q.act.element.classList.remove('pk_act');
+    if (graph.act) {
+      graph.act.element.classList.remove('pk_act');
     }
 
-    q.act = newRange;
+    graph.act = newRange;
 
     _computeRangeCurve(newRange);
-    newRange.element = _range_render_el(q, newRange, ' pk_act');
+    newRange.element = _range_render_el(graph, newRange, ' pk_act');
 
-    q.Callback && q.Callback();
+    graph.Callback && graph.Callback();
 
-    q.Render();
+    graph.Render();
   };
 
   this.Remove = function (range) {
-    const q = this;
+    const graph = this;
 
-    let l = q.ranges.length;
+    let l = graph.ranges.length;
 
     while (l-- > 0) {
-      if (q.ranges[l] === range) {
-        q.ranges.splice(l, 1);
+      if (graph.ranges[l] === range) {
+        graph.ranges.splice(l, 1);
         break;
       }
     }
@@ -90,21 +90,21 @@ function ParagraphicEqGraph() {
       range.element = null;
     }
 
-    if (q.act && q.act === range) {
-      q.act = null;
+    if (graph.act && graph.act === range) {
+      graph.act = null;
     }
 
-    q.Render();
+    graph.Render();
   };
 
   const _fillstyle = '#d9d955';
 
   const _anim_render = function () {
-    _render(q);
+    _render(graph);
   };
 
   this.Render = function () {
-    const q = this;
+    const graph = this;
 
     if (_is_render_scheduled) return;
     _is_render_scheduled = true;
@@ -113,23 +113,23 @@ function ParagraphicEqGraph() {
   };
 
   this.RenderBars = function (_, freq) {
-    const q = this;
+    const graph = this;
 
     if (_is_render_scheduled2) return;
     _is_render_scheduled2 = true;
 
     requestAnimationFrame(function () {
-      _render_bars(q, freq);
+      _render_bars(graph, freq);
     });
   };
 
-  const _render_bars = function (q, freq) {
+  const _render_bars = function (graph, freq) {
     _is_render_scheduled2 = false;
 
     if (!freq) return;
 
-    const canvasContext = q.ui.barsContext;
-    const canvas = q.ui.canvasBars;
+    const canvasContext = graph.ui.barsContext;
+    const canvas = graph.ui.canvasBars;
 
     const canvasWidth = canvas.width;
     const canvasHeight = canvas.height;
@@ -234,11 +234,11 @@ function ParagraphicEqGraph() {
   };
 
   const lineArray = new Array(1000);
-  const _render = function (q) {
+  const _render = function (graph) {
     _is_render_scheduled = false;
 
-    const canvasContext = q.ui.equalizerContext;
-    const canvas = q.ui.canvasEqualizer;
+    const canvasContext = graph.ui.equalizerContext;
+    const canvas = graph.ui.canvasEqualizer;
 
     const canvasWidth = canvas.width;
     const canvasHeight = canvas.height;
@@ -250,7 +250,7 @@ function ParagraphicEqGraph() {
 
     canvasContext.fillStyle = _fillstyle;
 
-    if (q.ranges.length === 0) {
+    if (graph.ranges.length === 0) {
       canvasContext.beginPath();
       canvasContext.moveTo(0, halfCanvasHeight);
       canvasContext.lineTo(canvasWidth, halfCanvasHeight);
@@ -262,8 +262,8 @@ function ParagraphicEqGraph() {
     // render the line based on the elements
     let first = true;
 
-    for (let o = 0; o < q.ranges.length; ++o) {
-      const current = q.ranges[o];
+    for (let o = 0; o < graph.ranges.length; ++o) {
+      const current = graph.ranges[o];
 
       if (!current._on) continue;
 
@@ -320,8 +320,8 @@ function ParagraphicEqGraph() {
 
     // draw the dots
     const radius = 6;
-    for (let o = 0; o < q.ranges.length; ++o) {
-      const current = q.ranges[o];
+    for (let o = 0; o < graph.ranges.length; ++o) {
+      const current = graph.ranges[o];
 
       const centerX = current._coords.x;
       const centerY = current._coords.y;
@@ -329,7 +329,7 @@ function ParagraphicEqGraph() {
       canvasContext.beginPath();
       canvasContext.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
 
-      if (current === q.act) {
+      if (current === graph.act) {
         canvasContext.shadowBlur = 24;
 
         if (current._on) canvasContext.fillStyle = '#fff';
@@ -367,7 +367,7 @@ function ParagraphicEqGraph() {
   const total = 1000;
   const jump = (totalFrequency / total) >> 0;
 
-  function _range_update(q, range, newRange, computeCoordinates) {
+  function _range_update(graph, range, newRange, computeCoordinates) {
     let modified = false;
     let oldValue = null;
 
@@ -403,7 +403,7 @@ function ParagraphicEqGraph() {
           else if (range[key] === 'highpass') element.options[2].selected = true;
 
           _computeRangeCurve(range);
-          q.ranges.sort(_compare);
+          graph.ranges.sort(_compare);
         }
         // ---
       }
@@ -412,7 +412,7 @@ function ParagraphicEqGraph() {
     if (modified) {
       if (computeCoordinates) {
         // compute coords of the canvas
-        const canvas = q.ui.canvasEqualizer;
+        const canvas = graph.ui.canvasEqualizer;
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
 
@@ -439,11 +439,11 @@ function ParagraphicEqGraph() {
       }
 
       _dbncr = setTimeout(function () {
-        q.Callback();
+        graph.Callback();
         _dbncr = null;
       }, 38);
 
-      q.Render();
+      graph.Render();
     }
     // ---
   }
@@ -531,7 +531,7 @@ function ParagraphicEqGraph() {
     // -------------
   }
 
-  function _make_ui(q) {
+  function _make_ui(graph) {
     const drawerElement = document.createElement('div');
     drawerElement.className = 'pk_row';
 
@@ -597,7 +597,7 @@ function ParagraphicEqGraph() {
     drawerElement.appendChild(markerFrequencies);
     drawerElement.appendChild(markerDecibels);
 
-    q.element.appendChild(drawerElement);
+    graph.element.appendChild(drawerElement);
 
     // element's area
     const listElement = document.createElement('div');
@@ -608,25 +608,25 @@ function ParagraphicEqGraph() {
       '<span class="pk_txlft"> #</span><span>type</span><span>gain</span><span>freq</span><span>Q</span>' +
       '</div>';
 
-    q.element.appendChild(listElement);
+    graph.element.appendChild(listElement);
 
-    q.ui.barsContext = barsContext;
-    q.ui.equalizerContext = equalizerContext;
+    graph.ui.barsContext = barsContext;
+    graph.ui.equalizerContext = equalizerContext;
 
-    q.ui.canvasBars = canvasBars;
-    q.ui.canvasEqualizer = canvasEqualizer;
-    q.ui.listElement = listElement;
+    graph.ui.canvasBars = canvasBars;
+    graph.ui.canvasEqualizer = canvasEqualizer;
+    graph.ui.listElement = listElement;
   }
 
-  function _make_evs(q) {
-    const canvasContext = q.ui.equalizerContext;
-    const canvas = q.ui.canvasEqualizer;
+  function _make_evs(graph) {
+    const canvasContext = graph.ui.equalizerContext;
+    const canvas = graph.ui.canvasEqualizer;
 
     let clickTime = 0;
     let isDragging = false;
 
     const _move = function (e) {
-      if (!isDragging || !q.act) return;
+      if (!isDragging || !graph.act) return;
 
       let ex = 0;
       let ey = 0;
@@ -653,8 +653,8 @@ function ParagraphicEqGraph() {
       const relativeX = posx / canvasWidth;
       const relativeY = posy / canvasHeight;
 
-      q.act._coords.x = posx;
-      q.act._coords.y = posy;
+      graph.act._coords.x = posx;
+      graph.act._coords.y = posy;
 
       // up until half it's 0 - 5000, second half 5000 -> 2200
       let freq = 0;
@@ -668,11 +668,11 @@ function ParagraphicEqGraph() {
       //				var freq = (relativeX * (totalFrequency) + 0) >> 0; // + 16 (min freq)
       const gain = ((relativeY - 0.5) * -2 * maxDecibelValue).toFixed(2) / 1;
 
-      _range_update(q, q.act, {
+      _range_update(graph, graph.act, {
         freq: freq,
         gain: gain,
       });
-      _computeRangeCurve(q.act);
+      _computeRangeCurve(graph.act);
     };
 
     const _end = function (e) {
@@ -686,10 +686,10 @@ function ParagraphicEqGraph() {
     };
 
     const mdown = function (e) {
-      const unchecked = !!q.act;
+      const unchecked = !!graph.act;
 
-      if (q.ranges.length === 0) {
-        if (unchecked) q.Render();
+      if (graph.ranges.length === 0) {
+        if (unchecked) graph.Render();
         return;
       }
 
@@ -703,23 +703,23 @@ function ParagraphicEqGraph() {
       const distanceX = e.isTouch ? 20 : 10;
       const distanceY = e.isTouch ? 20 : 9;
 
-      for (let o = 0; o < q.ranges.length; ++o) {
-        const current = q.ranges[o];
+      for (let o = 0; o < graph.ranges.length; ++o) {
+        const current = graph.ranges[o];
 
         if (
           Math.abs(current._coords.x - posx) < distanceX &&
           Math.abs(current._coords.y - posy) < distanceY
         ) {
           if (unchecked) {
-            q.act.element.classList.remove('pk_act');
+            graph.act.element.classList.remove('pk_act');
           }
 
-          q.act = current;
-          q.act.element.classList.add('pk_act');
+          graph.act = current;
+          graph.act.element.classList.add('pk_act');
 
           isDragging = true;
 
-          q.Render();
+          graph.Render();
 
           // check if we are targetting a circle
 
@@ -740,11 +740,11 @@ function ParagraphicEqGraph() {
       }
 
       if (unchecked) {
-        q.act.element.classList.remove('pk_act');
+        graph.act.element.classList.remove('pk_act');
         // un-highlight
-        q.act = null;
+        graph.act = null;
 
-        q.Render();
+        graph.Render();
       }
 
       // ----
@@ -795,7 +795,7 @@ function ParagraphicEqGraph() {
           const qval = 5;
           const type = 'peaking';
 
-          q.Add(type, true, freq, gain, qval, posx, posy);
+          graph.Add(type, true, freq, gain, qval, posx, posy);
         }
 
         clickTime = e.timeStamp;
@@ -806,8 +806,8 @@ function ParagraphicEqGraph() {
     // ---
   }
 
-  function _range_render_el(q, range, className) {
-    const listElement = q.ui.listElement;
+  function _range_render_el(graph, range, className) {
+    const listElement = graph.ui.listElement;
 
     const element = document.createElement('div');
     element.className = 'pk_pgeq_els' + (className ? className : '');
@@ -818,15 +818,15 @@ function ParagraphicEqGraph() {
       function (e) {
         if (!range.element) return;
 
-        if (range !== q.act) {
-          if (q.act) {
-            q.act.element.classList.remove('pk_act');
+        if (range !== graph.act) {
+          if (graph.act) {
+            graph.act.element.classList.remove('pk_act');
           }
 
-          q.act = range;
-          q.act.element.classList.add('pk_act');
+          graph.act = range;
+          graph.act.element.classList.add('pk_act');
 
-          q.Render();
+          graph.Render();
         }
       },
       false
@@ -839,7 +839,7 @@ function ParagraphicEqGraph() {
 
         if (!range._hov) {
           range._hov = true;
-          q.Render();
+          graph.Render();
         }
       },
       false
@@ -852,7 +852,7 @@ function ParagraphicEqGraph() {
 
         if (range._hov) {
           range._hov = false;
-          q.Render();
+          graph.Render();
         }
       },
       false
@@ -875,7 +875,7 @@ function ParagraphicEqGraph() {
       '">ON</label>';
 
     numberElement.getElementsByTagName('input')[0].onchange = function (e) {
-      _range_update(q, range, { _on: !!this.checked });
+      _range_update(graph, range, { _on: !!this.checked });
 
       const lbl = this.parentNode.getElementsByTagName('label')[0];
       lbl.innerHTML = this.checked ? 'ON' : 'OFF';
@@ -902,7 +902,7 @@ function ParagraphicEqGraph() {
         element.classList.add('pk_dis');
       }
 
-      _range_update(q, range, { type: value }, 1);
+      _range_update(graph, range, { type: value }, 1);
     };
 
     element.appendChild(typeElement);
@@ -921,7 +921,7 @@ function ParagraphicEqGraph() {
         this.parentNode.getElementsByClassName('pk_horiz')[0].value = this.value;
       }
 
-      _range_update(q, range, { gain: this.value / 1 }, 1);
+      _range_update(graph, range, { gain: this.value / 1 }, 1);
       _computeRangeCurve(range);
     };
     gainElement.getElementsByClassName('pk_gain')[0].onfocus = function (e) {
@@ -953,11 +953,11 @@ function ParagraphicEqGraph() {
         ) {
           self.removeAttribute('data-open');
           parent.removeChild(bar);
-          q.element.removeEventListener('mousedown', down);
+          graph.element.removeEventListener('mousedown', down);
           return;
         }
       };
-      q.element.addEventListener('mousedown', down, false);
+      graph.element.addEventListener('mousedown', down, false);
     };
     element.appendChild(gainElement);
 
@@ -976,7 +976,7 @@ function ParagraphicEqGraph() {
         this.parentNode.getElementsByClassName('pk_horiz')[0].value = this.value;
       }
 
-      _range_update(q, range, { freq: this.value / 1 }, 1);
+      _range_update(graph, range, { freq: this.value / 1 }, 1);
       _computeRangeCurve(range);
     };
 
@@ -1009,15 +1009,15 @@ function ParagraphicEqGraph() {
         ) {
           self.removeAttribute('data-open');
           parent.removeChild(bar);
-          q.element.removeEventListener('mousedown', down);
+          graph.element.removeEventListener('mousedown', down);
         }
       };
-      q.element.addEventListener('mousedown', down, false);
+      graph.element.addEventListener('mousedown', down, false);
     };
 
     element.appendChild(frequencyElement);
 
-    // q
+    // graph
     const qElement = document.createElement('div');
     qElement.innerHTML =
       '<input type="number" class="pk_val pk_q" min="1" max="50" value="' + range.q + '">';
@@ -1030,7 +1030,7 @@ function ParagraphicEqGraph() {
         this.parentNode.getElementsByClassName('pk_horiz')[0].value = this.value;
       }
 
-      _range_update(q, range, { q: this.value / 1 }, 1);
+      _range_update(graph, range, { q: this.value / 1 }, 1);
       _computeRangeCurve(range);
     };
 
@@ -1063,10 +1063,10 @@ function ParagraphicEqGraph() {
         ) {
           self.removeAttribute('data-open');
           parent.removeChild(bar);
-          q.element.removeEventListener('mousedown', down);
+          graph.element.removeEventListener('mousedown', down);
         }
       };
-      q.element.addEventListener('mousedown', down, false);
+      graph.element.addEventListener('mousedown', down, false);
     };
     element.appendChild(qElement);
 
@@ -1075,7 +1075,7 @@ function ParagraphicEqGraph() {
     deleteElement.className = 'pk_del';
     deleteElement.innerHTML = '<a style="cursor:pointer">DELETE</a>';
     deleteElement.getElementsByTagName('a')[0].onclick = function (e) {
-      q.Remove(range);
+      graph.Remove(range);
     };
 
     element.appendChild(deleteElement);
@@ -1130,7 +1130,7 @@ export function openParagraphicEQ(app, customPresets) {
       id: filterId,
       title: 'Paragraphic EQ',
 
-      ondestroy: function (q) {
+      ondestroy: function (modal) {
         app.stopListeningFor('DidAudioProcess', DrawBars);
         app.ui.InteractionHandler.on = false;
         app.ui.KeyHandler.removeCallback(modalEscapeKey);
@@ -1138,7 +1138,7 @@ export function openParagraphicEQ(app, customPresets) {
         PGEQ = null;
       },
 
-      preview: function (q) {
+      preview: function (modal) {
         app.fireEvent('RequestActionFX_PREVIEW_PARAMEQ', updateFilter());
       },
 
@@ -1199,15 +1199,15 @@ export function openParagraphicEQ(app, customPresets) {
         {
           title: 'Apply EQ',
           className: 'pk_modal_a_accpt',
-          callback: function (q) {
+          callback: function (modal) {
             app.fireEvent('RequestActionFX_PARAMEQ', updateFilter());
-            q.Destroy();
+            modal.Destroy();
           },
         },
       ],
 
-      setup: function (q) {
-        PGEQ.Init(q.bodyElement);
+      setup: function (modal) {
+        PGEQ.Init(modal.bodyElement);
 
         PGEQ.Callback = function () {
           app.fireEvent('RequestActionFX_UPDATE_PREVIEW', updateFilter());
@@ -1221,7 +1221,7 @@ export function openParagraphicEQ(app, customPresets) {
           modalEscapeKey,
           function (e) {
             if (!app.ui.InteractionHandler.check(modalName)) return;
-            q.Destroy();
+            modal.Destroy();
           },
           [27]
         );
