@@ -159,11 +159,18 @@ const SCENES = [
     name: 'file-menu-open',
     async setup(page) {
       await loadSample(page);
-      await page.evaluate(() => {
-        const menu = [...document.querySelectorAll('.pk_hdr *')].find(
-          (element) => element.textContent.trim() === 'File'
-        );
-        menu?.click();
+      // A real mouse click, not element.click(): the menu opens from mouse
+      // events on the header, which a synthetic click does not produce.
+      await page
+        .locator('button', { hasText: /^File$/ })
+        .first()
+        .click();
+      // Assert the menu actually opened. An earlier version of this scene
+      // silently no-opped and captured the same DOM as the base scene, which
+      // made it look like coverage it was not providing.
+      await page.waitForFunction(() => {
+        const menu = document.querySelector('.pk_menu');
+        return menu && getComputedStyle(menu).visibility === 'visible';
       });
       await page.waitForTimeout(200);
     },
@@ -268,6 +275,18 @@ test('computed styles match the recorded baseline', async ({ page }) => {
     const result = await page.evaluate(captureScene, TRACKED_PROPERTIES);
     captured[scene.name] = result.entries;
     for (const className of result.classes) coveredClasses.add(className);
+  }
+
+  // A scene that fails to reach its UI state captures the same DOM as the
+  // plain editor and quietly contributes nothing. Every scene after the first
+  // opens something, so each must differ from the base.
+  const [baseScene, ...derivedScenes] = SCENES;
+  for (const scene of derivedScenes) {
+    expect(
+      JSON.stringify(captured[scene.name]) === JSON.stringify(captured[baseScene.name]),
+      `scene "${scene.name}" captured the same DOM as "${baseScene.name}" -- it never ` +
+        `reached the state it is supposed to cover`
+    ).toBe(false);
   }
 
   if (shouldUpdate || !existsSync(BASELINE_PATH)) {
