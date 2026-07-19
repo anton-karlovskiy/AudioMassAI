@@ -26,7 +26,6 @@ export function AudioUtils(app, wavesurfer) {
   }
 
   function OverwriteBufferWithSegment(_offset, _duration, withBuffer) {
-    const originalBuffer = wavesurfer.backend.buffer;
     TrimBuffer(_offset, _duration, true);
     const ret = InsertSegmentToBuffer(_offset, withBuffer);
 
@@ -1301,8 +1300,6 @@ export function AudioUtils(app, wavesurfer) {
 
         update: function (filterChain, audioContext, value) {
           // update filter chain...
-          const inputNode = filterChain[0];
-          const outputNode = filterChain[1];
           const dryGainNode = filterChain[2];
           const wetGainNode = filterChain[3];
           const feedbackGainNode = filterChain[4];
