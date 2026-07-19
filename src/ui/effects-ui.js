@@ -1868,7 +1868,7 @@ export function registerEffectsUI(app) {
         );
 
         if (!wnd) {
-          showToast('Please allow pop-ups for AudioMass!', 3600, 'pk_r');
+          showToast('Please allow pop-ups for AudioMass!', 3600, 'pk_toast_error');
           return;
         }
 

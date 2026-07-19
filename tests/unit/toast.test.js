@@ -34,7 +34,7 @@ describe('showToast', () => {
   });
 
   it('applies extra CSS classes', () => {
-    showToast('Error!', 100, 'pk_r');
-    expect(document.querySelector('.pk_toast').className).toContain('pk_r');
+    showToast('Error!', 100, 'pk_toast_error');
+    expect(document.querySelector('.pk_toast').className).toContain('pk_toast_error');
   });
 });

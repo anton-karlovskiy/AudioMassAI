@@ -34,10 +34,12 @@
  * there is no call site to read their meaning from, and inventing a name for a
  * rule you do not understand is worse than leaving the abbreviation.
  *
- * `pk_r` is also left alone, for a different reason. It is passed as a toast
- * variant in effects-ui.js, but no rule anywhere matches it -- the class is
- * inert. Renaming it would dress up dead code; it wants deleting or styling,
- * which is a behaviour change rather than a rename.
+ * `pk_r` was previously left alone: it was passed as a toast variant in
+ * effects-ui.js but no rule matched it, so the class was inert and renaming it
+ * would only have dressed up dead code. It is now styled -- its one call site
+ * is a genuine error ("please allow pop-ups"), which had been rendering with
+ * the same neutral chrome as "Loaded Successfully" -- and renamed to
+ * `pk_toast_error` now that the name has to describe something real.
  *
  * Renames here are checked two ways: tests/e2e/style-baseline.spec.js compares
  * computed styles across nine UI states, and tests/unit/css-class-consistency
@@ -916,6 +918,12 @@ a {
   font-size: 16px;
   user-select: none;
   pointer-events: none;
+}
+
+.pk_toast.pk_toast_error {
+  background: rgba(74, 12, 12, 0.86);
+  border-color: #a33;
+  color: #fbeaea;
 }
 
 /** modal **/
