@@ -491,17 +491,17 @@ export function openTempoTools(app) {
 
       // Estimate tempo for selected area button
       drawerElement.innerHTML =
-        '<div class="pk_row pk_pgeq_els">' +
+        '<div class="pk_row pk_pgeq_element">' +
         '<span>Average BPM</span>' +
         '<input style="margin-left:2px;min-width:64px;max-width:64px" ' +
         'type="text" class="pk_value pk_gain" value="-">' +
         '</div>' +
-        '<div class="pk_row pk_pgeq_els">' +
+        '<div class="pk_row pk_pgeq_element">' +
         '<span>Nearest BPM</span>' +
         '<input style="margin-left:2px;min-width:64px;max-width:64px" ' +
         'type="text" class="pk_value pk_gain" value="-">' +
         '</div>' +
-        '<div class="pk_row pk_pgeq_els">' +
+        '<div class="pk_row pk_pgeq_element">' +
         '<span>Timing Taps</span>' +
         '<input style="margin-left:2px;min-width:64px;max-width:64px" ' +
         'type="text" class="pk_value pk_gain" value="-">' +
@@ -509,16 +509,16 @@ export function openTempoTools(app) {
         '<a class="pk_modal_action_bottom" style="display:inline-block;float:none">Play Track</a>' +
         '<a class="pk_modal_action_bottom" style="display:inline-block;float:none">Loop</a>' +
         '</div>' +
-        '<div><div id="pk_tmp_tap">' +
-        '<span style="opacity:0" class="pk_obj2">CLEARED...</span>' +
-        '<span class="pk_obj2">STAND BY...</span>' +
+        '<div><div id="pk_tempo_tap_status">' +
+        '<span style="opacity:0" class="pk_tempo_tap_message">CLEARED...</span>' +
+        '<span class="pk_tempo_tap_message">STAND BY...</span>' +
         '</div>' +
-        '<div id="pk_tmp_tap2" style="position:relative">' +
+        '<div id="pk_tempo_tap_graph" style="position:relative">' +
         '<canvas width="1000" height="200" style="image-rendering:pixelated;width:500px;height:100px;display:block;background:#000"></canvas>' +
         '<span style="z-index:3;background:red;position:absolute;display:block;width:2px;height:100px;' +
         'left:50%;margin-left:-1px;top:0"></span>' +
         '</div></div>' +
-        '<div id="pk_tmp_tap3">' +
+        '<div id="pk_tempo_tap_area">' +
         '<span style="position:absolute;top:50%;display:block;width:80%;left:10%;font-size:12px;' +
         'margin-top:-20px;user-select:none;text-align:center;pointer-events:none;color:#ccc">' +
         'Tap in this area, or hit [SPACE] rhythmically, to measure BPM.' +
@@ -530,8 +530,8 @@ export function openTempoTools(app) {
     }
 
     function _make_evs(tool) {
-      const tapGraph = tool.body.querySelectorAll('#pk_tmp_tap')[0];
-      const tapArea = tool.body.querySelectorAll('#pk_tmp_tap3')[0];
+      const tapGraph = tool.body.querySelectorAll('#pk_tempo_tap_status')[0];
+      const tapArea = tool.body.querySelectorAll('#pk_tempo_tap_area')[0];
       const resetButton = tool.body.getElementsByClassName('pk_modal_action_bottom')[0];
       const playButton = tool.body.getElementsByClassName('pk_modal_action_bottom')[1];
       const loopButton = tool.body.getElementsByClassName('pk_modal_action_bottom')[2];
@@ -548,7 +548,7 @@ export function openTempoTools(app) {
       tempContext.imageSmoothingEnabled = true;
 
       const valueElements = tool.body.getElementsByClassName('pk_value');
-      const tapMessage = tapGraph.getElementsByClassName('pk_obj2');
+      const tapMessage = tapGraph.getElementsByClassName('pk_tempo_tap_message');
       const tapMessageSecondary = tapArea.getElementsByTagName('span')[0];
 
       const bpmElement = valueElements[0];
@@ -607,7 +607,7 @@ export function openTempoTools(app) {
           bpmElementRound.value = '-';
           bpmElementCount.value = '-';
 
-          const elements = tapGraph.parentNode.getElementsByClassName('pk_obj');
+          const elements = tapGraph.parentNode.getElementsByClassName('pk_tempo_step');
           let l = elements.length;
 
           while (l-- > 0) {
@@ -876,7 +876,7 @@ export function openTempoTools(app) {
         }
 
         const step = document.createElement('div');
-        step.className = 'pk_obj';
+        step.className = 'pk_tempo_step';
 
         if (isPlaying) {
           canvas.parentNode.appendChild(step);
@@ -1152,7 +1152,7 @@ export function openTempoTools(app) {
         '<input type="radio" class="pk_check" id="tt4" name="xport" checked value="whole">' +
         '<label for="tt4">Whole track</label>' +
         '<input type="radio" class="pk_check" id="tt5" name="xport" value="sel">' +
-        '<label class="pk_lblmp3" for="tt5">Estimate for Selection Only</label></div>' +
+        '<label class="pk_label_mp3" for="tt5">Estimate for Selection Only</label></div>' +
         '<div class="pk_row">' +
         '<a class="pk_modal_action_bottom" style="margin:0;float:left">Estimate</a>' +
         '</div>';

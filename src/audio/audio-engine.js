@@ -308,7 +308,7 @@ export function AudioEngine(app) {
     engine.isReady = true;
 
     // dirty hack for default message
-    let dirtymsg = document.getElementsByClassName('pk_tmpMsg');
+    let dirtymsg = document.getElementsByClassName('pk_temp_message');
     if (dirtymsg.length > 0) {
       dirtymsg = dirtymsg[0];
       dirtymsg.parentNode.removeChild(dirtymsg);
@@ -655,7 +655,7 @@ export function AudioEngine(app) {
       input = document.createElement('input');
       input.setAttribute('type', 'file');
       input.setAttribute('accept', 'audio/*');
-      input.className = 'pk_inpfile';
+      input.className = 'pk_input_file';
       input.onchange = function () {
         engine.LoadFile(input);
 

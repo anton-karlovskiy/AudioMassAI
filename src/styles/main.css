@@ -219,17 +219,17 @@ html {
   animation-iteration-count: infinite;
 }
 
-.pk_prc {
+.pk_percent {
   margin-top: 20px;
   font-size: 14px;
 }
 
-.pk_prc span {
+.pk_percent span {
   margin-right: 10px;
   padding-bottom: 7px;
   text-align: center;
 }
-.pk_prc button {
+.pk_percent button {
   border-radius: 3px;
   border: 1px solid #eee;
   background: transparent;
@@ -242,7 +242,7 @@ html {
   top: 26px;
 }
 
-.pk_inpfile {
+.pk_input_file {
   visibility: hidden;
   width: 1px;
   height: 1px;
@@ -261,7 +261,7 @@ a {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
-.pk_tmpMsg {
+.pk_temp_message {
   position: absolute;
   left: 50%;
   top: 50%;
@@ -277,7 +277,7 @@ a {
   line-height: 32px;
 }
 
-.pk_tmpMsg2 {
+.pk_temp_message_alt {
   position: fixed;
   background: rgba(0, 0, 0, 0.6);
   z-index: 10;
@@ -293,7 +293,7 @@ a {
   cursor: progress !important;
 }
 
-.pk_tmpMsg2.pk_active {
+.pk_temp_message_alt.pk_active {
   display: flex;
 }
 
@@ -335,7 +335,7 @@ a {
 }
 
 .pk_selection,
-.pk_ctns,
+.pk_actions,
 .pk_transport {
   float: left;
   margin-right: 12px;
@@ -348,7 +348,7 @@ a {
 .pk_selection {
   margin-right: 0;
 }
-.pk_ctns {
+.pk_actions {
   min-width: 40px;
 }
 
@@ -494,7 +494,7 @@ a {
   line-height: 18px;
 }
 
-.pk_selection .pk_dat {
+.pk_selection .pk_selection_value {
   background: #383838;
   padding: 2px 5px;
   color: #99c2c6;
@@ -1498,7 +1498,7 @@ input.pk_horizontal.pk_width_180 {
 }
 
 @media only screen and (max-width: 1250px) {
-  .pk_ctns,
+  .pk_actions,
   .pk_transport {
     float: none;
     display: block;
@@ -1607,7 +1607,7 @@ input.pk_horizontal.pk_width_180 {
     white-space: nowrap;
     border-bottom: none;
   }
-  .pk_mobile .pk_ctns,
+  .pk_mobile .pk_actions,
   .pk_mobile .pk_transport {
     height: 36px;
   }
@@ -1615,7 +1615,7 @@ input.pk_horizontal.pk_width_180 {
     font-size: 8px;
   }
 
-  .pk_tmpMsg {
+  .pk_temp_message {
     font-size: 14px;
     line-height: 28px;
     margin-left: -120px;
@@ -1627,7 +1627,7 @@ input.pk_horizontal.pk_width_180 {
   }
 
   .pk_mobile .pk_transport,
-  .pk_mobile .pk_ctns,
+  .pk_mobile .pk_actions,
   .pk_mobile .pk_button_group {
     float: none;
     display: inline-block;
@@ -1661,7 +1661,7 @@ input.pk_horizontal.pk_width_180 {
     margin-top: 3px;
   }
 
-  .pk_lcldrf .pk_lcla {
+  .pk_local_draft .pk_local_draft_link {
     margin-left: 14px;
     font-size: 12px;
   }
@@ -1683,7 +1683,7 @@ input.pk_horizontal.pk_width_180 {
   display: none;
 }
 
-.pk_frqan {
+.pk_frequency_analyzer {
   border: 1px solid #444;
   width: 380px;
   margin: 15px 15px 12px 15px;
@@ -1705,14 +1705,14 @@ input.pk_horizontal.pk_width_180 {
   display: none;
 }
 
-.pk_peq {
+.pk_pgeq_curve {
   width: 450px;
   height: 225px;
   z-index: 3;
   position: relative;
 }
 
-.pk_peq2 {
+.pk_pgeq_bars {
   position: absolute;
   left: 14px;
   width: 225px;
@@ -1722,14 +1722,14 @@ input.pk_horizontal.pk_width_180 {
   transform-origin: 0 0;
 }
 
-.pk_peq3 {
+.pk_pgeq_frequency_markers {
   font-size: 10px;
   color: #666;
   position: relative;
   z-index: 1;
 }
 
-.pk_peq3 span span {
+.pk_pgeq_frequency_markers span span {
   position: absolute;
   top: -229px;
   width: 1px;
@@ -1739,7 +1739,7 @@ input.pk_horizontal.pk_width_180 {
   left: 50%;
 }
 
-.pk_peq4 {
+.pk_pgeq_decibel_markers {
   font-size: 9px;
   color: #666;
   position: absolute;
@@ -1748,7 +1748,7 @@ input.pk_horizontal.pk_width_180 {
   height: 225px;
 }
 
-.pk_peq4:before {
+.pk_pgeq_decibel_markers:before {
   content: ' ';
   position: absolute;
   background: #1b1a1a;
@@ -1759,7 +1759,7 @@ input.pk_horizontal.pk_width_180 {
   top: 5px;
 }
 
-.pk_peq4 span span {
+.pk_pgeq_decibel_markers span span {
   position: absolute;
   width: 446px;
   left: 18px;
@@ -1769,7 +1769,7 @@ input.pk_horizontal.pk_width_180 {
   border-top: 1px solid #4d4729;
 }
 
-.pk_peq4 span {
+.pk_pgeq_decibel_markers span {
   text-align: center;
   top: 50%;
   left: 0px;
@@ -1777,7 +1777,7 @@ input.pk_horizontal.pk_width_180 {
   position: absolute;
 }
 
-.pk_pgeq_els {
+.pk_pgeq_element {
   margin-bottom: 0px;
   padding: 6px 0;
   border-bottom: 1px solid #333;
@@ -1785,15 +1785,15 @@ input.pk_horizontal.pk_width_180 {
   transition: background 120ms;
 }
 
-.pk_pgeq_els:hover {
+.pk_pgeq_element:hover {
   background: #3b413f;
 }
 
-.pk_pgeq_els.pk_active {
+.pk_pgeq_element.pk_active {
   background: #24302c;
 }
 
-.pk_pgeq_els > span {
+.pk_pgeq_element > span {
   display: inline-block;
   width: 18%;
   text-align: center;
@@ -1801,26 +1801,26 @@ input.pk_horizontal.pk_width_180 {
   font-size: 12px;
 }
 
-.pk_pgeq_els .pk_text_left {
+.pk_pgeq_element .pk_text_left {
   text-align: left;
   width: 20%;
 }
 
-.pk_pgeq_els .pk_del {
+.pk_pgeq_element .pk_delete {
   width: 8%;
   overflow: hidden;
   font-size: 8px;
   text-align: left;
 }
 
-.pk_pgeq_els > div {
+.pk_pgeq_element > div {
   position: relative;
   display: inline-block;
   width: 18%;
   text-align: center;
 }
 
-.pk_pgeq_els .pk_value {
+.pk_pgeq_element .pk_value {
   float: none;
   margin: 0;
   color: #fff;
@@ -1831,7 +1831,7 @@ input.pk_horizontal.pk_width_180 {
   border-right: none;
 }
 
-.pk_pgeq_els select {
+.pk_pgeq_element select {
   margin: 0 auto;
   padding: 0 0 0 10px;
 }
@@ -1861,8 +1861,8 @@ input.pk_horizontal.pk_width_180 {
   top: -8px;
 }
 
-.pk_pgeq_els .pk_check:not(:checked) + label,
-.pk_pgeq_els .pk_check:checked + label {
+.pk_pgeq_element .pk_check:not(:checked) + label,
+.pk_pgeq_element .pk_check:checked + label {
   position: relative;
   padding-left: 25px;
   display: inline-block;
@@ -1873,19 +1873,19 @@ input.pk_horizontal.pk_width_180 {
   margin: 0;
 }
 
-.pk_pgeq_els i {
+.pk_pgeq_element i {
   display: inline-block;
   padding: 0 8px;
   margin-right: 8px;
 }
 
 label.pk_disabled,
-.pk_pgeq_els.pk_disabled .pk_gain {
+.pk_pgeq_element.pk_disabled .pk_gain {
   pointer-events: none;
   opacity: 0.5;
 }
 
-.pk_pglst {
+.pk_pgeq_list {
   max-height: 160px;
   overflow-y: scroll;
   padding-bottom: 20px;
@@ -1893,7 +1893,7 @@ label.pk_disabled,
   -ms-overflow-style: none;
 }
 
-.pk_pglst::-webkit-scrollbar {
+.pk_pgeq_list::-webkit-scrollbar {
   width: 0px;
 }
 
@@ -1951,7 +1951,7 @@ body.pk_standalone {
   text-shadow: 0 0 1px #000;
 }
 
-#pk_tmp_tap {
+#pk_tempo_tap_status {
   width: 100%;
   background: #151515;
   min-width: 500px;
@@ -1966,8 +1966,8 @@ body.pk_standalone {
   box-sizing: border-box;
 }
 
-#pk_tmp_tap2 .pk_obj,
-#pk_tmp_tap .pk_obj {
+#pk_tempo_tap_graph .pk_tempo_step,
+#pk_tempo_tap_status .pk_tempo_step {
   width: 100%;
   height: 100%;
   z-index: 2;
@@ -1987,12 +1987,12 @@ body.pk_standalone {
   transition: transform 3.3s linear;
 }
 
-#pk_tmp_tap2 .pk_obj {
+#pk_tempo_tap_graph .pk_tempo_step {
   transform: translate3d(50%, 0, 0);
   transition: transform 1770ms linear;
 }
 
-#pk_tmp_tap .pk_obj2 {
+#pk_tempo_tap_status .pk_tempo_tap_message {
   width: 100px;
   display: block;
   position: absolute;
@@ -2005,7 +2005,7 @@ body.pk_standalone {
   transition: opacity 200ms;
 }
 
-#pk_tmp_tap3 {
+#pk_tempo_tap_area {
   width: 100%;
   background: #333;
   min-width: 500px;
@@ -2018,11 +2018,11 @@ body.pk_standalone {
   transition: background 70ms;
 }
 
-#pk_tmp_tap3:hover {
+#pk_tempo_tap_area:hover {
   background: #363636;
 }
 
-#pk_tmp_tap3.pk_active {
+#pk_tempo_tap_area.pk_active {
   background: #555;
 }
 
@@ -2035,13 +2035,13 @@ body.pk_standalone {
   pointer-events: none;
 }
 
-.pk_id3ttl {
+.pk_id3_title {
   font-weight: bold;
   padding: 2px 10px;
   display: inline-block;
   min-width: 64px;
 }
-.pk_lcldrf {
+.pk_local_draft {
   padding: 6px 0 14px 0;
   margin-top: 10px;
   overflow: hidden;
@@ -2054,11 +2054,11 @@ body.pk_standalone {
   padding-right: 5px;
 }
 
-.pk_lcldrf:hover {
+.pk_local_draft:hover {
   background: #292929;
 }
 
-.pk_lcldrf .pk_field_label {
+.pk_local_draft .pk_field_label {
   color: #909090;
   font-size: 11px;
   padding-right: 5px;
@@ -2068,12 +2068,12 @@ body.pk_standalone {
   display: inline-block;
 }
 
-.pk_lcla {
+.pk_local_draft_link {
   margin: 0 10px;
   margin-left: 15px;
   vertical-align: middle;
 }
-.pk_lcla2 {
+.pk_local_draft_play {
   position: absolute;
   left: 7px;
   bottom: 16px;
@@ -2084,12 +2084,12 @@ body.pk_standalone {
   padding: 1px 8px;
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
-.pk_lcla2.pk_active {
+.pk_local_draft_play.pk_active {
   background: rgba(255, 255, 255, 0.74);
   color: #111;
 }
 
-.pk_lcli {
+.pk_local_draft_image {
   max-width: 120px;
   width: 120px;
   vertical-align: middle;
@@ -2097,7 +2097,7 @@ body.pk_standalone {
   background: #111;
 }
 
-.pk_lcls {
+.pk_local_draft_stat {
   min-width: 74px;
   width: 25%;
   margin-bottom: 6px;

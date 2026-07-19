@@ -60,7 +60,7 @@ export function openRecordingModal(app) {
       },
 
       body:
-        '<div class="pk_rec" style="user-select:none">' +
+        '<div class="pk_record" style="user-select:none">' +
         '<div class="pk_row">' +
         '<label>Devices:</label>' +
         '<select style="max-width:220px"></select>' +

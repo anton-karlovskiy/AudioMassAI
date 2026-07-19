@@ -275,7 +275,7 @@ test('saves a local session and reloads it, old records included', async ({ page
     entry.click();
   });
 
-  const draftEntry = page.locator('.pk_modal .pk_lcldrf', { hasText: 'e2e draft' });
+  const draftEntry = page.locator('.pk_modal .pk_local_draft', { hasText: 'e2e draft' });
   await expect(draftEntry).toHaveCount(1);
   await expect(draftEntry).toContainText(sessionId);
   await page.keyboard.press('Escape');

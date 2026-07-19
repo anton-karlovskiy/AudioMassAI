@@ -409,11 +409,12 @@ export function registerEffectsUI(app) {
             callback: function (modal) {
               if (mode === 1) {
                 // check if we are doing force mono, or force flip
-                const mono = modal.bodyElement.getElementsByClassName('pk_c_mm')[0];
-                const flip = modal.bodyElement.getElementsByClassName('pk_c_fl')[0];
+                const mono = modal.bodyElement.getElementsByClassName('pk_make_mono')[0];
+                const flip = modal.bodyElement.getElementsByClassName('pk_flip_channels')[0];
 
                 if (mono.checked) {
-                  const channelCount = modal.bodyElement.getElementsByClassName('pk_c_c');
+                  const channelCount =
+                    modal.bodyElement.getElementsByClassName('pk_channel_choice');
                   // check which channel we pick
 
                   if (channelCount[0].checked) {
@@ -425,7 +426,7 @@ export function registerEffectsUI(app) {
                   app.fireEvent('RequestActionFX_Flip', 'flip');
                 }
               } else if (mode === 2) {
-                const stereo = modal.bodyElement.getElementsByClassName('pk_c_ms')[0];
+                const stereo = modal.bodyElement.getElementsByClassName('pk_make_stereo')[0];
                 if (stereo.checked) {
                   app.fireEvent('RequestActionFX_Flip', 'stereo');
                 }
@@ -436,21 +437,21 @@ export function registerEffectsUI(app) {
           },
         ],
         body:
-          '<div class="pk_row pk_mm" style="border:none;display:none">' +
+          '<div class="pk_row pk_mono_section" style="border:none;display:none">' +
           '<div class="pk_row">' +
-          '<input type="checkbox" class="pk_check pk_c_mm" id="xmm" name="makeMono">' +
+          '<input type="checkbox" class="pk_check pk_make_mono" id="xmm" name="makeMono">' +
           '<label for="xmm">Make Mono</label></div>' +
           '<div class="pk_row" style="padding-left:30px">' +
-          '<input type="radio" class="pk_check pk_c_c" id="kf6" name="chnl" value="left">' +
+          '<input type="radio" class="pk_check pk_channel_choice" id="kf6" name="chnl" value="left">' +
           '<label class="pk_disabled" for="kf6">Left Channel</label>' +
-          '<input type="radio" class="pk_check pk_c_c" id="kf7" name="chnl" value="right">' +
+          '<input type="radio" class="pk_check pk_channel_choice" id="kf7" name="chnl" value="right">' +
           '<label class="pk_disabled" for="kf7">Right Channel</label>' +
           '</div>' +
-          '<div class="pk_row"><input type="checkbox" class="pk_check pk_c_fl" id="xfc" name="flipChn">' +
+          '<div class="pk_row"><input type="checkbox" class="pk_check pk_flip_channels" id="xfc" name="flipChn">' +
           '<label for="xfc">Flip Channels</label></div>' +
           '</div>' +
-          '<div class="pk_row pk_ms" style="border:none;display:none">' +
-          '<div class="pk_row"><input type="checkbox" class="pk_check pk_c_ms" id="xms" checked name="makeStereo">' +
+          '<div class="pk_row pk_stereo_section" style="border:none;display:none">' +
+          '<div class="pk_row"><input type="checkbox" class="pk_check pk_make_stereo" id="xms" checked name="makeStereo">' +
           '<label for="xms">Make Stereo</label></div>' +
           '</div>',
         setup: function (modal) {
@@ -458,11 +459,11 @@ export function registerEffectsUI(app) {
           const number = app.engine.wavesurfer.backend.buffer.numberOfChannels;
           if (number === 2) {
             mode = 1;
-            main = modal.bodyElement.getElementsByClassName('pk_mm')[0];
+            main = modal.bodyElement.getElementsByClassName('pk_mono_section')[0];
 
-            const mono = main.getElementsByClassName('pk_c_mm')[0];
-            const flip = main.getElementsByClassName('pk_c_fl')[0];
-            const channelCount = main.getElementsByClassName('pk_c_c');
+            const mono = main.getElementsByClassName('pk_make_mono')[0];
+            const flip = main.getElementsByClassName('pk_flip_channels')[0];
+            const channelCount = main.getElementsByClassName('pk_channel_choice');
             const tmp = main.getElementsByClassName('pk_disabled');
             const lbls = [tmp[0], tmp[1]];
 
@@ -488,7 +489,7 @@ export function registerEffectsUI(app) {
             };
           } else {
             mode = 2;
-            main = modal.bodyElement.getElementsByClassName('pk_ms')[0];
+            main = modal.bodyElement.getElementsByClassName('pk_stereo_section')[0];
           }
 
           main.style.display = 'block';
@@ -1364,23 +1365,33 @@ export function registerEffectsUI(app) {
       let markup = '<div style="margin-top:18px">';
 
       markup +=
-        '<div><span class="pk_id3ttl">Artist</span><span>' + (tags.artist || '-') + '</span></div>';
+        '<div><span class="pk_id3_title">Artist</span><span>' +
+        (tags.artist || '-') +
+        '</span></div>';
       markup +=
-        '<div><span class="pk_id3ttl">Title</span><span>' + (tags.title || '-') + '</span></div>';
+        '<div><span class="pk_id3_title">Title</span><span>' +
+        (tags.title || '-') +
+        '</span></div>';
       markup +=
-        '<div><span class="pk_id3ttl">Album</span><span>' + (tags.album || '-') + '</span></div>';
+        '<div><span class="pk_id3_title">Album</span><span>' +
+        (tags.album || '-') +
+        '</span></div>';
       markup +=
-        '<div><span class="pk_id3ttl">Year</span><span>' + (tags.year || '-') + '</span></div>';
+        '<div><span class="pk_id3_title">Year</span><span>' + (tags.year || '-') + '</span></div>';
       markup +=
-        '<div><span class="pk_id3ttl">Genre</span><span>' + (tags.genre || '-') + '</span></div>';
+        '<div><span class="pk_id3_title">Genre</span><span>' +
+        (tags.genre || '-') +
+        '</span></div>';
       markup +=
-        '<div style="max-width:700px"><span class="pk_id3ttl">Comment</span><span>' +
+        '<div style="max-width:700px"><span class="pk_id3_title">Comment</span><span>' +
         ((tags.comment || {}).text || '-') +
         '</span></div>';
       markup +=
-        '<div><span class="pk_id3ttl">Track</span><span>' + (tags.track || '-') + '</span></div>';
+        '<div><span class="pk_id3_title">Track</span><span>' +
+        (tags.track || '-') +
+        '</span></div>';
       markup +=
-        '<div style="max-width:700px"><span class="pk_id3ttl">Lyrics</span><span>' +
+        '<div style="max-width:700px"><span class="pk_id3_title">Lyrics</span><span>' +
         ((tags.lyrics || {}).lyrics || '-') +
         '</span></div>';
 
@@ -1392,7 +1403,7 @@ export function registerEffectsUI(app) {
         }
 
         markup +=
-          '<div><span style="float:left" class="pk_id3ttl">Cover</span>' +
+          '<div><span style="float:left" class="pk_id3_title">Cover</span>' +
           '<span><img style="max-width:340px" src="data:' +
           image.format +
           ';base64,' +
@@ -1414,10 +1425,10 @@ export function registerEffectsUI(app) {
       buttons: [],
       body:
         '<input type="file" accept="audio/*" />' +
-        '<div class="pk_row pk_ttx">Choose file to view audio metatags!</div>',
+        '<div class="pk_row pk_id3_hint">Choose file to view audio metatags!</div>',
       setup: function (modal) {
         const input = modal.bodyElement.getElementsByTagName('input')[0];
-        const textElement = modal.bodyElement.getElementsByClassName('pk_ttx')[0];
+        const textElement = modal.bodyElement.getElementsByClassName('pk_id3_hint')[0];
 
         input.onchange = function (e) {
           const reader = new FileReader();
@@ -1887,7 +1898,7 @@ export function registerEffectsUI(app) {
         }, 130);
     } else if (type === 1) {
       let iframe = document.createElement('iframe');
-      iframe.className = 'pk_frqan';
+      iframe.className = 'pk_frequency_analyzer';
       iframe.id = 'pk_fr' + url;
 
       if (app.ui.BarBtm.on) {

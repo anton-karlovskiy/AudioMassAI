@@ -224,7 +224,7 @@ function _topbarConfig(app, ui) {
                 '<input type="radio" class="pk_check" id="k4" name="xport" checked value="whole">' +
                 '<label for="k4">Export whole file</label>' +
                 '<input type="radio" class="pk_check" id="k5" name="xport" value="sel">' +
-                '<label class="pk_lblmp3" for="k5">Export Selection Only</label></div>',
+                '<label class="pk_label_mp3" for="k5">Export Selection Only</label></div>',
 
               setup: function (modal) {
                 const wavesurfer = app.engine.wavesurfer;
@@ -233,7 +233,7 @@ function _topbarConfig(app, ui) {
                 // if no region
                 const region = wavesurfer.regions.list[0];
                 if (!region) {
-                  const lbl = modal.bodyElement.getElementsByClassName('pk_lblmp3')[0];
+                  const lbl = modal.bodyElement.getElementsByClassName('pk_label_mp3')[0];
                   lbl.className = 'pk_disabled';
                 }
 
@@ -489,10 +489,10 @@ function _topbarConfig(app, ui) {
                 '<div class="pk_row"><input type="radio" class="pk_check" id="sl1" name="rdslnc" checked value="whole">' +
                 '<label style="vertical-align:top" for="sl1">Whole Track</label>' +
                 '<input type="radio" class="pk_check"  id="sl2" name="rdslnc" value="sel">' +
-                '<label style="vertical-align:top" class="pk_lblsel" for="sl2">Selection' +
+                '<label style="vertical-align:top" class="pk_label_selection" for="sl2">Selection' +
                 '<i style="display:block;font-size:11px;margin-top:-5px"></i></label>' +
                 '<input type="radio" class="pk_check"  id="sl3" name="rdslnc" value="copy">' +
-                '<label style="vertical-align:top" class="pk_lblsel2" for="sl3">"Copy" clipboard/buffer</label></div>' +
+                '<label style="vertical-align:top" class="pk_label_copy_buffer" for="sl3">"Copy" clipboard/buffer</label></div>' +
                 '<div class="pk_row"><label for="slk0">Draft Name</label>' +
                 '<input style="min-width:250px" placeholder="(optional) filename" maxlength="100" ' +
                 'class="pk_text" type="text" id="slk0" /></div>',
@@ -503,7 +503,7 @@ function _topbarConfig(app, ui) {
 
                 // if no region
                 const region = wavesurfer.regions.list[0];
-                const lblr = modal.bodyElement.getElementsByClassName('pk_lblsel')[0];
+                const lblr = modal.bodyElement.getElementsByClassName('pk_label_selection')[0];
                 if (!region) {
                   lblr.className = 'pk_disabled';
                 } else {
@@ -515,7 +515,7 @@ function _topbarConfig(app, ui) {
                 // if no copy buffer
                 const copy = app.engine.GetCopyBuff();
                 if (!copy) {
-                  const lbl = modal.bodyElement.getElementsByClassName('pk_lblsel2')[0];
+                  const lbl = modal.bodyElement.getElementsByClassName('pk_label_copy_buffer')[0];
                   lbl.className = 'pk_disabled';
                 }
 
@@ -651,30 +651,30 @@ function _topbarConfig(app, ui) {
                     message +=
                       '<div id="pk_' +
                       current.id +
-                      '" class="pk_lcldrf">' +
+                      '" class="pk_local_draft">' +
                       '<div style="padding-bottom:2px"><span><i class="pk_field_label">name:</i>' +
                       filename +
                       '</span></div>' +
-                      '<div><span class="pk_lcls"><i class="pk_field_label">id:</i><strong>' +
+                      '<div><span class="pk_local_draft_stat"><i class="pk_field_label">id:</i><strong>' +
                       current.id +
                       '</strong><br/><i class="pk_field_label">chn:</i>' +
                       chns +
                       '</span>' +
-                      '<span class="pk_lcls" style="width:50%;text-align:center"><i class="pk_field_label">date:</i><span>' +
+                      '<span class="pk_local_draft_stat" style="width:50%;text-align:center"><i class="pk_field_label">date:</i><span>' +
                       datestr +
                       '<br/>' +
                       agostr +
                       '</span></span>' +
-                      '<span style="text-align:right;float:right" class="pk_lcls"><i class="pk_field_label">durr:</i>' +
+                      '<span style="text-align:right;float:right" class="pk_local_draft_stat"><i class="pk_field_label">durr:</i>' +
                       duration +
                       's</span></div><div>' +
-                      '<img class="pk_lcli" src="' +
+                      '<img class="pk_local_draft_image" src="' +
                       thumbnail +
                       '" />' +
-                      '<a class="pk_lcla2" onclick="PKAudioEditor.fireEvent(\'LoadDraft\',\'' +
+                      '<a class="pk_local_draft_play" onclick="PKAudioEditor.fireEvent(\'LoadDraft\',\'' +
                       current.id +
                       '\', 3);">PLAY</a>' +
-                      '<a class="pk_lcla" onclick="PKAudioEditor.fireEvent(\'LoadDraft\',\'' +
+                      '<a class="pk_local_draft_link" onclick="PKAudioEditor.fireEvent(\'LoadDraft\',\'' +
                       current.id +
                       '\');">Open</a>';
 
@@ -682,10 +682,10 @@ function _topbarConfig(app, ui) {
                       message +=
                         "<a onclick=\"PKAudioEditor.fireEvent('LoadDraft','" +
                         current.id +
-                        '\',1);" class="pk_lcla">Append to Current Track</a>';
+                        '\',1);" class="pk_local_draft_link">Append to Current Track</a>';
                     }
                     message +=
-                      '<a class="pk_lcla" style="color:#ad2b2b" onclick="PKAudioEditor.fireEvent(\'LoadDraft\',\'' +
+                      '<a class="pk_local_draft_link" style="color:#ad2b2b" onclick="PKAudioEditor.fireEvent(\'LoadDraft\',\'' +
                       current.id +
                       '\',2);">Del</a>';
                     message += '</div></div>';
@@ -710,7 +710,7 @@ function _topbarConfig(app, ui) {
                   } else {
                     const element = document.getElementById('pk_' + name);
                     if (element) {
-                      act = element.getElementsByClassName('pk_lcla2')[0];
+                      act = element.getElementsByClassName('pk_local_draft_play')[0];
                       act && act.classList.add('pk_active');
                     }
                   }
@@ -2054,7 +2054,7 @@ function _makeUIMainView(UI, app) {
 
   // change temp message, it's pretty ugly #### TODO
   const ttmp = document.createElement('div');
-  ttmp.className = 'pk_tmpMsg';
+  ttmp.className = 'pk_temp_message';
   ttmp.innerHTML =
     'Drag n drop an Audio File in this window, or click ' +
     '<a style="white-space:nowrap;border:1px solid;border-radius:23px;padding:5px 18px;font-size:0.94em;margin-left:5px" ' +
@@ -2064,10 +2064,10 @@ function _makeUIMainView(UI, app) {
   mainAudioView.appendChild(ttmp);
 
   const ttmp2 = document.createElement('div');
-  ttmp2.className = 'pk_tmpMsg2';
+  ttmp2.className = 'pk_temp_message_alt';
   ttmp2.innerHTML =
     '<span>Please Wait...</span><div class="pk_modal_loading"><div></div></div>' +
-    '<div class="pk_prc"><span>0%</span>' +
+    '<div class="pk_percent"><span>0%</span>' +
     '<button tabIndex="-1" class="pk_button" ' +
     'onclick="PKAudioEditor.fireEvent(\'RequestCancelModal\');">cancel</button></div>';
 
@@ -2832,7 +2832,7 @@ function _makeUIToolbar(UI) {
   });
 
   const actions = document.createElement('div');
-  actions.className = 'pk_ctns';
+  actions.className = 'pk_actions';
 
   const copyButton = document.createElement('button');
   copyButton.setAttribute('tabIndex', -1);
@@ -2898,9 +2898,9 @@ function _makeUIToolbar(UI) {
   selection.innerHTML =
     '<div class="pk_select_list">' +
     '<span class="pk_title">Selection:</span>' +
-    '<div><span class="title">Start:</span><span class="s_s pk_dat">-</span></div>' +
-    '<div><span class="title">End:</span><span class="s_e pk_dat">-</span></div>' +
-    '<div><span  class="title">Duration:</span><span class="s_d pk_dat">-</span></div>' +
+    '<div><span class="title">Start:</span><span class="s_s pk_selection_value">-</span></div>' +
+    '<div><span class="title">End:</span><span class="s_e pk_selection_value">-</span></div>' +
+    '<div><span  class="title">Duration:</span><span class="s_d pk_selection_value">-</span></div>' +
     '</div>';
 
   const buttonClearSelection = document.createElement('button');
@@ -2908,14 +2908,15 @@ function _makeUIToolbar(UI) {
   buttonClearSelection.className = 'pk_button icon-clearsel pk_inactive';
   buttonClearSelection.innerHTML = '<span>Clear Selection (Q key)</span>';
 
-  let selectedSpans = selection.getElementsByClassName('pk_dat');
+  let selectedSpans = selection.getElementsByClassName('pk_selection_value');
   UI.listenFor('DidCreateRegion', function (region) {
     copyButton.classList.remove('pk_inactive');
     cutButton.classList.remove('pk_inactive');
     buttonClearSelection.classList.remove('pk_inactive');
 
     if (region) {
-      if (!selectedSpans[0]) selectedSpans = document.querySelectorAll('.pk_select_list .pk_dat');
+      if (!selectedSpans[0])
+        selectedSpans = document.querySelectorAll('.pk_select_list .pk_selection_value');
       selectedSpans[0].textContent = region.start.toFixed(3);
       selectedSpans[1].textContent = region.end.toFixed(3);
       selectedSpans[2].textContent = (region.end - region.start).toFixed(3);
@@ -2926,7 +2927,8 @@ function _makeUIToolbar(UI) {
     cutButton.classList.add('pk_inactive');
     buttonClearSelection.classList.add('pk_inactive');
 
-    if (!selectedSpans[0]) selectedSpans = document.querySelectorAll('.pk_select_list .pk_dat');
+    if (!selectedSpans[0])
+      selectedSpans = document.querySelectorAll('.pk_select_list .pk_selection_value');
     selectedSpans[0].textContent = '-';
     selectedSpans[1].textContent = '-';
     selectedSpans[2].textContent = '-';

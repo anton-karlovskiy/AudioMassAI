@@ -256,7 +256,7 @@ const SCENES = [
         );
         entry.click();
       });
-      await page.waitForSelector('.pk_lcldrf');
+      await page.waitForSelector('.pk_local_draft');
       await page.waitForTimeout(300);
     },
   },

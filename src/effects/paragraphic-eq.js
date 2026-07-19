@@ -381,7 +381,7 @@ function ParagraphicEqGraph() {
           const element = document.getElementById('pgon' + range.id);
           element.checked = range[key];
         } else if (key === 'freq') {
-          const element = range.element.getElementsByClassName('pk_freq')[0];
+          const element = range.element.getElementsByClassName('pk_frequency')[0];
           //requestAnimationFrame (function () {
           element.value = range[key];
           //});
@@ -538,8 +538,8 @@ function ParagraphicEqGraph() {
     const canvasBars = document.createElement('canvas');
     const canvasEqualizer = document.createElement('canvas');
 
-    canvasBars.className = 'pk_peq2';
-    canvasEqualizer.className = 'pk_peq';
+    canvasBars.className = 'pk_pgeq_bars';
+    canvasEqualizer.className = 'pk_pgeq_curve';
 
     canvasBars.width = 450 / 2;
     canvasBars.height = 224 / 2;
@@ -559,7 +559,7 @@ function ParagraphicEqGraph() {
 
     // render the decibel and the frequencies
     const markerFrequencies = document.createElement('div');
-    markerFrequencies.className = 'pk_peq3 pk_noselect';
+    markerFrequencies.className = 'pk_pgeq_frequency_markers pk_noselect';
     markerFrequencies.innerHTML =
       '<span>32</span>' +
       //			'<span>32</span>' +
@@ -578,7 +578,7 @@ function ParagraphicEqGraph() {
       '<span style="float:right">20k</span>';
 
     const markerDecibels = document.createElement('div');
-    markerDecibels.className = 'pk_peq4 pk_noselect';
+    markerDecibels.className = 'pk_pgeq_decibel_markers pk_noselect';
     markerDecibels.innerHTML =
       '<span style="top:0">35</span>' +
       '<span style="top:10%">28<span></span></span>' +
@@ -601,10 +601,10 @@ function ParagraphicEqGraph() {
 
     // element's area
     const listElement = document.createElement('div');
-    listElement.className = 'pk_row pk_noselect pk_pglst';
+    listElement.className = 'pk_row pk_noselect pk_pgeq_list';
 
     listElement.innerHTML =
-      '<div class="pk_pgeq_els">' +
+      '<div class="pk_pgeq_element">' +
       '<span class="pk_text_left"> #</span><span>type</span><span>gain</span><span>freq</span><span>Q</span>' +
       '</div>';
 
@@ -810,7 +810,7 @@ function ParagraphicEqGraph() {
     const listElement = graph.ui.listElement;
 
     const element = document.createElement('div');
-    element.className = 'pk_pgeq_els' + (className ? className : '');
+    element.className = 'pk_pgeq_element' + (className ? className : '');
     element.setAttribute('data-id', range.id);
 
     element.addEventListener(
@@ -966,10 +966,10 @@ function ParagraphicEqGraph() {
     // freq
     const frequencyElement = document.createElement('div');
     frequencyElement.innerHTML =
-      '<input type="number" class="pk_value pk_freq" min="16" max="20000" value="' +
+      '<input type="number" class="pk_value pk_frequency" min="16" max="20000" value="' +
       range.freq +
       '">';
-    frequencyElement.getElementsByClassName('pk_freq')[0].onchange = function (e) {
+    frequencyElement.getElementsByClassName('pk_frequency')[0].onchange = function (e) {
       if (!this.value) {
         this.value = 500;
       }
@@ -982,15 +982,15 @@ function ParagraphicEqGraph() {
       _computeRangeCurve(range);
     };
 
-    frequencyElement.getElementsByClassName('pk_freq')[0].onfocus = function (e) {
+    frequencyElement.getElementsByClassName('pk_frequency')[0].onfocus = function (e) {
       if (this.hasAttribute('data-open')) return;
 
       const self = this;
       const parent = this.parentNode;
       const bar = document.createElement('div');
-      bar.className = 'pk_pgeq_freq pk_freq';
+      bar.className = 'pk_pgeq_freq pk_frequency';
       bar.innerHTML =
-        '<div class="pk_arrow"></div><input type="range" min="16" max="20000" class="pk_horizontal pk_freq" step="1" value="' +
+        '<div class="pk_arrow"></div><input type="range" min="16" max="20000" class="pk_horizontal pk_frequency" step="1" value="' +
         range.freq +
         '">';
 
@@ -1006,7 +1006,7 @@ function ParagraphicEqGraph() {
 
       const down = function (e) {
         if (
-          !e.target.classList.contains('pk_freq') ||
+          !e.target.classList.contains('pk_frequency') ||
           (e.target.type === self.type && e.target !== self)
         ) {
           self.removeAttribute('data-open');
@@ -1074,7 +1074,7 @@ function ParagraphicEqGraph() {
 
     // delete
     const deleteElement = document.createElement('div');
-    deleteElement.className = 'pk_del';
+    deleteElement.className = 'pk_delete';
     deleteElement.innerHTML = '<a style="cursor:pointer">DELETE</a>';
     deleteElement.getElementsByTagName('a')[0].onclick = function (e) {
       graph.Remove(range);
