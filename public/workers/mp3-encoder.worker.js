@@ -4,7 +4,7 @@
  * Encodes raw 16-bit PCM samples to MP3 using the vendored lamejs library.
  *
  * Protocol:
- *  1. First message:  { sample_rate, kbps, channels } — configures the encoder.
+ *  1. First message:  { sampleRate, kbps, channels } — configures the encoder.
  *  2. Second message: ArrayBuffer with left-channel (or mono) Int16 samples.
  *  3. Third message (stereo only): ArrayBuffer with right-channel Int16 samples.
  *  Progress is reported back as { percentage } messages; the final message is
@@ -26,8 +26,8 @@ onmessage = function (event) {
   if (!event.data) return;
 
   // Configuration message.
-  if (event.data.sample_rate) {
-    sampleRate = event.data.sample_rate / 1;
+  if (event.data.sampleRate) {
+    sampleRate = event.data.sampleRate / 1;
     bitrateKbps = event.data.kbps / 1;
     channelCount = event.data.channels / 1;
     return;

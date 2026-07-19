@@ -495,7 +495,7 @@ export function initTranscription(app) {
       mono16k.buffer instanceof ArrayBuffer &&
       mono16k.length > 0
     ) {
-      transcriptionWorker.postMessage({ audio: mono16k, sampling_rate: WHISPER_SAMPLE_RATE }, [
+      transcriptionWorker.postMessage({ audio: mono16k, sampleRate: WHISPER_SAMPLE_RATE }, [
         mono16k.buffer,
       ]);
     } else {

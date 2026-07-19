@@ -1,4 +1,17 @@
 import { test, expect } from '@playwright/test';
+import { open } from 'node:fs/promises';
+import { Buffer } from 'node:buffer';
+
+/** Read the first `length` bytes of a file. */
+async function readFileHead(path, length) {
+  const handle = await open(path, 'r');
+  try {
+    const { buffer } = await handle.read(Buffer.alloc(length), 0, length, 0);
+    return buffer;
+  } finally {
+    await handle.close();
+  }
+}
 
 /**
  * End-to-end smoke tests for the editor.
@@ -268,6 +281,63 @@ test('saves a local session and reloads it, old records included', async ({ page
   await page.keyboard.press('Escape');
 
   expect(consoleErrors).toEqual([]);
+});
+
+test('exports a wav through the real encoder worker', async ({ page }) => {
+  const consoleErrors = await bootApp(page);
+  await loadSample(page);
+
+  const sourceSampleRate = await page.evaluate(
+    () => window.PKAudioEditor.engine.wavesurfer.backend.buffer.sampleRate
+  );
+
+  const downloadPromise = page.waitForEvent('download', { timeout: 30_000 });
+  await page.evaluate(() =>
+    window.PKAudioEditor.engine.DownloadFile('e2e-export', 'wav', 0, null, true)
+  );
+  const download = await downloadPromise;
+
+  const header = await readFileHead(await download.path(), 44);
+
+  // "RIFF"...."WAVE", then the fmt chunk fields.
+  expect(header.toString('ascii', 0, 4)).toBe('RIFF');
+  expect(header.toString('ascii', 8, 12)).toBe('WAVE');
+  expect(header.readUInt16LE(22)).toBe(2);
+  expect(header.readUInt32LE(24)).toBe(sourceSampleRate);
+
+  expect(consoleErrors).toEqual([]);
+});
+
+/**
+ * The encoder workers take their sample rate and channel count from a config
+ * message. Both fall back to a 44.1kHz mono default, so a mistyped key would
+ * go unnoticed against a 44.1kHz source -- this drives the worker directly
+ * with values that differ from those defaults.
+ */
+test('the wav encoder worker honours its config message', async ({ page }) => {
+  await bootApp(page);
+
+  const header = await page.evaluate(
+    () =>
+      new Promise((resolve, reject) => {
+        const worker = new Worker('/workers/wav-encoder.worker.js');
+        setTimeout(() => reject(new Error('encoder worker never replied')), 10000);
+
+        worker.onmessage = async (event) => {
+          const bytes = new Uint8Array(await event.data.slice(0, 44).arrayBuffer());
+          worker.terminate();
+          resolve(Array.from(bytes));
+        };
+
+        worker.postMessage({ sampleRate: 22050, channels: 2, kbps: 128 });
+        worker.postMessage(new Int16Array(128).buffer);
+        worker.postMessage(new Int16Array(128).buffer);
+      })
+  );
+
+  const view = new DataView(new Uint8Array(header).buffer);
+  expect(view.getUint16(22, true)).toBe(2);
+  expect(view.getUint32(24, true)).toBe(22050);
 });
 
 test('export dialog opens with format options', async ({ page }) => {

@@ -5,7 +5,7 @@
  * (Emscripten) build.
  *
  * Protocol:
- *  1. First message:  { sample_rate, flac_compression, channels } — configures
+ *  1. First message:  { sampleRate, flacCompression, channels } — configures
  *     and initializes the encoder.
  *  2. Second message: ArrayBuffer with left-channel (or mono) Int16 samples.
  *  3. Third message (stereo only): ArrayBuffer with right-channel Int16 samples.
@@ -74,9 +74,9 @@ onmessage = function (event) {
   if (!event.data) return;
 
   // Configuration message.
-  if (event.data.sample_rate) {
-    sampleRate = event.data.sample_rate / 1;
-    compressionLevel = event.data.flac_compression;
+  if (event.data.sampleRate) {
+    sampleRate = event.data.sampleRate / 1;
+    compressionLevel = event.data.flacCompression;
     channelCount = event.data.channels / 1;
 
     initEncoder();

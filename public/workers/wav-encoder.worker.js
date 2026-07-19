@@ -4,7 +4,7 @@
  * Wraps raw 16-bit PCM samples in a RIFF/WAVE container.
  *
  * Protocol:
- *  1. First message:  { sample_rate, kbps, channels } — configures the encoder.
+ *  1. First message:  { sampleRate, kbps, channels } — configures the encoder.
  *  2. Second message: ArrayBuffer with left-channel (or mono) Int16 samples.
  *  3. Third message (stereo only): ArrayBuffer with right-channel Int16 samples.
  *  The final message posted back is the encoded audio as a Blob.
@@ -84,8 +84,8 @@ onmessage = function (event) {
   if (!event.data) return;
 
   // Configuration message.
-  if (event.data.sample_rate) {
-    sampleRate = event.data.sample_rate / 1;
+  if (event.data.sampleRate) {
+    sampleRate = event.data.sampleRate / 1;
     channelCount = event.data.channels / 1;
     return;
   }

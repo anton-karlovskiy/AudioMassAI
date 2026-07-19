@@ -646,9 +646,9 @@ export function AudioUtils(app, wavesurfer) {
     };
 
     worker.postMessage({
-      sample_rate: sampleRate,
+      sampleRate: sampleRate,
       kbps: !kbps ? 128 : kbps,
-      flac_compression: kbps,
+      flacCompression: kbps,
       channels: channels,
     });
     worker.postMessage(dataAsInt16ArrayLeft.buffer, [dataAsInt16ArrayLeft.buffer]);

@@ -668,7 +668,7 @@ export function openTempoTools(app) {
         const wavesurfer = app.engine.wavesurfer;
         const buffer = wavesurfer.backend.buffer;
         const channelData = buffer.getChannelData(0);
-        const sample_rate = buffer.sampleRate;
+        const sampleRate = buffer.sampleRate;
 
         const currentTime = wavesurfer.getCurrentTime();
         const width = 500;
@@ -684,8 +684,8 @@ export function openTempoTools(app) {
         const rightTime = currentTime + limit / 2;
         let quickRender = false;
 
-        let startOffset = (leftTime * sample_rate) >> 0;
-        let endOffset = ((leftTime + limit) * sample_rate) >> 0;
+        let startOffset = (leftTime * sampleRate) >> 0;
+        let endOffset = ((leftTime + limit) * sampleRate) >> 0;
         let length = endOffset - startOffset;
         let mod = (length / width) >> 0;
 
@@ -704,8 +704,8 @@ export function openTempoTools(app) {
 
             newWidth = pixels;
 
-            startOffset = (oldRightTime * sample_rate) >> 0;
-            endOffset = (rightTime * sample_rate) >> 0;
+            startOffset = (oldRightTime * sampleRate) >> 0;
+            endOffset = (rightTime * sampleRate) >> 0;
             length = endOffset - startOffset;
             mod = (length / pixels) >> 0;
 
@@ -946,11 +946,11 @@ export function openTempoTools(app) {
 
       const startingTime = 20.375;
       const endingTime = wavesurfer.getDuration();
-      const sample_rate = buffer.sampleRate;
+      const sampleRate = buffer.sampleRate;
 
-      const lookAhead = 10 * sample_rate;
-      const offsetRate = startingTime * sample_rate;
-      const durationRate = endingTime * sample_rate;
+      const lookAhead = 10 * sampleRate;
+      const offsetRate = startingTime * sampleRate;
+      const durationRate = endingTime * sampleRate;
       const distanceRhythm = {};
 
       // now run offline

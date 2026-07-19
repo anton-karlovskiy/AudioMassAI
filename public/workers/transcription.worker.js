@@ -21,7 +21,7 @@ class PipelineSingleton {
 }
 
 self.addEventListener('message', async (event) => {
-  const { audio, sampling_rate } = event.data;
+  const { audio, sampleRate } = event.data;
 
   if (!audio) {
     self.postMessage({
@@ -39,8 +39,9 @@ self.addEventListener('message', async (event) => {
     // Ensure Float32Array
     const pcm = audio instanceof Float32Array ? audio : new Float32Array(audio);
 
+    // snake_case keys here are transformers.js pipeline options, not ours.
     const output = await transcriber(pcm, {
-      sampling_rate,
+      sampling_rate: sampleRate,
       chunk_length_s: 30,
       stride_length_s: 5,
     });
