@@ -1,0 +1,42 @@
+{
+  "styledButUnreferenced": [
+    "pk_aut",
+    "pk_aut_act",
+    "pk_wave_cursor"
+  ],
+  "referencedButUnstyled": [
+    "pk_audio_view_",
+    "pk_back_jump",
+    "pk_channel_choice",
+    "pk_ctx_action",
+    "pk_ctxmn",
+    "pk_flip_channels",
+    "pk_frame",
+    "pk_frequency",
+    "pk_front_jump",
+    "pk_id3_hint",
+    "pk_label_copy_buffer",
+    "pk_label_mp3",
+    "pk_label_selection",
+    "pk_make_mono",
+    "pk_make_stereo",
+    "pk_mono_section",
+    "pk_open",
+    "pk_option",
+    "pk_pause",
+    "pk_preset_fx",
+    "pk_q",
+    "pk_record",
+    "pk_stereo",
+    "pk_stereo_section",
+    "pk_stop",
+    "pk_tempo_tap_area",
+    "pk_tempo_tap_graph",
+    "pk_tempo_tap_status",
+    "pk_timing_context",
+    "pk_timing_number",
+    "pk_zoom_in_h",
+    "pk_zoom_out_h",
+    "pk_zoom_reset"
+  ]
+}
